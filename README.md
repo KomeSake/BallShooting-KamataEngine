@@ -1,0 +1,2 @@
+# BallShooting-KamataEngine
+关于可以变换成球滚动或者射击形态的上帝视角2D射击游戏

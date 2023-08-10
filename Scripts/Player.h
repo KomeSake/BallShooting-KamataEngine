@@ -14,6 +14,5 @@ public:
 	unsigned int _color;
 
 	Player();
-	void Move(char keys[], float bgWidth, float bgHeight);
+	void Move(char keys[], float bgWidth, float bgHeight, float minMapSize);
 };
-

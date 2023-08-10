@@ -50,6 +50,9 @@
     <ClCompile Include="Scripts\Camera.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Scripts\Map.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -127,5 +130,6 @@
     <ClInclude Include="Scripts\People.h" />
     <ClInclude Include="Scripts\Player.h" />
     <ClInclude Include="Scripts\Camera.h" />
+    <ClInclude Include="Scripts\Map.h" />
   </ItemGroup>
 </Project>

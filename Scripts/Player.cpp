@@ -7,12 +7,12 @@ Player::Player()
 	_vel = { 0,0 };
 	_speed = 10;
 	_image = LoadRes::_playerSP;
-	_width = 64;
-	_height = 64;
+	_width = 128;
+	_height = 128;
 	_color = WHITE;
 }
 
-void Player::Move(char keys[], float bgWidth, float bgHeight)
+void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 {
 	//移动部分
 	if (keys[DIK_W]) {
@@ -40,7 +40,33 @@ void Player::Move(char keys[], float bgWidth, float bgHeight)
 	}
 	_pos.x += _dir.x * _speed;
 	_pos.y += _dir.y * _speed;
-	//限制部分
+
+	//格子限制
+	////注意！地图格子是二维容器装着的，所以序号是从0开始
+	int checkUp = (int)((bgHeight - _pos.y - _height / 2) / minMapSize);
+	int checkDown = (int)((bgHeight - _pos.y + _height / 2) / minMapSize);
+	int checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
+	int checkRight = (int)((_pos.x + _width / 2) / minMapSize);
+	int playerCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
+	int playerCheckLine = (int)(_pos.x / minMapSize);
+
+	Novice::ScreenPrintf(10, 100, "%d,%d,%d,%d,", checkUp, checkDown, checkLeft, checkRight);
+
+	if (Map::_mapData1[checkUp][playerCheckLine] != 'o') {
+		_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+	}
+	else if (Map::_mapData1[checkDown][playerCheckLine] != 'o') {
+		_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+	}
+	if (Map::_mapData1[playerCheckRow][checkLeft] != 'o') {
+		_pos.x = playerCheckLine * minMapSize + _width / 2;
+	}
+	else if (Map::_mapData1[playerCheckRow][checkRight] != 'o') {
+		_pos.x = playerCheckLine * minMapSize + _width / 2;
+	}
+
+
+	//最外围的边界限制
 	if (_pos.x + _width / 2 > bgWidth) {
 		_pos.x = bgWidth - _width / 2;
 	}
@@ -54,4 +80,3 @@ void Player::Move(char keys[], float bgWidth, float bgHeight)
 		_pos.y = _height / 2;
 	}
 }
-

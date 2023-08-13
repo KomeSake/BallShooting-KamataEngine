@@ -10,6 +10,12 @@ Player::Player()
 	_width = 128;
 	_height = 128;
 	_color = WHITE;
+
+	_mousePos.x = 0;
+	_mousePos.y = 0;
+	_bulletPos = { 0,0 };
+	_bulletDir = { 0,0 };
+	_bulletSpeed = 30;
 }
 
 void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
@@ -99,5 +105,26 @@ void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 	}
 	else if (_pos.y - _height / 2 < 0) {
 		_pos.y = _height / 2;
+	}
+}
+
+void Player::Attack(Vector2 cameraPos)
+{
+	int x = 0, y = 0;
+	Novice::GetMousePosition(&x, &y);
+	Vector2 worldPos = ScreenToWorld((float)x, (float)y, cameraPos.x, cameraPos.y);
+	_mousePos.x = worldPos.x;
+	_mousePos.y = worldPos.y;
+
+	_bulletDir = { _mousePos.x - _pos.x,_mousePos.y - _pos.y };
+	float vectorLength = sqrtf(powf(_bulletDir.x, 2) + powf(_bulletDir.y, 2));
+	if (vectorLength != 0) {
+		_bulletDir.x = _bulletDir.x / vectorLength;
+		_bulletDir.y = _bulletDir.y / vectorLength;
+	}
+
+	if (Novice::IsTriggerMouse(0)) {
+		Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
+		bullet->Fire(Bullet::Vector2{_pos.x, _pos.y}, Bullet::Vector2{_bulletDir.x, _bulletDir.y});
 	}
 }

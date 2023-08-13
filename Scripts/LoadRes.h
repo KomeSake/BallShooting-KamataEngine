@@ -4,11 +4,13 @@
 class LoadRes
 {
 public:
-	inline static int _playerSP = 0;
-	inline static int _bgSP = 0;
+	inline static int _playerSP;
+	inline static int _bgSP;
 
-	inline static int _map_floor = 0;
-	inline static int _map_wall = 0;
+	inline static int _map_floor;
+	inline static int _map_wall;
+
+	inline static int _bullet;
 
 	static void LoadResNovice();
 };

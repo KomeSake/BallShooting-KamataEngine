@@ -4,6 +4,7 @@
 #include "Scripts/Player.h"
 #include "Scripts/Camera.h"
 #include "Scripts/Map.h"
+#include "Scripts/Bullet.h"
 
 const char kWindowTitle[] = "v20230707";
 const int screenWidth = 1920;
@@ -29,7 +30,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Map::LoadNovice();
 
 	Player* PlayerObj = new Player;
-	Camera* CameraObj = new Camera(PlayerObj, screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
+	Camera* CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -45,20 +46,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		BulletManager::BulletUpdata(Bullet::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
+
 		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-		CameraObj->Move();
+		CameraObj->Move(Camera::Vector2{PlayerObj->_pos.x, PlayerObj->_pos.y});
+		PlayerObj->Attack(People::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
 
 
 		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-		CameraObj->Show();
+		CameraObj->BulletShow();
+		CameraObj->Show(PlayerObj);
 
 
+
+
+
+
+		//调试信息
 		Novice::DrawLine(0, (int)(CameraObj->_screenHeight / 2), (int)CameraObj->_screenWidth, (int)(CameraObj->_screenHeight / 2), RED);
 		Novice::DrawLine((int)(CameraObj->_screenWidth / 2), 0, (int)(CameraObj->_screenWidth / 2), (int)CameraObj->_screenHeight, RED);
 
 		Novice::ScreenPrintf(10, 10, "Player(%d,%d)", (int)PlayerObj->_pos.x, (int)PlayerObj->_pos.y);
-		Novice::ScreenPrintf(10, 30, "BG(%d,%d)", (int)CameraObj->_bgPos.x, (int)CameraObj->_bgPos.y);
-		Novice::ScreenPrintf(10, 50, "Camera(%d,%d)", (int)CameraObj->_cameraPos.x, (int)CameraObj->_cameraPos.y);
+		Novice::ScreenPrintf(10, 30, "Camera(%d,%d)", (int)CameraObj->_cameraPos.x, (int)CameraObj->_cameraPos.y);
 		Novice::ScreenPrintf(10, 70, "PlayerRL(%d,%d)", (int)((bgHeight - PlayerObj->_pos.y) / minMapSize), (int)(PlayerObj->_pos.x / minMapSize));
 
 

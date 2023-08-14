@@ -11,7 +11,7 @@ void Bullet::Inital(BulletType type)
 	_dir = { 0,0 };
 	_speed = 30;
 	_type = normal;
-	_image = LoadRes::_bullet;
+	_image = LoadRes::_bulletSP;
 	_width = 64;
 	_height = 64;
 	_color = WHITE;
@@ -32,7 +32,6 @@ void Bullet::Move(Vector2 cameraPos)
 		_pos.y += _dir.y * _speed;
 	}
 	else {
-		Novice::ConsolePrintf("Release\n");
 		BulletManager::ReleaseBullet(this);
 	}
 }

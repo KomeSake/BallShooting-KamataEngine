@@ -10,7 +10,7 @@ public:
 	inline static int _map_floor;
 	inline static int _map_wall;
 
-	inline static int _bullet;
+	inline static int _bulletSP;
 
 	static void LoadResNovice();
 };

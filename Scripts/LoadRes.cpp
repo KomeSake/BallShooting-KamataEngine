@@ -8,5 +8,5 @@ void LoadRes::LoadResNovice()
 	_map_floor = Novice::LoadTexture("./Resources/Textures/Map_floors.png");
 	_map_wall = Novice::LoadTexture("./Resources/Textures/Map_Wall.png");
 
-	_bullet = Novice::LoadTexture("./Resources/Textures/bullet.png");
+	_bulletSP = Novice::LoadTexture("./Resources/Textures/bullet.png");
 }

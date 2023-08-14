@@ -18,6 +18,7 @@ public:
 	Vector2 _bulletPos;
 	Vector2 _bulletDir;
 	float _bulletSpeed;
+	int _bulletTime;//子弹间隔时间
 
 	Player();
 	void Move(char keys[], float bgWidth, float bgHeight, float minMapSize);

@@ -16,6 +16,7 @@ Player::Player()
 	_bulletPos = { 0,0 };
 	_bulletDir = { 0,0 };
 	_bulletSpeed = 30;
+	_bulletTime = 100;
 }
 
 void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
@@ -123,7 +124,8 @@ void Player::Attack(Vector2 cameraPos)
 		_bulletDir.y = _bulletDir.y / vectorLength;
 	}
 
-	if (Novice::IsTriggerMouse(0)) {
+	if (Novice::IsPressMouse(0)
+		&& Timers(_bulletTime, 1)) {
 		Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
 		bullet->Fire(Bullet::Vector2{_pos.x, _pos.y}, Bullet::Vector2{_bulletDir.x, _bulletDir.y});
 	}

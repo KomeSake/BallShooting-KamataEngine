@@ -24,7 +24,7 @@ void Camera::Move(Vector2 playerPos)
 
 void Camera::Show(Player* PlayerObj)
 {
-	FrameAnimation(PlayerObj->_pos.x, PlayerObj->_pos.y, PlayerObj->_image, PlayerObj->_width, PlayerObj->_height, PlayerObj->_color);
+	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, PlayerObj->_sprite, PlayerObj->_color);
 }
 
 void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize) {
@@ -36,10 +36,10 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 		for (const char& line : row) {
 			switch (line) {
 			case 'w':
-				FrameAnimation(minMapPos.x, minMapPos.y, LoadRes::_map_wall, minSize, minSize, WHITE);
+				FrameTextrue(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 2, WHITE);
 				break;
 			case 'o':
-				FrameAnimation(minMapPos.x, minMapPos.y, LoadRes::_map_floor, minSize, minSize, WHITE);
+				FrameTextrue(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
 				break;
 			}
 			minMapPos.x += minSize;
@@ -53,7 +53,7 @@ void Camera::BulletShow() {
 	for (Bullet* element : BulletManager::_bulletUpdata_player) {
 		//角度问题实在是太难了，如果是归一化后的向量，直接tan即可求出弧度(因为长度变成1了)
 		//但是这个弧度是和x轴进行比较的，所以还需要减去90度来转到y轴
-		//因为弧度实在不容易看出来问题，所以我全部转成了degree，然后输出的时候在转回弧度
+		//因为弧度实在不容易看出来问题，所以我全部转成了degree，然后输出的时候再转回弧度
 		//注意！！数学上，角度增加应该是逆时针旋转，但是我发现引擎是顺时针旋转，所以我的函数也是顺时针
 		//所以如果是数学上算出来的角度，使用旋转函数时候必须换成负数！
 		float rad = atan2f(element->_dir.y, element->_dir.x);
@@ -62,27 +62,38 @@ void Camera::BulletShow() {
 			degree += 360;
 		}
 		degree -= 90;
-		FrameAnimation(element->_pos.x, element->_pos.y, element->_image, element->_width, element->_height, -(acosf(-1) / 180 * degree), element->_color);
+		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, -(acosf(-1) / 180 * degree), element->_color);
 	}
 }
 
-void Camera::FrameAnimation(float x, float y, int image, float w, float h, int color)
+void Camera::FrameTexture(float x, float y, LoadRes::Sprite sprite, int color)
 {
 	float screenPosX = x - _cameraPos.x + _screenWidth / 2;
 	float screenPosY = (y - _cameraPos.y + _screenHeight / 2 - _screenHeight) * -1;
-	Novice::DrawSprite((int)(screenPosX - w / 2), (int)(screenPosY - h / 2), image, 1, 1, 0, color);
+	Novice::DrawSprite((int)(screenPosX - (float)(sprite.w) / 2), (int)(screenPosY - (float)(sprite.h) / 2), sprite.path, 1, 1, 0, color);
 }
 
-void Camera::FrameAnimation(float x, float y, int image, float w, float h, float rad, int color)
+void Camera::FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color)
 {
-	Vector2 rotated = { -w / 2,h / 2 };
+	Vector2 rotated = { (float)sprite.w * -1 / 2,(float)sprite.h / 2 };
 	//RotatedPos
 	rotated = AditionRule(rotated, -rad);
 	//ScreenPos
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
 
-	Novice::DrawSprite((int)rotated.x, (int)rotated.y, image, 1, 1, rad, color);
+	Novice::DrawSprite((int)rotated.x, (int)rotated.y, sprite.path, 1, 1, rad, color);
+}
+
+void Camera::FrameTextrue(float x, float y, map<int, LoadRes::SpriteList> spList, int index, int color)
+{
+	int arrSprite = spList[index].path;
+	int arrW = spList[index].w, arrH = spList[index].h;
+	int arrSpriteW = spList[index].listW, arrSpriteH = spList[index].listH;
+	int arrX = spList[index].x, arrY = spList[index].y;
+
+	Vector2 pos = WorldToScreen({ x,y }, _cameraPos);
+	Novice::DrawSpriteRect((int)(pos.x - (float)(arrW) / 2), (int)(pos.y - (float)(arrH) / 2), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW), ((float)arrH / (float)arrSpriteH), 0, color);
 }
 
 Camera::Vector2 Camera::AditionRule(Vector2 pos, float rad)

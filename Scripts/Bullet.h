@@ -22,7 +22,7 @@ public:
 	Vector2 _dir;
 	float _speed;
 	BulletType _type;
-	unsigned int _image;
+	LoadRes::Sprite _sprite;
 	float _width;
 	float _height;
 	unsigned int _color;

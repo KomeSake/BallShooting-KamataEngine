@@ -8,8 +8,13 @@ public:
 	Vector2 _pos;//postion
 	Vector2 _dir;//direction
 	Vector2 _vel;//velocity
+	Vector2 _acceleration;
 	float _speed;
-	unsigned int _image;
+	float _bounce;//反弹系数
+	float _friction;//摩擦力
+	float _velMax;//速度的上限，正反皆是
+
+	LoadRes::Sprite _sprite;
 	float _width;
 	float _height;
 	unsigned int _color;

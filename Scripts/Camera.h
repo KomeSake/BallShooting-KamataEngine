@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <cmath>
+#include <map>
 #include "Player.h"
 #include "Bullet.h"
 using namespace std;
@@ -35,9 +36,11 @@ public:
 	//3.将相机框选出的部分转换成相机坐标系
 	//4.将框选出的部分转换成屏幕坐标系
 
-	void FrameAnimation(float x, float y, int image, float w, float h, int color);
-	void FrameAnimation(float x, float y, int image, float w, float h, float rad, int color);
-	Vector2 AditionRule(Vector2 pos, float rad);
+	void FrameTexture(float x, float y, LoadRes::Sprite sprite, int color);
+	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color);
+	void FrameTextrue(float x, float y, map<int, LoadRes::SpriteList>spList, int index, int color);
+	Vector2 AditionRule(Vector2 pos, float rad);//加法定理，为了计算旋转后的图像位置
+
 
 	//将屏幕坐标变成世界坐标(为了方便，屏幕大小已定为1920*1080)
 	static Vector2 ScreenToWorld(float screenX, float screenY, float cameraX, float cameraY);

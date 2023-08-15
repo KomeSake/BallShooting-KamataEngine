@@ -1,16 +1,34 @@
 ﻿#pragma once
 #include <Novice.h>
+#include <map>
+using namespace std;
 
 class LoadRes
 {
 public:
-	inline static int _playerSP;
-	inline static int _bgSP;
+	//普通图片的结构体
+	static struct Sprite
+	{
+		int path = 0;
+		int w = 0;
+		int h = 0;
+	}structSP;
+	//这是用来装图集的结构体
+	static struct SpriteList
+	{
+		int path = 0;//本地路径
+		int x = 0;//图片在图集中的位置（左上角）
+		int y = 0;
+		int w = 0;//图片的宽高
+		int h = 0;
+		int listW = 0;//图集的宽高
+		int listH = 0;
+	}structSL;
 
-	inline static int _map_floor;
-	inline static int _map_wall;
+	inline static Sprite _spPlayer;
+	inline static Sprite _spBullet;
 
-	inline static int _bulletSP;
+	inline static map<int, SpriteList> _spListMap;
 
 	static void LoadResNovice();
 };

@@ -2,11 +2,20 @@
 
 void LoadRes::LoadResNovice()
 {
-	_playerSP = Novice::LoadTexture("./Resources/Textures/player.png");
-	_bgSP = Novice::LoadTexture("./Resources/Textures/BG.png");
+	//图片
+	_spPlayer = { Novice::LoadTexture("./Resources/Textures/player.png"), 128,128 };
+	_spBullet = { Novice::LoadTexture("./Resources/Textures/bullet.png"),64,64 };
 
-	_map_floor = Novice::LoadTexture("./Resources/Textures/Map_floors.png");
-	_map_wall = Novice::LoadTexture("./Resources/Textures/Map_Wall.png");
+	//图集
+	int path = 0;
+	int listW = 0, listH = 0;
+	int w = 0, h = 0, x = 0, y = 0;
 
-	_bulletSP = Novice::LoadTexture("./Resources/Textures/bullet.png");
+	for (int i = 0; i < 5; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/map2.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 512, listH = 128;
+		_spListMap[i] = { path,x,y,w,h,listW,listH };
+	}
 }

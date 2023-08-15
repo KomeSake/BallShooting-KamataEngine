@@ -5,8 +5,14 @@ Player::Player()
 	_pos = { 1280 / 2 - 100,720 / 2 - 100 };
 	_dir = { 0,0 };
 	_vel = { 0,0 };
-	_speed = 10;
-	_image = LoadRes::_playerSP;
+	_acceleration = { 0,0 };
+
+	_bounce = 0.7f;
+	_friction = 0.97f;
+	_speed = 3;
+	_velMax = 20;
+
+	_sprite = LoadRes::_spPlayer;
 	_width = 128;
 	_height = 128;
 	_color = WHITE;
@@ -54,42 +60,56 @@ void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 	int playerCheckLine = (int)(_pos.x / minMapSize);
 
 	//开始x轴的移动，移动后算出新的上下左右4个角的格子位置
-	_pos.x += _dir.x * _speed;
+	_acceleration.x = _dir.x * _speed;
+	if (_vel.x<_velMax && _vel.x>-_velMax) {
+		_vel.x += _acceleration.x;
+	}
+	_vel.x = _vel.x * _friction;
+	_pos.x += _vel.x;
 	int checkUp = (int)((bgHeight - _pos.y - _height / 2) / minMapSize);
 	int checkDown = (int)((bgHeight - _pos.y + _height / 2 - 1) / minMapSize);//下和右格要缩小一像素，这样才准确
 	int checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
 	int checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 	//通过4个角的格子来判断是否已经不在可通过格子中，如果不在就把player移回去
-	if (_dir.x > 0) {
+	if (_vel.x > 0) {
 		if (Map::_mapData1[checkUp][checkRight] != 'o'
 			|| Map::_mapData1[checkDown][checkRight] != 'o') {
 			_pos.x = playerCheckLine * minMapSize + _width / 2;
+			_vel.x = _vel.x * -_bounce;
 		}
 	}
-	else if (_dir.x < 0) {
+	else if (_vel.x < 0) {
 		if (Map::_mapData1[checkUp][checkLeft] != 'o'
 			|| Map::_mapData1[checkDown][checkLeft] != 'o') {
 			_pos.x = playerCheckLine * minMapSize + _width / 2;
+			_vel.x = _vel.x * -_bounce;
 		}
 	}
 
 	//y轴也是相同的，先移动后判断，如果不对劲就把player移回去
 	//核心区别就在于，之前都是x轴和y轴都移动了后再进行判断，这样会导致后面的轴被前面影响而导致误判
-	_pos.y += _dir.y * _speed;
+	_acceleration.y = _dir.y * _speed;
+	if (_vel.y<_velMax && _vel.y>-_velMax) {
+		_vel.y += _acceleration.y;
+	}
+	_vel.y = _vel.y * _friction;
+	_pos.y += _vel.y;
 	checkUp = (int)((bgHeight - _pos.y - _height / 2) / minMapSize);
 	checkDown = (int)((bgHeight - _pos.y + _height / 2 - 1) / minMapSize);
 	checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
 	checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
-	if (_dir.y > 0) {
+	if (_vel.y > 0) {
 		if (Map::_mapData1[checkUp][checkLeft] != 'o'
 			|| Map::_mapData1[checkUp][checkRight] != 'o') {
 			_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+			_vel.y = _vel.y * -_bounce;
 		}
 	}
-	else if (_dir.y < 0) {
+	else if (_vel.y < 0) {
 		if (Map::_mapData1[checkDown][checkLeft] != 'o'
 			|| Map::_mapData1[checkDown][checkRight] != 'o') {
 			_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+			_vel.y = _vel.y * -_bounce;
 		}
 	}
 	//Novice::ScreenPrintf(10, 100, "u:%d,d:%d,l:%d,r:%d,", checkUp, checkDown, checkLeft, checkRight);

@@ -11,7 +11,7 @@ void Bullet::Inital(BulletType type)
 	_dir = { 0,0 };
 	_speed = 30;
 	_type = normal;
-	_image = LoadRes::_bulletSP;
+	_sprite = LoadRes::_spBullet;
 	_width = 64;
 	_height = 64;
 	_color = WHITE;

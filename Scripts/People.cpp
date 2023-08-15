@@ -7,7 +7,7 @@ People::Vector2 People::ScreenToWorld(float screenX, float screenY, float camera
 	return Vector2{ worldX,worldY };
 }
 
-int People::Timers(int milli, int index)
+int People::MyTimers(int milli, int index)
 {
 	if (!_isTimeOpen[index]) {
 		_timeStart[index] = clock();

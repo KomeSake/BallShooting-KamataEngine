@@ -6,11 +6,22 @@ Player::Player()
 	_dir = { 0,0 };
 	_vel = { 0,0 };
 	_acceleration = { 0,0 };
+	_speed = 0;
+	_bounce = 0;
+	_friction = 0;
+	_velMax = 0;
+	//球形态
+	_bounceBall = 0.7f;
+	_frictionBall = 0.97f;
+	_speedBall = 2.5f;
+	_velMaxBall = 20;
+	//人形态
+	_bounceMan = 0.1f;
+	_frictionMan = 0.5f;
+	_speedMan = 5;
+	_velMaxMan = 15;
 
-	_bounce = 0.7f;
-	_friction = 0.97f;
-	_speed = 3;
-	_velMax = 20;
+	_pattern = 1;
 
 	_sprite = LoadRes::_spPlayer;
 	_width = 128;
@@ -21,7 +32,6 @@ Player::Player()
 	_mousePos.y = 0;
 	_bulletPos = { 0,0 };
 	_bulletDir = { 0,0 };
-	_bulletSpeed = 30;
 	_bulletTime = 100;
 }
 
@@ -145,8 +155,45 @@ void Player::Attack(Vector2 cameraPos)
 	}
 
 	if (Novice::IsPressMouse(0)
-		&& Timers(_bulletTime, 1)) {
+		&& MyTimers(_bulletTime, 1)) {
 		Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
 		bullet->Fire(Bullet::Vector2{_pos.x, _pos.y}, Bullet::Vector2{_bulletDir.x, _bulletDir.y});
+	}
+}
+
+void Player::PatternChange(char keys[], char preKeys[])
+{
+	//状态变换(按住按键变成球版)
+	if (!Novice::IsPressMouse(0)) {
+		if (keys[DIK_LSHIFT] || keys[DIK_SPACE]) {
+			_pattern = 0;
+		}
+		if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
+			_pattern = 1;
+		}
+		if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
+			_pattern = 1;
+		}
+	}
+	else {
+		_pattern = 1;
+		_color = WHITE;
+	}
+	//状态变换后的属性变化
+	switch (_pattern) {
+	case 0:
+		_speed = _speedBall;
+		_bounce = _bounceBall;
+		_friction = _frictionBall;
+		_velMax = _velMaxBall;
+		_color = GREEN;
+		break;
+	case 1:
+		_speed = _speedMan;
+		_bounce = _bounceMan;
+		_friction = _frictionMan;
+		_velMax = _velMaxMan;
+		_color = WHITE;
+		break;
 	}
 }

@@ -38,7 +38,7 @@ public:
 
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, int color);
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color);
-	void FrameTextrue(float x, float y, map<int, LoadRes::SpriteList>spList, int index, int color);
+	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, int color);
 	Vector2 AditionRule(Vector2 pos, float rad);//加法定理，为了计算旋转后的图像位置
 
 

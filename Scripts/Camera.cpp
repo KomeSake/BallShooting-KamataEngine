@@ -25,6 +25,13 @@ void Camera::Move(Vector2 playerPos)
 void Camera::Show(Player* PlayerObj)
 {
 	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, PlayerObj->_sprite, PlayerObj->_color);
+	float rad = atan2f(PlayerObj->_bulletDir.y, PlayerObj->_bulletDir.x);
+	float degree = 180.f / acosf(-1) * rad;
+	if (degree < 0) {
+		degree += 360;
+	}
+	degree -= 90;
+	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, LoadRes::_spArrow, -(acosf(-1) / 180 * degree), WHITE);
 }
 
 void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize) {
@@ -36,10 +43,10 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 		for (const char& line : row) {
 			switch (line) {
 			case 'w':
-				FrameTextrue(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 2, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 2, WHITE);
 				break;
 			case 'o':
-				FrameTextrue(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
 				break;
 			}
 			minMapPos.x += minSize;
@@ -85,7 +92,7 @@ void Camera::FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, i
 	Novice::DrawSprite((int)rotated.x, (int)rotated.y, sprite.path, 1, 1, rad, color);
 }
 
-void Camera::FrameTextrue(float x, float y, map<int, LoadRes::SpriteList> spList, int index, int color)
+void Camera::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList, int index, int color)
 {
 	int arrSprite = spList[index].path;
 	int arrW = spList[index].w, arrH = spList[index].h;

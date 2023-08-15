@@ -20,7 +20,7 @@ public:
 	Vector2 ScreenToWorld(float screenX, float screenY, float cameraX, float cameraY);
 
 	//计时器
-	int Timers(int milli, int index);
+	int MyTimers(int milli, int index);
 	clock_t _timeStart[31] = { 0 };
 	clock_t _timeEnd[31] = { 0 };
 	bool _isTimeOpen[31] = { 0 };

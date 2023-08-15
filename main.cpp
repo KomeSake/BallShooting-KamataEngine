@@ -48,9 +48,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		BulletManager::BulletUpdata(Bullet::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
 
+		PlayerObj->PatternChange(keys, preKeys);
 		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->Move(Camera::Vector2{PlayerObj->_pos.x, PlayerObj->_pos.y});
 		PlayerObj->Attack(People::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
+		PlayerObj->SteamRush(keys, preKeys);
 
 
 		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);

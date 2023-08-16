@@ -25,13 +25,8 @@ void Camera::Move(Vector2 playerPos)
 void Camera::Show(Player* PlayerObj)
 {
 	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, PlayerObj->_sprite, PlayerObj->_color);
-	float rad = atan2f(PlayerObj->_bulletDir.y, PlayerObj->_bulletDir.x);
-	float degree = 180.f / acosf(-1) * rad;
-	if (degree < 0) {
-		degree += 360;
-	}
-	degree -= 90;
-	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, LoadRes::_spArrow, -(acosf(-1) / 180 * degree), WHITE);
+	float rad = SpriteToObjDir(Vector2{ PlayerObj->_bulletDir.x,PlayerObj->_bulletDir.y });
+	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, LoadRes::_spArrow, rad, WHITE);
 }
 
 void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize) {
@@ -48,6 +43,9 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 			case 'o':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
 				break;
+			case 'e':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
+				break;
 			}
 			minMapPos.x += minSize;
 		}
@@ -58,18 +56,16 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 
 void Camera::BulletShow() {
 	for (Bullet* element : BulletManager::_bulletUpdata_player) {
-		//角度问题实在是太难了，如果是归一化后的向量，直接tan即可求出弧度(因为长度变成1了)
-		//但是这个弧度是和x轴进行比较的，所以还需要减去90度来转到y轴
-		//因为弧度实在不容易看出来问题，所以我全部转成了degree，然后输出的时候再转回弧度
-		//注意！！数学上，角度增加应该是逆时针旋转，但是我发现引擎是顺时针旋转，所以我的函数也是顺时针
-		//所以如果是数学上算出来的角度，使用旋转函数时候必须换成负数！
-		float rad = atan2f(element->_dir.y, element->_dir.x);
-		float degree = 180.f / acosf(-1) * rad;
-		if (degree < 0) {
-			degree += 360;
-		}
-		degree -= 90;
-		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, -(acosf(-1) / 180 * degree), element->_color);
+		float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
+		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
+	}
+}
+
+void Camera::EnemyShow()
+{
+	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+		float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
+		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
 	}
 }
 
@@ -121,4 +117,24 @@ Camera::Vector2 Camera::WorldToScreen(Vector2 worldPos, Vector2 cameraPos)
 	float screenPosX = worldPos.x - cameraPos.x + 1920.f / 2;
 	float screenPosY = (worldPos.y - cameraPos.y + 1080.f / 2 - 1080) * -1;
 	return Vector2(screenPosX, screenPosY);
+}
+
+float Camera::SpriteToObjDir(Vector2 dir)
+{
+	//角度问题实在是太难了，如果是归一化后的向量，直接tan即可求出弧度(因为长度变成1了)
+	//但是这个弧度是和x轴进行比较的，所以还需要减去90度来转到y轴
+	//因为弧度实在不容易看出来问题，所以我全部转成了degree，然后输出的时候再转回弧度
+	//注意！！数学上，角度增加应该是逆时针旋转，但是我发现引擎是顺时针旋转，所以我的函数也是顺时针
+	//所以如果是数学上算出来的角度，使用旋转函数时候必须换成负数！
+
+	float rad = atan2f(dir.y, dir.x);
+	float degree = 180.f / acosf(-1) * rad;
+	if (degree < 0) {
+		degree += 360;
+	}
+	degree -= 90;
+	rad = -(acosf(-1) / 180 * degree);
+	return rad;
+
+	//如果有空还是优化一下吧，连续转了两次还是浪费了算力
 }

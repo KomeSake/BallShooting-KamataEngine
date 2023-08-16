@@ -4,6 +4,7 @@
 #include <map>
 #include "Player.h"
 #include "Bullet.h"
+#include "Enemy.h"
 using namespace std;
 
 class Camera
@@ -29,6 +30,7 @@ public:
 	void Show(Player* PlayerObj);
 	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
 	void BulletShow();
+	void EnemyShow();
 
 	//相机设置步骤
 	//1.所有坐标都必须是世界坐标
@@ -46,4 +48,6 @@ public:
 	static Vector2 ScreenToWorld(float screenX, float screenY, float cameraX, float cameraY);
 	//将世界坐标变成屏幕坐标(为了方便，屏幕大小已定为1920*1080)
 	static Vector2 WorldToScreen(Vector2 worldPos, Vector2 cameraPos);
+	//让图片旋转成和方向一致
+	static float SpriteToObjDir(Vector2 dir);
 };

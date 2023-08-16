@@ -16,7 +16,7 @@ public:
 	static enum BulletType
 	{
 		normal,
-	}bulletType;
+	}enumBullet;
 
 	Vector2 _pos;
 	Vector2 _dir;
@@ -30,7 +30,7 @@ public:
 	Bullet(BulletType type);
 	void Inital(BulletType type);
 	void Move(Vector2 cameraPos);
-	void Fire(Vector2 pos, Vector2 dir);
+	void Fire(Vector2 bornPos, Vector2 dir);
 };
 
 class BulletManager {

@@ -6,6 +6,7 @@ void LoadRes::LoadResNovice()
 	_spPlayer = { Novice::LoadTexture("./Resources/Textures/player.png"), 128,128 };
 	_spBullet = { Novice::LoadTexture("./Resources/Textures/bullet.png"),64,64 };
 	_spArrow = { Novice::LoadTexture("./Resources/Textures/arrow.png"),384,384 };
+	_spEnemy1 = { Novice::LoadTexture("./Resources/Textures/enemy1.png"),96,96 };
 
 	//图集
 	int path = 0;

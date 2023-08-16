@@ -2,6 +2,7 @@
 #include <Novice.h>
 #include "Scripts/LoadRes.h"
 #include "Scripts/Player.h"
+#include "Scripts/Enemy.h"
 #include "Scripts/Camera.h"
 #include "Scripts/Map.h"
 #include "Scripts/Bullet.h"
@@ -31,6 +32,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Player* PlayerObj = new Player;
 	Camera* CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
+	EnemyManager::EnemyBornToMap(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -47,16 +49,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		BulletManager::BulletUpdata(Bullet::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
+		EnemyManager::EnemyUpdata(Enemy::Vector2{PlayerObj->_pos.x, PlayerObj->_pos.y});
 
 		PlayerObj->PatternChange(keys, preKeys);
 		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->Move(Camera::Vector2{PlayerObj->_pos.x, PlayerObj->_pos.y});
 		PlayerObj->Attack(People::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
-		PlayerObj->SteamRush(keys, preKeys);
 
 
 		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->BulletShow();
+		CameraObj->EnemyShow();
 		CameraObj->Show(PlayerObj);
 
 

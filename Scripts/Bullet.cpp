@@ -36,9 +36,9 @@ void Bullet::Move(Vector2 cameraPos)
 	}
 }
 
-void Bullet::Fire(Vector2 pos, Vector2 dir)
+void Bullet::Fire(Vector2 bornPos, Vector2 dir)
 {
-	_pos = pos;
+	_pos = bornPos;
 	_dir = dir;
 	BulletManager::_bulletUpdata_player.push_back(this);
 }

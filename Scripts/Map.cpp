@@ -26,3 +26,16 @@ void Map::LoaclMapLoad(string name, vector<vector<char>>& mapData)
 		mapData.push_back(rowVector);
 	}
 }
+
+bool Map::IsThrough(vector<vector<char>> mapData, int line, int row)
+{
+	switch (mapData[line][row]) {
+	case 'o':
+		return true;
+	case 'w':
+		return false;
+	case 'e':
+		return true;
+	}
+	return false;
+}

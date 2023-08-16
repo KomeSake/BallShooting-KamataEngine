@@ -82,15 +82,15 @@ void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 	int checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 	//通过4个角的格子来判断是否已经不在可通过格子中，如果不在就把player移回去
 	if (_vel.x > 0) {
-		if (Map::_mapData1[checkUp][checkRight] != 'o'
-			|| Map::_mapData1[checkDown][checkRight] != 'o') {
+		if (!Map::IsThrough(Map::_mapData1, checkUp, checkRight)
+			|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
 			_pos.x = playerCheckLine * minMapSize + _width / 2;
 			_vel.x = _vel.x * -_bounce;
 		}
 	}
 	else if (_vel.x < 0) {
-		if (Map::_mapData1[checkUp][checkLeft] != 'o'
-			|| Map::_mapData1[checkDown][checkLeft] != 'o') {
+		if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
+			|| !Map::IsThrough(Map::_mapData1, checkDown, checkLeft)) {
 			_pos.x = playerCheckLine * minMapSize + _width / 2;
 			_vel.x = _vel.x * -_bounce;
 		}
@@ -109,15 +109,15 @@ void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 	checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
 	checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 	if (_vel.y > 0) {
-		if (Map::_mapData1[checkUp][checkLeft] != 'o'
-			|| Map::_mapData1[checkUp][checkRight] != 'o') {
+		if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
+			|| !Map::IsThrough(Map::_mapData1, checkUp, checkRight)) {
 			_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
 			_vel.y = _vel.y * -_bounce;
 		}
 	}
 	else if (_vel.y < 0) {
-		if (Map::_mapData1[checkDown][checkLeft] != 'o'
-			|| Map::_mapData1[checkDown][checkRight] != 'o') {
+		if (!Map::IsThrough(Map::_mapData1, checkDown, checkLeft)
+			|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
 			_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
 			_vel.y = _vel.y * -_bounce;
 		}

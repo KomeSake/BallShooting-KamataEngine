@@ -24,5 +24,8 @@ public:
 	clock_t _timeStart[31] = { 0 };
 	clock_t _timeEnd[31] = { 0 };
 	bool _isTimeOpen[31] = { 0 };
+
+	//向量归一化
+	Vector2 VectorNormalization(float x, float y);
 };
 

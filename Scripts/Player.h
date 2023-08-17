@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "People.h"
+#include "Enemy.h"
 
 class Player :
 	public People
@@ -29,9 +30,11 @@ public:
 	Vector2 _bulletPos;
 	Vector2 _bulletDir;
 	int _bulletTime;//子弹间隔时间
+	float _bounceValue_enemy;//被敌人触碰的反弹力
 
 	Player();
 	void Move(char keys[], float bgWidth, float bgHeight, float minMapSize);
 	void Attack(Vector2 cameraPos);
 	void PatternChange(char keys[], char preKeys[]);
+	void CollideSystem();
 };

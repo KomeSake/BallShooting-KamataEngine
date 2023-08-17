@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include "People.h"
+#include "Bullet.h"
 using namespace std;
 
 class Enemy :
@@ -15,7 +16,12 @@ public:
 
 	Vector2 _pos;
 	Vector2 _dir;
+	Vector2 _vel;//velocity
+	Vector2 _acceleration;
 	float _speed;
+	float _bounce;//反弹系数
+	float _friction;//摩擦力
+	float _velMax;//速度的上限，正反皆是
 
 	LoadRes::Sprite _sprite;
 	float _width;
@@ -23,13 +29,19 @@ public:
 	unsigned int _color;
 
 	EnemyType _type;
+	float _hp;
 	float _damage;
-	float _warningLength;//距离玩家多远才开始产生反应
+	float _warningLength;//距离玩家多远才开始产生警戒
+	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应
+	float _hitBox_enemy;//调整敌人之间碰撞的大小
+	float _bounceValue_bullet;//被子弹弹开的大小
 
 	Enemy(EnemyType type);
 	void Inital(EnemyType type);
 	void Move(Vector2 playerPos);
 	void Fire(Vector2 bornPos);
+	void CollideSystem();
+	void IsDead();
 };
 
 class EnemyManager {

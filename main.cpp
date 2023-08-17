@@ -48,13 +48,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		BulletManager::BulletUpdata(Bullet::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
-		EnemyManager::EnemyUpdata(Enemy::Vector2{PlayerObj->_pos.x, PlayerObj->_pos.y});
+		BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y });
+		EnemyManager::EnemyUpdata(Enemy::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
 
 		PlayerObj->PatternChange(keys, preKeys);
+		PlayerObj->CollideSystem();
 		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-		CameraObj->Move(Camera::Vector2{PlayerObj->_pos.x, PlayerObj->_pos.y});
-		PlayerObj->Attack(People::Vector2{CameraObj->_cameraPos.x, CameraObj->_cameraPos.y});
+		CameraObj->Move(Camera::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
+		PlayerObj->Attack(People::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y });
 
 
 		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);

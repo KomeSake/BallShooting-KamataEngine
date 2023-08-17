@@ -21,11 +21,14 @@ public:
 	Vector2 _pos;
 	Vector2 _dir;
 	float _speed;
-	BulletType _type;
+
 	LoadRes::Sprite _sprite;
 	float _width;
 	float _height;
 	unsigned int _color;
+
+	BulletType _type;
+	float _damage;
 
 	Bullet(BulletType type);
 	void Inital(BulletType type);

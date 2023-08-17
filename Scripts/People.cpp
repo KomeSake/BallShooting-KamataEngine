@@ -20,3 +20,13 @@ int People::MyTimers(int milli, int index)
 	}
 	return 0;
 }
+
+People::Vector2 People::VectorNormalization(float x, float y)
+{
+	float vectorLength = sqrtf(powf(x, 2) + powf(y, 2));
+	if (vectorLength != 0) {
+		x = x / vectorLength;
+		y = y / vectorLength;
+	}
+	return Vector2{ x,y };
+}

@@ -10,11 +10,13 @@ void Bullet::Inital(BulletType type)
 	_pos = { 0,-100 };
 	_dir = { 0,0 };
 	_speed = 30;
-	_type = normal;
 	_sprite = LoadRes::_spBullet;
 	_width = 64;
 	_height = 64;
 	_color = WHITE;
+
+	_type = normal;
+	_damage = 5;
 
 	switch (type) {
 	case normal:

@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <map>
+#include <random>
 #include "Player.h"
 #include "Bullet.h"
 #include "Enemy.h"

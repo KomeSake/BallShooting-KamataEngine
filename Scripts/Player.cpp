@@ -33,6 +33,7 @@ Player::Player()
 	_bulletPos = { 0,0 };
 	_bulletDir = { 0,0 };
 	_bulletTime = 100;
+	_bounceValue_enemy = 30;
 }
 
 void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
@@ -157,7 +158,7 @@ void Player::Attack(Vector2 cameraPos)
 	if (Novice::IsPressMouse(0)
 		&& MyTimers(_bulletTime, 1)) {
 		Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
-		bullet->Fire(Bullet::Vector2{_pos.x, _pos.y}, Bullet::Vector2{_bulletDir.x, _bulletDir.y});
+		bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
 	}
 }
 
@@ -195,5 +196,19 @@ void Player::PatternChange(char keys[], char preKeys[])
 		_velMax = _velMaxMan;
 		_color = WHITE;
 		break;
+	}
+}
+
+void Player::CollideSystem()
+{
+	//和敌人的碰撞
+	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+		float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+		if (length + 50 < element->_width / 2 + _width / 2) {
+			Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+			hitDir = VectorNormalization(hitDir.x, hitDir.y);
+			_vel.x = hitDir.x * _bounceValue_enemy;
+			_vel.y = hitDir.y * _bounceValue_enemy;
+		}
 	}
 }

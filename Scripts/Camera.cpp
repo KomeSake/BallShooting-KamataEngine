@@ -64,8 +64,15 @@ void Camera::BulletShow() {
 void Camera::EnemyShow()
 {
 	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-		float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
-		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
+		if (element->_isWarning) {
+			float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
+			FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
+		}
+		else {
+			srand(unsigned int(time(nullptr)));//随机数计算
+			float rad = (float)(rand() % 10);//随机个角度出来，让敌人的未警戒状态看着自然一些
+			FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
+		}
 	}
 }
 

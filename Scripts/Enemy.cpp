@@ -9,14 +9,26 @@ void Enemy::Inital(EnemyType type)
 {
 	_pos = { -100,0 };
 	_dir = { 0,0 };
-	_speed = 10;
+	_vel = { 0,0 };
+	_acceleration = { 0,0 };
+	_speed = 2;
+	_bounce = 0.7f;
+	_friction = 0.97f;
+	_velMax = 10;
+
 	_sprite = LoadRes::_spEnemy1;
 	_width = 96;
 	_height = 96;
 	_color = WHITE;
+
 	_type = dog;
+	_hp = 20;
 	_damage = 10;
 	_warningLength = 700;
+	_isWarning = false;
+	_hitBox_enemy = -50;
+	_bounceValue_bullet = 20;
+
 	switch (type) {
 	case dog:
 		_type = type;
@@ -26,6 +38,9 @@ void Enemy::Inital(EnemyType type)
 
 void Enemy::Move(Vector2 playerPos)
 {
+	//移动前的位置
+	Vector2 originalPos = _pos;
+
 	Vector2 dir = { playerPos.x - _pos.x,playerPos.y - _pos.y };
 	float vectorLength = sqrtf(powf(dir.x, 2) + powf(dir.y, 2));
 	if (vectorLength != 0) {
@@ -35,8 +50,77 @@ void Enemy::Move(Vector2 playerPos)
 	_dir = dir;
 
 	if (vectorLength < _warningLength) {
-		_pos.x += dir.x * _speed;
-		_pos.y += dir.y * _speed;
+		_isWarning = true;
+	}
+	if (_isWarning) {
+		//从Player类偷来的物理移动和地图碰撞检测
+		float bgHeight = 3200;
+		float minMapSize = 128;
+		int playerCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
+		int playerCheckLine = (int)(_pos.x / minMapSize);
+
+		//开始x轴的移动，移动后算出新的上下左右4个角的格子位置
+		_acceleration.x = _dir.x * _speed;
+		if (_vel.x<_velMax && _vel.x>-_velMax) {
+			_vel.x += _acceleration.x;
+		}
+		_vel.x = _vel.x * _friction;
+		_pos.x += _vel.x;
+		int checkUp = (int)((bgHeight - _pos.y - _height / 2) / minMapSize);
+		int checkDown = (int)((bgHeight - _pos.y + _height / 2 - 1) / minMapSize);//下和右格要缩小一像素，这样才准确
+		int checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
+		int checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
+		//通过4个角的格子来判断是否已经不在可通过格子中，如果不在就把player移回去
+		if (_vel.x > 0) {
+			if (!Map::IsThrough(Map::_mapData1, checkUp, checkRight)
+				|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
+				_pos.x = playerCheckLine * minMapSize + _width / 2;
+				_vel.x = _vel.x * -_bounce;
+			}
+		}
+		else if (_vel.x < 0) {
+			if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
+				|| !Map::IsThrough(Map::_mapData1, checkDown, checkLeft)) {
+				_pos.x = playerCheckLine * minMapSize + _width / 2;
+				_vel.x = _vel.x * -_bounce;
+			}
+		}
+
+		//y轴也是相同的，先移动后判断，如果不对劲就把player移回去
+		//核心区别就在于，之前都是x轴和y轴都移动了后再进行判断，这样会导致后面的轴被前面影响而导致误判
+		_acceleration.y = _dir.y * _speed;
+		if (_vel.y<_velMax && _vel.y>-_velMax) {
+			_vel.y += _acceleration.y;
+		}
+		_vel.y = _vel.y * _friction;
+		_pos.y += _vel.y;
+		checkUp = (int)((bgHeight - _pos.y - _height / 2) / minMapSize);
+		checkDown = (int)((bgHeight - _pos.y + _height / 2 - 1) / minMapSize);
+		checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
+		checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
+		if (_vel.y > 0) {
+			if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
+				|| !Map::IsThrough(Map::_mapData1, checkUp, checkRight)) {
+				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				_vel.y = _vel.y * -_bounce;
+			}
+		}
+		else if (_vel.y < 0) {
+			if (!Map::IsThrough(Map::_mapData1, checkDown, checkLeft)
+				|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
+				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				_vel.y = _vel.y * -_bounce;
+			}
+		}
+	}
+	//和其他敌人的碰撞检测
+	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+		if (element != this) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length - _hitBox_enemy < element->_width / 2 + _width / 2) {
+				_pos = originalPos;
+			}
+		}
 	}
 }
 
@@ -46,10 +130,43 @@ void Enemy::Fire(Vector2 bornPos)
 	EnemyManager::_enemyUpdateVector.push_back(this);
 }
 
+void Enemy::CollideSystem()
+{
+	//和子弹之间的碰撞
+	for (Bullet* element : BulletManager::_bulletUpdata_player) {
+		float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+		if (length + 50 < element->_width / 2 + _width / 2) {
+			Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+			hitDir = VectorNormalization(hitDir.x, hitDir.y);
+			_vel.x = hitDir.x * _bounceValue_bullet;
+			_vel.y = hitDir.y * _bounceValue_bullet;
+
+			_hp -= element->_damage;
+			BulletManager::ReleaseBullet(element);
+		}
+	}
+	//和球形态玩家之间的碰撞
+}
+
+void Enemy::IsDead()
+{
+	if (_hp < 0) {
+		EnemyManager::ReleaseEnemy(this);
+	}
+}
+
+
+
+
+
+
+
 void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos)
 {
 	for (Enemy* element : _enemyUpdateVector) {
+		element->CollideSystem();
 		element->Move(playerPos);
+		element->IsDead();
 	}
 }
 

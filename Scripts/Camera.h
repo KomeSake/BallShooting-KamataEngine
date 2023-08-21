@@ -16,6 +16,7 @@ public:
 	};
 
 	Vector2 _cameraPos;
+	Vector2 _cameraOffset;//相机偏移量，用以给相机做位移效果
 	Vector2 _bgPos;
 
 	float _bgWidth;
@@ -28,6 +29,9 @@ public:
 	void Move(Vector2 playerPos);
 	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
 	void BulletShow();
+
+	bool CameraEffect(int index);
+	int _cameraEffect01[4];//屏幕抖动效果，0：x移动次数，1：y移动次数，2：总共几个轮回，3：移动的速度
 
 	//相机设置步骤
 	//1.所有坐标都必须是世界坐标

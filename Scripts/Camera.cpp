@@ -9,16 +9,22 @@ Camera::Camera(const int screenW, const int screenH, int bgW, int bgH, int minMa
 	_minMapSize = (float)minMapSize;
 
 	_cameraPos = { _screenWidth / 2,_screenHeight / 2 };
+	_cameraOffset = { 0,0 };
 	_bgPos = { _bgWidth / 2,_bgHeight / 2 };
+
+	_cameraEffect01[0] = 0;
+	_cameraEffect01[1] = 5;
+	_cameraEffect01[2] = 2;
+	_cameraEffect01[3] = 5;
 }
 
 void Camera::Move(Vector2 playerPos)
 {
 	if (playerPos.x >= _screenWidth / 2 && playerPos.x <= _bgWidth - _screenWidth / 2) {
-		_cameraPos.x = playerPos.x;
+		_cameraPos.x = playerPos.x+ _cameraOffset.x;
 	}
 	if (playerPos.y >= _screenHeight / 2 && playerPos.y <= _bgHeight - _screenHeight / 2) {
-		_cameraPos.y = playerPos.y;
+		_cameraPos.y = playerPos.y+ _cameraOffset.y;
 	}
 }
 
@@ -52,6 +58,37 @@ void Camera::BulletShow() {
 		float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
 		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
 	}
+}
+
+bool Camera::CameraEffect(int index)
+{
+	switch (index) {
+	case 0: {_cameraEffect01[3]);
+		if (_cameraEffect01[0] > 0) {
+			_cameraOffset.x += _cameraEffect01[3];
+			_cameraEffect01[0]--;
+		}
+		if (_cameraEffect01[1] > 0) {
+			_cameraOffset.y += _cameraEffect01[3];
+			_cameraEffect01[1]--;
+		}
+		if (_cameraEffect01[0] <= 0 && _cameraEffect01[1] <= 0) {
+			_cameraEffect01[3] = _cameraEffect01[3] *-1;
+			_cameraEffect01[0] = 5;
+			_cameraEffect01[1] = 5;
+			_cameraEffect01[2]--;
+		}
+		if (_cameraEffect01[2] < 0) {
+			_cameraEffect01[0] = 0;
+			_cameraEffect01[1] = 5;
+			_cameraEffect01[2] = 2;
+			_cameraEffect01[3] = 5;
+			_cameraOffset = { 0,0 };
+			return true;
+		}
+		break;}
+	}
+	return false;
 }
 
 void Camera::FrameTexture(float x, float y, LoadRes::Sprite sprite, int color)

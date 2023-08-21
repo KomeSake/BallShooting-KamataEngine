@@ -23,7 +23,10 @@ Player::Player()
 
 	_pattern = 1;
 	_hp = 30;
+	_bounceValue_enemy = 30;
 	_ballDamage = 10;
+	_isBallTouch = false;
+	_isHarmed = false;
 
 	_sprite = LoadRes::_spListPlayer;
 	_width = 128;
@@ -35,7 +38,6 @@ Player::Player()
 	_bulletPos = { 0,0 };
 	_bulletDir = { 0,0 };
 	_bulletTime = 100;
-	_bounceValue_enemy = 30;
 
 	_spriteDownDegree = 0;
 }
@@ -206,17 +208,36 @@ void Player::PatternChange(char keys[], char preKeys[])
 
 void Player::CollideSystem()
 {
-	//和敌人的碰撞
-	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-		float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-		if (length + 50 < element->_width / 2 + _width / 2) {
-			Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
-			hitDir = VectorNormalization(hitDir.x, hitDir.y);
-			_vel.x = hitDir.x * _bounceValue_enemy;
-			_vel.y = hitDir.y * _bounceValue_enemy;
+	switch (_pattern) {
+	case 0: {
+		//球状态撞敌人（现在会有点问题，因为碰撞距离计算的问题，不过现在先不用管，等做了蒸汽功能再说）
+		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length+50 < element->_width / 2 + _width / 2) {
+				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+				hitDir = VectorNormalization(hitDir.x, hitDir.y);
+				_vel.x = hitDir.x * _bounceValue_enemy;
+				_vel.y = hitDir.y * _bounceValue_enemy;
 
-			_hp -= element->_damage;
+				_isBallTouch = true;
+			}
 		}
+		break; }
+	case 1: {
+		//被敌人碰撞
+		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length + 50 < element->_width / 2 + _width / 2) {
+				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+				hitDir = VectorNormalization(hitDir.x, hitDir.y);
+				_vel.x = hitDir.x * _bounceValue_enemy;
+				_vel.y = hitDir.y * _bounceValue_enemy;
+
+				_isHarmed = true;
+				_hp -= element->_damage;
+			}
+		}
+		break; }
 	}
 }
 
@@ -232,35 +253,36 @@ void Player::Show(char keys[])
 	switch (_pattern)
 	{
 	case 0: {
-		if (keys[DIK_W] && keys[DIK_A]) {
+		int spriteVel = 10;//图片旋转基准值(速度实际上不会马上变为0,所以需要一个基准值来控制,不然就会觉得图片换的慢)
+		if (_vel.x < -spriteVel && _vel.y > spriteVel) {
 			_spriteDownDegree = -45;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_W] && keys[DIK_D]) {
+		else if (_vel.x > spriteVel && _vel.y > spriteVel) {
 			_spriteDownDegree = 45;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_S] && keys[DIK_A]) {
+		else if (_vel.x < -spriteVel && _vel.y < -spriteVel) {
 			_spriteDownDegree = -135;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_S] && keys[DIK_D]) {
+		else if (_vel.x > spriteVel && _vel.y < -spriteVel) {
 			_spriteDownDegree = 135;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_W]) {
+		else if (_vel.y > spriteVel) {
 			_spriteDownDegree = 0;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_S]) {
+		else if (_vel.y < -spriteVel) {
 			_spriteDownDegree = 180;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_A]) {
+		else if (_vel.x < -spriteVel) {
 			_spriteDownDegree = -90;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
-		else if (keys[DIK_D]) {
+		else if (_vel.x > spriteVel) {
 			_spriteDownDegree = 90;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
 		}
@@ -313,5 +335,16 @@ void Player::Show(char keys[])
 		}
 		FrameTexture(_pos.x, _pos.y, LoadRes::_spArrow, rad, WHITE);
 		break; }
+	}
+}
+
+void Player::Effect() 
+{
+	if (_isHarmed) {
+		_color = RED;
+		if (MyTimers(100, 1)) {
+			_color = WHITE;
+			_isHarmed = false;
+		}
 	}
 }

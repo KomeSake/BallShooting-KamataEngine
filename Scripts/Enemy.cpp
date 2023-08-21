@@ -152,7 +152,7 @@ void Enemy::CollideSystem(Vector2 playerPos, int playerPattern, float playerBall
 	//和球形态玩家之间的碰撞
 	if (playerPattern == 0) {
 		float length = sqrtf(powf(playerPos.x - _pos.x, 2) + powf(playerPos.y - _pos.y, 2));
-		if (length + 50 < 128 / 2 + 128 / 2) {
+		if (length + 50 < 98.f / 2 + _width / 2) {
 			Vector2 hitDir = { _pos.x - playerPos.x,_pos.y - playerPos.y };
 			hitDir = VectorNormalization(hitDir.x, hitDir.y);
 			_vel.x = hitDir.x * _bounceValue_player;

@@ -53,6 +53,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		PlayerObj->PatternChange(keys, preKeys);
 		PlayerObj->CollideSystem();
+		if (PlayerObj->_isBallTouch) {
+			if (CameraObj->CameraEffect(0)) {
+				PlayerObj->_isBallTouch = false;
+			}
+		}
 		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->Move(Camera::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
 		People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
@@ -63,6 +68,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->BulletShow();
 		EnemyManager::EnemyShow();
+		PlayerObj->Effect();
 		PlayerObj->Show(keys);
 
 

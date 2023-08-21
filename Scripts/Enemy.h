@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <queue>
+#include <map>
 #include "People.h"
 #include "Bullet.h"
 using namespace std;
@@ -23,7 +24,7 @@ public:
 	float _friction;//摩擦力
 	float _velMax;//速度的上限，正反皆是
 
-	//LoadRes::SpriteList _sprite;
+	map<int, LoadRes::SpriteList> _sprite;
 	float _width;
 	float _height;
 	unsigned int _color;
@@ -34,7 +35,8 @@ public:
 	float _warningLength;//距离玩家多远才开始产生警戒
 	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应
 	float _hitBox_enemy;//调整敌人之间碰撞的大小
-	float _bounceValue_bullet;//被子弹弹开的大小
+	float _bounceValue_bullet;//被子弹弹开的力大小
+	float _bounceValue_player;//被子弹弹开的力大小
 
 	bool _isHarmed;//是否受到伤害（为了特效）
 
@@ -45,6 +47,7 @@ public:
 	void CollideSystem(Vector2 playerPos, int playerPattern, float playerBallDamage);
 	void Effect();
 	void IsDead();
+	void Show();
 };
 
 class EnemyManager {
@@ -58,5 +61,6 @@ public:
 	static void ReleaseEnemy(Enemy* enemy);
 
 	static void EnemyBornToMap(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
+	static void EnemyShow();
 };
 

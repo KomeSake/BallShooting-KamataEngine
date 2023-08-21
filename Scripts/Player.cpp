@@ -25,7 +25,7 @@ Player::Player()
 	_hp = 30;
 	_ballDamage = 10;
 
-	_sprite = LoadRes::_spPlayer;
+	_sprite = LoadRes::_spListPlayer;
 	_width = 128;
 	_height = 128;
 	_color = WHITE;
@@ -36,6 +36,8 @@ Player::Player()
 	_bulletDir = { 0,0 };
 	_bulletTime = 100;
 	_bounceValue_enemy = 30;
+
+	_spriteDownDegree = 0;
 }
 
 void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
@@ -180,7 +182,6 @@ void Player::PatternChange(char keys[], char preKeys[])
 	}
 	else {
 		_pattern = 1;
-		_color = WHITE;
 	}
 	//状态变换后的属性变化
 	switch (_pattern) {
@@ -189,14 +190,16 @@ void Player::PatternChange(char keys[], char preKeys[])
 		_bounce = _bounceBall;
 		_friction = _frictionBall;
 		_velMax = _velMaxBall;
-		_color = GREEN;
+		_width = 98;
+		_height = 98;
 		break;
 	case 1:
 		_speed = _speedMan;
 		_bounce = _bounceMan;
 		_friction = _frictionMan;
 		_velMax = _velMaxMan;
-		_color = WHITE;
+		_width = 128;
+		_height = 128;
 		break;
 	}
 }
@@ -221,5 +224,94 @@ void Player::IsDead()
 {
 	if (_hp < 0) {
 		//这里写上需要的效果
+	}
+}
+
+void Player::Show(char keys[])
+{
+	switch (_pattern)
+	{
+	case 0: {
+		if (keys[DIK_W] && keys[DIK_A]) {
+			_spriteDownDegree = -45;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_W] && keys[DIK_D]) {
+			_spriteDownDegree = 45;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_S] && keys[DIK_A]) {
+			_spriteDownDegree = -135;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_S] && keys[DIK_D]) {
+			_spriteDownDegree = 135;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_W]) {
+			_spriteDownDegree = 0;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_S]) {
+			_spriteDownDegree = 180;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_A]) {
+			_spriteDownDegree = -90;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else if (keys[DIK_D]) {
+			_spriteDownDegree = 90;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		}
+		else {
+			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, 1, acosf(-1) / 180 * _spriteDownDegree, _color);
+		}
+		break; }
+	case 1: {
+		if (keys[DIK_W] && keys[DIK_A]) {
+			_spriteDownDegree = -45;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_W] && keys[DIK_D]) {
+			_spriteDownDegree = 45;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_S] && keys[DIK_A]) {
+			_spriteDownDegree = -135;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_S] && keys[DIK_D]) {
+			_spriteDownDegree = 135;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_W]) {
+			_spriteDownDegree = 0;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_S]) {
+			_spriteDownDegree = 180;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_A]) {
+			_spriteDownDegree = -90;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else if (keys[DIK_D]) {
+			_spriteDownDegree = 90;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		}
+		else {
+			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_down, 1, acosf(-1) / 180 * _spriteDownDegree, _color);
+		}
+		float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
+		if (Novice::IsPressMouse(0)) {
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer, rad, _color, 30, 2);
+		}
+		else {
+			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer, 0, rad, _color);
+		}
+		FrameTexture(_pos.x, _pos.y, LoadRes::_spArrow, rad, WHITE);
+		break; }
 	}
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "People.h"
 #include "Enemy.h"
+#include <map>
 
 class Player :
 	public People
@@ -23,7 +24,7 @@ public:
 	float _hp;
 	float _ballDamage;
 
-	LoadRes::Sprite _sprite;
+	map<int, LoadRes::SpriteList> _sprite;
 	float _width;
 	float _height;
 	unsigned int _color;
@@ -40,4 +41,6 @@ public:
 	void PatternChange(char keys[], char preKeys[]);
 	void CollideSystem();
 	void IsDead();
+	void Show(char keys[]);
+	float _spriteDownDegree;//地盘动画的角度
 };

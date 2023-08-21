@@ -22,13 +22,6 @@ void Camera::Move(Vector2 playerPos)
 	}
 }
 
-void Camera::Show(Player* PlayerObj)
-{
-	float rad = SpriteToObjDir(Vector2{ PlayerObj->_bulletDir.x,PlayerObj->_bulletDir.y });
-	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, PlayerObj->_sprite, rad, PlayerObj->_color);
-	FrameTexture(PlayerObj->_pos.x, PlayerObj->_pos.y, LoadRes::_spArrow, rad, WHITE);
-}
-
 void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize) {
 	bgW;
 	Vector2 minMapPos = { 0,0 };
@@ -61,25 +54,6 @@ void Camera::BulletShow() {
 	}
 }
 
-void Camera::EnemyShow()
-{
-	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-		if (element->_isWarning) {
-			float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
-			FrameAnimation(element->_pos.x, element->_pos.y, LoadRes::_spListEnemy1, rad, element->_color, 100, 1);
-		}
-		else {
-			srand(unsigned int(time(nullptr)));//随机数计算
-			float rad = (float)(rand() % 10);//随机个角度出来，让敌人的未警戒状态看着自然一些
-			FrameAnimation(element->_pos.x, element->_pos.y, LoadRes::_spListEnemy1, rad, element->_color, 100, 1);
-		}
-		if (element->_hp < 0) {
-			float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
-			FrameAnimation(element->_pos.x, element->_pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
-		}
-	}
-}
-
 void Camera::FrameTexture(float x, float y, LoadRes::Sprite sprite, int color)
 {
 	float screenPosX = x - _cameraPos.x + _screenWidth / 2;
@@ -108,6 +82,20 @@ void Camera::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList
 
 	Vector2 pos = WorldToScreen({ x,y }, _cameraPos);
 	Novice::DrawSpriteRect((int)(pos.x - (float)(arrW) / 2), (int)(pos.y - (float)(arrH) / 2), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW), ((float)arrH / (float)arrSpriteH), 0, color);
+}
+
+void Camera::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList, int index, float rad, int color)
+{
+	int arrSprite = spList[index].path;
+	int arrW = spList[index].w, arrH = spList[index].h;
+	int arrSpriteW = spList[index].listW, arrSpriteH = spList[index].listH;
+	int arrX = spList[index].x, arrY = spList[index].y;
+
+	Vector2 rotated = { (float)spList[index].w * -1 / 2,(float)spList[index].h / 2 };
+	rotated = AditionRule(rotated, -rad);
+	rotated = { rotated.x + x ,rotated.y + y };
+	rotated = WorldToScreen(rotated, _cameraPos);
+	Novice::DrawSpriteRect((int)rotated.x, (int)rotated.y, arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW), ((float)arrH / (float)arrSpriteH), rad, color);
 }
 
 void Camera::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spList, float rad, int color, int frameTime, int playIndex)

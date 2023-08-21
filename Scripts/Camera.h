@@ -3,9 +3,7 @@
 #include <cmath>
 #include <map>
 #include <random>
-#include "Player.h"
 #include "Bullet.h"
-#include "Enemy.h"
 using namespace std;
 
 class Camera
@@ -28,10 +26,8 @@ public:
 
 	Camera(const int screenW, const int screenH, int bgW, int bgH, int minMapSize);
 	void Move(Vector2 playerPos);
-	void Show(Player* PlayerObj);
 	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
 	void BulletShow();
-	void EnemyShow();
 
 	//相机设置步骤
 	//1.所有坐标都必须是世界坐标
@@ -44,6 +40,7 @@ public:
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, int color);
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, int color);
+	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float rad, int color);
 
 	//播放帧动画：位置x，位置y，播放文件，角度，每帧时间，几号位置
 	void FrameAnimation(float x, float y, map<int, LoadRes::SpriteList>spList, float rad, int color, int frameTime, int playIndex);

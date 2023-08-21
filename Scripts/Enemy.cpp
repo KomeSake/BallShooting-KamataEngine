@@ -1,5 +1,4 @@
 ﻿#include "Enemy.h"
-#include "Player.h"
 
 Enemy::Enemy(EnemyType type)
 {
@@ -17,7 +16,7 @@ void Enemy::Inital(EnemyType type)
 	_friction = 0.97f;
 	_velMax = 10;
 
-	//_sprite = LoadRes::_spListEnemy1;
+	_sprite = LoadRes::_spListEnemy1;
 	_width = 128;
 	_height = 128;
 	_color = WHITE;
@@ -28,7 +27,8 @@ void Enemy::Inital(EnemyType type)
 	_warningLength = 700;
 	_isWarning = false;
 	_hitBox_enemy = -50;
-	_bounceValue_bullet = 20;
+	_bounceValue_bullet = 10;
+	_bounceValue_player = 50;
 
 	_isHarmed = false;
 
@@ -155,8 +155,8 @@ void Enemy::CollideSystem(Vector2 playerPos, int playerPattern, float playerBall
 		if (length + 50 < 128 / 2 + 128 / 2) {
 			Vector2 hitDir = { _pos.x - playerPos.x,_pos.y - playerPos.y };
 			hitDir = VectorNormalization(hitDir.x, hitDir.y);
-			_vel.x = hitDir.x * _bounceValue_bullet;
-			_vel.y = hitDir.y * _bounceValue_bullet;
+			_vel.x = hitDir.x * _bounceValue_player;
+			_vel.y = hitDir.y * _bounceValue_player;
 
 			_hp -= playerBallDamage;
 			_isHarmed = true;
@@ -179,9 +179,25 @@ void Enemy::Effect()
 void Enemy::IsDead()
 {
 	int aniTime = (int)(LoadRes::_spListEnemyExplode.size());
-	Novice::ScreenPrintf(10, 100, "sum:%d", aniTime);
-	if (MyTimers(aniTime*100,2)) {
+	if (MyTimers(aniTime * 100, 2)) {
 		EnemyManager::ReleaseEnemy(this);
+	}
+}
+
+void Enemy::Show()
+{
+	if (_isWarning) {
+		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
+		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemy1, rad, _color, 100, 1);
+	}
+	else {
+		srand(unsigned int(time(nullptr)));//随机数计算
+		float rad = (float)(rand() % 10);//随机个角度出来，让敌人的未警戒状态看着自然一些
+		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemy1, rad, _color, 100, 1);
+	}
+	if (_hp < 0) {
+		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
+		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
 	}
 }
 
@@ -257,5 +273,12 @@ void EnemyManager::EnemyBornToMap(vector<vector<char>> mapData, float bgW, float
 		}
 		minMapPos.x = minSize / 2;
 		minMapPos.y -= minSize;
+	}
+}
+
+void EnemyManager::EnemyShow()
+{
+	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+		element->Show();
 	}
 }

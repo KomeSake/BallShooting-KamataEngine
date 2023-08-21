@@ -28,9 +28,13 @@ public:
 	inline static Sprite _spPlayer;
 	inline static Sprite _spBullet;
 	inline static Sprite _spArrow;
-	inline static Sprite _spEnemy1;
+
+	inline static map<int, SpriteList> _spListEnemy1;
 
 	inline static map<int, SpriteList> _spListMap;
+
+	inline static map<int, SpriteList> _spListExplode;
+	inline static map<int, SpriteList> _spListEnemyExplode;
 
 	static void LoadResNovice();
 };

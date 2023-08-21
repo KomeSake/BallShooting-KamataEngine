@@ -16,7 +16,7 @@ void Bullet::Inital(BulletType type)
 	_color = WHITE;
 
 	_type = normal;
-	_damage = 5;
+	_damage = 2;
 
 	switch (type) {
 	case normal:

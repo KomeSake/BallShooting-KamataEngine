@@ -20,6 +20,8 @@ public:
 	int _pattern;//状态指示器，0球，1人，2蒸汽冲刺(未做)
 	//蒸汽冲刺想法：把Move方法复制一份，把里面的碰撞检测和物理移动挑出即可。
 	//最后在方法中设定一个时间来退出，回到普通的移动模式
+	float _hp;
+	float _ballDamage;
 
 	LoadRes::Sprite _sprite;
 	float _width;
@@ -37,4 +39,5 @@ public:
 	void Attack(Vector2 cameraPos);
 	void PatternChange(char keys[], char preKeys[]);
 	void CollideSystem();
+	void IsDead();
 };

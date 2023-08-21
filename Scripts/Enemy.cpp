@@ -1,4 +1,5 @@
 ﻿#include "Enemy.h"
+#include "Player.h"
 
 Enemy::Enemy(EnemyType type)
 {
@@ -16,9 +17,9 @@ void Enemy::Inital(EnemyType type)
 	_friction = 0.97f;
 	_velMax = 10;
 
-	_sprite = LoadRes::_spEnemy1;
-	_width = 96;
-	_height = 96;
+	//_sprite = LoadRes::_spListEnemy1;
+	_width = 128;
+	_height = 128;
 	_color = WHITE;
 
 	_type = dog;
@@ -28,6 +29,8 @@ void Enemy::Inital(EnemyType type)
 	_isWarning = false;
 	_hitBox_enemy = -50;
 	_bounceValue_bullet = 20;
+
+	_isHarmed = false;
 
 	switch (type) {
 	case dog:
@@ -130,7 +133,7 @@ void Enemy::Fire(Vector2 bornPos)
 	EnemyManager::_enemyUpdateVector.push_back(this);
 }
 
-void Enemy::CollideSystem()
+void Enemy::CollideSystem(Vector2 playerPos, int playerPattern, float playerBallDamage)
 {
 	//和子弹之间的碰撞
 	for (Bullet* element : BulletManager::_bulletUpdata_player) {
@@ -142,15 +145,42 @@ void Enemy::CollideSystem()
 			_vel.y = hitDir.y * _bounceValue_bullet;
 
 			_hp -= element->_damage;
+			_isHarmed = true;
 			BulletManager::ReleaseBullet(element);
 		}
 	}
 	//和球形态玩家之间的碰撞
+	if (playerPattern == 0) {
+		float length = sqrtf(powf(playerPos.x - _pos.x, 2) + powf(playerPos.y - _pos.y, 2));
+		if (length + 50 < 128 / 2 + 128 / 2) {
+			Vector2 hitDir = { _pos.x - playerPos.x,_pos.y - playerPos.y };
+			hitDir = VectorNormalization(hitDir.x, hitDir.y);
+			_vel.x = hitDir.x * _bounceValue_bullet;
+			_vel.y = hitDir.y * _bounceValue_bullet;
+
+			_hp -= playerBallDamage;
+			_isHarmed = true;
+		}
+	}
+}
+
+void Enemy::Effect()
+{
+	//受伤效果
+	if (_isHarmed) {
+		_color = RED;
+		if (MyTimers(100, 1)) {
+			_color = WHITE;
+			_isHarmed = false;
+		}
+	}
 }
 
 void Enemy::IsDead()
 {
-	if (_hp < 0) {
+	int aniTime = (int)(LoadRes::_spListEnemyExplode.size());
+	Novice::ScreenPrintf(10, 100, "sum:%d", aniTime);
+	if (MyTimers(aniTime*100,2)) {
 		EnemyManager::ReleaseEnemy(this);
 	}
 }
@@ -161,12 +191,19 @@ void Enemy::IsDead()
 
 
 
-void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos)
+void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, int playerPattern, float playerBallDamage)
 {
+	//应该要写上状态机变换才对，不应该直接就通过生命值来变换，这样不利于拓展
+	//不过为了做的快，其实直接就是两个状态了，一个活着一个死亡
 	for (Enemy* element : _enemyUpdateVector) {
-		element->CollideSystem();
-		element->Move(playerPos);
-		element->IsDead();
+		if (element->_hp < 0) {
+			element->IsDead();
+		}
+		else {
+			element->CollideSystem(playerPos, playerPattern, playerBallDamage);
+			element->Move(playerPos);
+			element->Effect();
+		}
 	}
 }
 

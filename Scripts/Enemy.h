@@ -23,7 +23,7 @@ public:
 	float _friction;//摩擦力
 	float _velMax;//速度的上限，正反皆是
 
-	LoadRes::Sprite _sprite;
+	//LoadRes::SpriteList _sprite;
 	float _width;
 	float _height;
 	unsigned int _color;
@@ -36,11 +36,14 @@ public:
 	float _hitBox_enemy;//调整敌人之间碰撞的大小
 	float _bounceValue_bullet;//被子弹弹开的大小
 
+	bool _isHarmed;//是否受到伤害（为了特效）
+
 	Enemy(EnemyType type);
 	void Inital(EnemyType type);
 	void Move(Vector2 playerPos);
 	void Fire(Vector2 bornPos);
-	void CollideSystem();
+	void CollideSystem(Vector2 playerPos, int playerPattern, float playerBallDamage);
+	void Effect();
 	void IsDead();
 };
 
@@ -50,7 +53,7 @@ public:
 	inline static std::vector<Enemy*> _enemyUpdateVector;
 	inline static std::queue<Enemy*> _enemyIdiePool_dog;
 
-	static void EnemyUpdata(Enemy::Vector2 playerPos);
+	static void EnemyUpdata(Enemy::Vector2 playerPos, int playerPattern, float playerBallDamage);
 	static Enemy* AcquireEnemy(Enemy::EnemyType type);
 	static void ReleaseEnemy(Enemy* enemy);
 

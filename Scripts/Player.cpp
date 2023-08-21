@@ -22,6 +22,8 @@ Player::Player()
 	_velMaxMan = 15;
 
 	_pattern = 1;
+	_hp = 30;
+	_ballDamage = 10;
 
 	_sprite = LoadRes::_spPlayer;
 	_width = 128;
@@ -209,6 +211,15 @@ void Player::CollideSystem()
 			hitDir = VectorNormalization(hitDir.x, hitDir.y);
 			_vel.x = hitDir.x * _bounceValue_enemy;
 			_vel.y = hitDir.y * _bounceValue_enemy;
+
+			_hp -= element->_damage;
 		}
+	}
+}
+
+void Player::IsDead()
+{
+	if (_hp < 0) {
+		//这里写上需要的效果
 	}
 }

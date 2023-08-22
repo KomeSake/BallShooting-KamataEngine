@@ -21,10 +21,10 @@ Camera::Camera(const int screenW, const int screenH, int bgW, int bgH, int minMa
 void Camera::Move(Vector2 playerPos)
 {
 	if (playerPos.x >= _screenWidth / 2 && playerPos.x <= _bgWidth - _screenWidth / 2) {
-		_cameraPos.x = playerPos.x+ _cameraOffset.x;
+		_cameraPos.x = playerPos.x + _cameraOffset.x;
 	}
 	if (playerPos.y >= _screenHeight / 2 && playerPos.y <= _bgHeight - _screenHeight / 2) {
-		_cameraPos.y = playerPos.y+ _cameraOffset.y;
+		_cameraPos.y = playerPos.y + _cameraOffset.y;
 	}
 }
 
@@ -63,7 +63,7 @@ void Camera::BulletShow() {
 bool Camera::CameraEffect(int index)
 {
 	switch (index) {
-	case 0: {_cameraEffect01[3]);
+	case 0: {
 		if (_cameraEffect01[0] > 0) {
 			_cameraOffset.x += _cameraEffect01[3];
 			_cameraEffect01[0]--;
@@ -73,7 +73,7 @@ bool Camera::CameraEffect(int index)
 			_cameraEffect01[1]--;
 		}
 		if (_cameraEffect01[0] <= 0 && _cameraEffect01[1] <= 0) {
-			_cameraEffect01[3] = _cameraEffect01[3] *-1;
+			_cameraEffect01[3] = _cameraEffect01[3] * -1;
 			_cameraEffect01[0] = 5;
 			_cameraEffect01[1] = 5;
 			_cameraEffect01[2]--;
@@ -86,7 +86,7 @@ bool Camera::CameraEffect(int index)
 			_cameraOffset = { 0,0 };
 			return true;
 		}
-		break;}
+		break; }
 	}
 	return false;
 }

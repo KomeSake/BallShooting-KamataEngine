@@ -2,6 +2,7 @@
 #include <Novice.h>
 #include <cmath>
 #include <ctime>
+#include <random>
 #include "LoadRes.h"
 #include "Map.h"
 #include "Bullet.h"
@@ -22,7 +23,7 @@ public:
 	inline static float _screenWidth;
 	inline static float _screenHeight;
 
-	//计时器
+	//计时器(共30格)
 	int MyTimers(int milli, int index);
 	clock_t _timeStart[31] = { 0 };
 	clock_t _timeEnd[31] = { 0 };

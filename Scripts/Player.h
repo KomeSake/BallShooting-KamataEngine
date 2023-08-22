@@ -22,6 +22,8 @@ public:
 	//最后在方法中设定一个时间来退出，回到普通的移动模式
 
 	int _pattern;//状态指示器，0球，1人，2蒸汽冲刺(未做)
+	bool _isBallEntering;//正在变成球形态
+	bool _isManEntering;//正在变成人形态
 	float _hp;
 	float _bounceValue_enemy;//被敌人触碰的反弹力
 	float _ballDamage;
@@ -46,5 +48,7 @@ public:
 	void IsDead();
 	void Show(char keys[]);
 	float _spriteDownDegree;//地盘动画的角度
+	int _ballStopSprite;//球停下来的时候需要用什么图片
+	bool _isBallStop;//球形态初次停下来了
 	void Effect();
 };

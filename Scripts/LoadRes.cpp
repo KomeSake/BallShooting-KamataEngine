@@ -32,6 +32,27 @@ void LoadRes::LoadResNovice()
 		listW = 1538, listH = 128;
 		_spListPlayer_ball[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 7; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Player_smoker.png");
+		w = 384, h = 384;
+		x = i * w, y = 0;
+		listW = 2688, listH = 384;
+		_spListPlayer_smoker[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 6; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Player_ChangeAni.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 768, listH = 128;
+		_spListPlayer_ChangeAni[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 6; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Player_ChangeAniTwo.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 768, listH = 128;
+		_spListPlayer_ChangeAniTwo[i] = { path,x,y,w,h,listW,listH };
+	}
 	for (int i = 0; i < 5; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Enemy1.png");
 		w = 128, h = 128;

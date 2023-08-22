@@ -27,6 +27,8 @@ Player::Player()
 	_ballDamage = 10;
 	_isBallTouch = false;
 	_isHarmed = false;
+	_isBallEntering = false;
+	_isManEntering = false;
 
 	_sprite = LoadRes::_spListPlayer;
 	_width = 128;
@@ -40,6 +42,8 @@ Player::Player()
 	_bulletTime = 100;
 
 	_spriteDownDegree = 0;
+	_ballStopSprite = 0;
+	_isBallStop = false;
 }
 
 void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
@@ -161,28 +165,53 @@ void Player::Attack(Vector2 cameraPos)
 		_bulletDir.y = _bulletDir.y / vectorLength;
 	}
 
-	if (Novice::IsPressMouse(0)
-		&& MyTimers(_bulletTime, 1)) {
-		Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
-		bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
+	if (_pattern == 1 && _isManEntering == false) {
+		if (Novice::IsPressMouse(0)
+			&& MyTimers(_bulletTime, 1)) {
+			Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
+			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
+		}
 	}
 }
 
 void Player::PatternChange(char keys[], char preKeys[])
 {
+	//状态变换(按住按键变成球版)(按下鼠标立马变成人形态)
+	//现在不是人形态下，子弹是射不出的，如果想用这个版本，就把Attack方法改一下判断条件
+	//if (!Novice::IsPressMouse(0)) {
+	//	if (keys[DIK_LSHIFT] || keys[DIK_SPACE]) {
+	//		_pattern = 0;
+	//	}
+	//	if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
+	//		_pattern = 1;
+	//	}
+	//	if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
+	//		_pattern = 1;
+	//	}
+	//}
+	//else {
+	//	_pattern = 1;
+	//}	
+
 	//状态变换(按住按键变成球版)
-	if (!Novice::IsPressMouse(0)) {
-		if (keys[DIK_LSHIFT] || keys[DIK_SPACE]) {
-			_pattern = 0;
-		}
-		if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
-			_pattern = 1;
-		}
-		if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
-			_pattern = 1;
-		}
+	if (!preKeys[DIK_LSHIFT] && keys[DIK_LSHIFT]) {
+		_isBallEntering = true;
+		_frameAniIndex[4] = 0;
+		_pattern = 0;
 	}
-	else {
+	else if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
+		_isBallEntering = true;
+		_frameAniIndex[4] = 0;
+		_pattern = 0;
+	}
+	if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
+		_isManEntering = true;
+		_frameAniIndex[4] = 0;
+		_pattern = 1;
+	}
+	else if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
+		_isManEntering = true;
+		_frameAniIndex[4] = 0;
 		_pattern = 1;
 	}
 	//状态变换后的属性变化
@@ -213,7 +242,7 @@ void Player::CollideSystem()
 		//球状态撞敌人（现在会有点问题，因为碰撞距离计算的问题，不过现在先不用管，等做了蒸汽功能再说）
 		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
 			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-			if (length+50 < element->_width / 2 + _width / 2) {
+			if (length + 50 < element->_width / 2 + _width / 2) {
 				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
 				hitDir = VectorNormalization(hitDir.x, hitDir.y);
 				_vel.x = hitDir.x * _bounceValue_enemy;
@@ -253,96 +282,157 @@ void Player::Show(char keys[])
 	switch (_pattern)
 	{
 	case 0: {
-		int spriteVel = 10;//图片旋转基准值(速度实际上不会马上变为0,所以需要一个基准值来控制,不然就会觉得图片换的慢)
-		if (_vel.x < -spriteVel && _vel.y > spriteVel) {
-			_spriteDownDegree = -45;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.x > spriteVel && _vel.y > spriteVel) {
-			_spriteDownDegree = 45;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.x < -spriteVel && _vel.y < -spriteVel) {
-			_spriteDownDegree = -135;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.x > spriteVel && _vel.y < -spriteVel) {
-			_spriteDownDegree = 135;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.y > spriteVel) {
-			_spriteDownDegree = 0;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.y < -spriteVel) {
-			_spriteDownDegree = 180;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.x < -spriteVel) {
-			_spriteDownDegree = -90;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
-		}
-		else if (_vel.x > spriteVel) {
-			_spriteDownDegree = 90;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, acosf(-1) / 180 * _spriteDownDegree, _color, 10, 1);
+		if (_isBallEntering) {
+			float rad = acosf(-1) / 180 * _spriteDownDegree;
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ChangeAniTwo, rad, _color, 100, 4);
+			if (MyTimers(599, 3)) {
+				//形态变换一共6张图600帧，少一帧可以减少卡帧的问题
+				_isBallEntering = false;
+			}
 		}
 		else {
-			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, 1, acosf(-1) / 180 * _spriteDownDegree, _color);
+			int spriteVel = 10;//图片旋转基准值(速度实际上不会马上变为0,所以需要一个基准值来控制,不然就会觉得图片换的慢)
+			if (_vel.x < -spriteVel && _vel.y > spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = -45;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.x > spriteVel && _vel.y > spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = 45;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.x < -spriteVel && _vel.y < -spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = -135;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.x > spriteVel && _vel.y < -spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = 135;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.y > spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = 0;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.y < -spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = 180;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.x < -spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = -90;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else if (_vel.x > spriteVel) {
+				_isBallStop = true;
+				_spriteDownDegree = 90;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
+			}
+			else {
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				if (_isBallStop) {
+					srand(unsigned int(time(nullptr)));//随机数计算
+					_ballStopSprite = rand() % 12;//随机选择停下来球的图片，显得不单调（有12张）
+					_isBallStop = false;
+				}
+				FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _ballStopSprite, rad, _color);
+			}
 		}
 		break; }
+
 	case 1: {
-		if (keys[DIK_W] && keys[DIK_A]) {
-			_spriteDownDegree = -45;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_W] && keys[DIK_D]) {
-			_spriteDownDegree = 45;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_S] && keys[DIK_A]) {
-			_spriteDownDegree = -135;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_S] && keys[DIK_D]) {
-			_spriteDownDegree = 135;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_W]) {
-			_spriteDownDegree = 0;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_S]) {
-			_spriteDownDegree = 180;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_A]) {
-			_spriteDownDegree = -90;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
-		}
-		else if (keys[DIK_D]) {
-			_spriteDownDegree = 90;
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, acosf(-1) / 180 * _spriteDownDegree, _color, 100, 1);
+		if (_isManEntering) {
+			//float rad = acosf(-1) / 180 * _spriteDownDegree;
+			float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
+			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ChangeAni, rad, _color, 100, 4);
+			if (MyTimers(599, 3)) {
+				//形态变换一共6张图600帧，少一帧可以减少卡帧的问题
+				_isManEntering = false;
+			}
 		}
 		else {
-			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_down, 1, acosf(-1) / 180 * _spriteDownDegree, _color);
+			if (keys[DIK_W] && keys[DIK_A]) {
+				_spriteDownDegree = -45;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_W] && keys[DIK_D]) {
+				_spriteDownDegree = 45;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_S] && keys[DIK_A]) {
+				_spriteDownDegree = -135;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_S] && keys[DIK_D]) {
+				_spriteDownDegree = 135;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_W]) {
+				_spriteDownDegree = 0;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_S]) {
+				_spriteDownDegree = 180;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_A]) {
+				_spriteDownDegree = -90;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else if (keys[DIK_D]) {
+				_spriteDownDegree = 90;
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_down, rad, _color, 100, 1);
+			}
+			else {
+				float rad = acosf(-1) / 180 * _spriteDownDegree;
+				FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_down, 1, rad, _color);
+			}
+			float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
+			if (Novice::IsPressMouse(0)) {
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer, rad, _color, 30, 2);
+			}
+			else {
+				FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer, 0, rad, _color);
+			}
+			FrameTexture(_pos.x, _pos.y, LoadRes::_spArrow, rad, WHITE);
 		}
-		float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
-		if (Novice::IsPressMouse(0)) {
-			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer, rad, _color, 30, 2);
-		}
-		else {
-			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer, 0, rad, _color);
-		}
-		FrameTexture(_pos.x, _pos.y, LoadRes::_spArrow, rad, WHITE);
 		break; }
 	}
 }
 
-void Player::Effect() 
+void Player::Effect()
 {
 	if (_isHarmed) {
 		_color = RED;
-		if (MyTimers(100, 1)) {
+		if (MyTimers(100, 2)) {
 			_color = WHITE;
 			_isHarmed = false;
 		}

@@ -217,7 +217,7 @@ void Player::PatternChange(char keys[], char preKeys[])
 		}
 		else {
 			_pattern = 2;
-			_color = GREEN;
+			_color = BLUE;
 		}
 	}
 	else if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
@@ -229,7 +229,7 @@ void Player::PatternChange(char keys[], char preKeys[])
 		}
 		else {
 			_pattern = 2;
-			_color = GREEN;
+			_color = BLUE;
 		}
 	}
 	if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
@@ -286,11 +286,14 @@ void Player::CollideSystem()
 				_vel.x = hitDir.x * _bounceValue_enemy;
 				_vel.y = hitDir.y * _bounceValue_enemy;
 
+				element->_hp -= _ballDamage;
+				element->_isHarmed = true;
 				_isBallTouch = true;
 			}
 		}
 		break; }
-	case 1: {
+	case 1:
+	case 2: {
 		//被敌人碰撞
 		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
 			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
@@ -302,19 +305,6 @@ void Player::CollideSystem()
 
 				_isHarmed = true;
 				_hp -= element->_damage;
-			}
-		}
-		break; }
-	case 2: {
-		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-			if (length + 50 < element->_width / 2 + _width / 2) {
-				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
-				hitDir = VectorNormalization(hitDir.x, hitDir.y);
-				_vel.x = hitDir.x * _bounceValue_enemy;
-				_vel.y = hitDir.y * _bounceValue_enemy;
-
-				_isHarmed = true;
 			}
 		}
 		break; }
@@ -343,61 +333,61 @@ void Player::Show(char keys[])
 			}
 		}
 		else {
-			int spriteVel = 10;//图片旋转基准值(速度实际上不会马上变为0,所以需要一个基准值来控制,不然就会觉得图片换的慢)
+			int spriteVel = 5;//图片旋转基准值(速度实际上不会马上变为0,所以需要一个基准值来控制,不然就会觉得图片换的慢)
 			if (_vel.x < -spriteVel && _vel.y > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = -45;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.x > spriteVel && _vel.y > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 45;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.x < -spriteVel && _vel.y < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = -135;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.x > spriteVel && _vel.y < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 135;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.y > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 0;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.y < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 180;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.x < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = -90;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else if (_vel.x > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 90;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, _color, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, rad, WHITE, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, rad, _color, 10, 1);
 			}
 			else {
@@ -520,7 +510,12 @@ void Player::Effect()
 	if (_isHarmed) {
 		_color = RED;
 		if (MyTimers(100, 2)) {
-			_color = WHITE;
+			if (_steamValue > 0) {
+				_color = WHITE;
+			}
+			else {
+				_color = BLUE;
+			}
 			_isHarmed = false;
 		}
 	}
@@ -535,7 +530,7 @@ void Player::SteamPush()
 		}
 		else {
 			_pattern = 2;
-			_color = GREEN;
+			_color = BLUE;
 		}
 		break;
 	}

@@ -3,6 +3,7 @@
 #include <vector>
 #include <queue>
 #include "LoadRes.h"
+#include "Map.h"
 using namespace std;
 
 class Bullet
@@ -32,7 +33,7 @@ public:
 
 	Bullet(BulletType type);
 	void Inital(BulletType type);
-	void Move(Vector2 cameraPos);
+	void Move(Vector2 cameraPos, float bgHeight, float minMapSize);
 	void Fire(Vector2 bornPos, Vector2 dir);
 };
 
@@ -41,7 +42,7 @@ public:
 	inline static vector<Bullet*> _bulletUpdata_player;
 	inline static queue<Bullet*> _bulletIdiePool_normal;
 
-	static void BulletUpdata(Bullet::Vector2 cameraPos);
+	static void BulletUpdata(Bullet::Vector2 cameraPos, float bgHeight, float minMapSize);
 	static Bullet* AcquireBullet(Bullet::BulletType type);
 	static void ReleaseBullet(Bullet* bullet);
 };

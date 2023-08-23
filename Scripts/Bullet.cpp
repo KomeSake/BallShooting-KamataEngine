@@ -24,7 +24,7 @@ void Bullet::Inital(BulletType type)
 	}
 }
 
-void Bullet::Move(Vector2 cameraPos)
+void Bullet::Move(Vector2 cameraPos, float bgHeight, float minMapSize)
 {
 	float screenPosX = _pos.x - cameraPos.x + 1920.f / 2 - _width / 2;
 	float screenPosY = (_pos.y - cameraPos.y + 1080.f / 2 - 1080) * -1 - _height / 2;
@@ -36,6 +36,13 @@ void Bullet::Move(Vector2 cameraPos)
 	else {
 		BulletManager::ReleaseBullet(this);
 	}
+
+	//判断是否碰到了不可通过格子
+	int posCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
+	int posCheckLine = (int)(_pos.x / minMapSize);
+	if (!Map::IsThrough(Map::_mapData1, posCheckRow, posCheckLine)) {
+		BulletManager::ReleaseBullet(this);
+	}
 }
 
 void Bullet::Fire(Vector2 bornPos, Vector2 dir)
@@ -45,10 +52,10 @@ void Bullet::Fire(Vector2 bornPos, Vector2 dir)
 	BulletManager::_bulletUpdata_player.push_back(this);
 }
 
-void BulletManager::BulletUpdata(Bullet::Vector2 cameraPos)
+void BulletManager::BulletUpdata(Bullet::Vector2 cameraPos, float bgHeight, float minMapSize)
 {
 	for (Bullet* element : _bulletUpdata_player) {
-		element->Move(cameraPos);
+		element->Move(cameraPos, bgHeight, minMapSize);
 	}
 }
 

@@ -27,7 +27,7 @@ public:
 	float _hp;
 	float _bounceValue_enemy;//被敌人触碰的反弹力
 	float _ballDamage;
-	bool _isBallTouch;//球形态下是否撞中敌人
+	bool _isBallTouch;//球形态下是否撞中敌人(用于给Camera类指示)
 	bool _isHarmed;
 
 	map<int, LoadRes::SpriteList> _sprite;

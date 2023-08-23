@@ -144,7 +144,7 @@ void Enemy::Fire(Vector2 bornPos)
 	EnemyManager::_enemyUpdateVector.push_back(this);
 }
 
-void Enemy::CollideSystem(Vector2 playerPos, int playerPattern, float playerBallDamage)
+void Enemy::CollideSystem()
 {
 	//和子弹之间的碰撞
 	for (Bullet* element : BulletManager::_bulletUpdata_player) {
@@ -160,19 +160,7 @@ void Enemy::CollideSystem(Vector2 playerPos, int playerPattern, float playerBall
 			BulletManager::ReleaseBullet(element);
 		}
 	}
-	//和球形态玩家之间的碰撞
-	if (playerPattern == 0) {
-		float length = sqrtf(powf(playerPos.x - _pos.x, 2) + powf(playerPos.y - _pos.y, 2));
-		if (length + 50 < 98.f / 2 + _width / 2) {
-			Vector2 hitDir = { _pos.x - playerPos.x,_pos.y - playerPos.y };
-			hitDir = VectorNormalization(hitDir.x, hitDir.y);
-			_vel.x = hitDir.x * _bounceValue_player;
-			_vel.y = hitDir.y * _bounceValue_player;
-
-			_hp -= playerBallDamage;
-			_isHarmed = true;
-		}
-	}
+	//和球形态玩家之间的碰撞(因为Player类中也会进行此计算，所以现在直接移过去了)
 }
 
 void Enemy::Effect()
@@ -189,6 +177,7 @@ void Enemy::Effect()
 
 void Enemy::IsDead()
 {
+	_color = RED;
 	int aniTime = (int)(LoadRes::_spListEnemyExplode.size());
 	if (MyTimers(aniTime * 100, 2)) {
 		EnemyManager::ReleaseEnemy(this);
@@ -218,7 +207,7 @@ void Enemy::Show()
 
 
 
-void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, int playerPattern, float playerBallDamage)
+void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos)
 {
 	//应该要写上状态机变换才对，不应该直接就通过生命值来变换，这样不利于拓展
 	//不过为了做的快，其实直接就是两个状态了，一个活着一个死亡
@@ -227,7 +216,7 @@ void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, int playerPattern, floa
 			element->IsDead();
 		}
 		else {
-			element->CollideSystem(playerPos, playerPattern, playerBallDamage);
+			element->CollideSystem();
 			element->Move(playerPos);
 			element->Effect();
 		}

@@ -45,7 +45,7 @@ public:
 	void Inital(EnemyType type);
 	void Move(Vector2 playerPos);
 	void Fire(Vector2 bornPos);
-	void CollideSystem(Vector2 playerPos, int playerPattern, float playerBallDamage);
+	void CollideSystem();
 	void Effect();
 	void IsDead();
 	void Show();
@@ -58,7 +58,7 @@ public:
 	inline static std::queue<Enemy*> _enemyIdiePool_dog;
 	inline static std::queue<Enemy*> _enemyIdiePool_dog2;
 
-	static void EnemyUpdata(Enemy::Vector2 playerPos, int playerPattern, float playerBallDamage);
+	static void EnemyUpdata(Enemy::Vector2 playerPos);
 	static Enemy* AcquireEnemy(Enemy::EnemyType type);
 	static void ReleaseEnemy(Enemy* enemy);
 

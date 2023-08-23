@@ -21,7 +21,7 @@ public:
 	//蒸汽冲刺想法：把Move方法复制一份，把里面的碰撞检测和物理移动挑出即可。
 	//最后在方法中设定一个时间来退出，回到普通的移动模式
 
-	int _pattern;//状态指示器，0球，1人，2蒸汽冲刺(未做)
+	int _pattern;//状态指示器，0球，1人，2蒸汽不足
 	bool _isBallEntering;//正在变成球形态
 	bool _isManEntering;//正在变成人形态
 	float _hp;
@@ -40,9 +40,21 @@ public:
 	Vector2 _bulletDir;
 	int _bulletTime;//子弹间隔时间
 
+	int _steamValue;//蒸汽容量
+	int _steamMax;//蒸汽上限
+	float _steamPlusRate;//增加增加比率
+	int _steamMinus;
+	int _gunHotPlus;//武器增加热度
+	int _gunHotMinus;//武器减少热度
+	int _gunHotValue;//当前热度容量
+	int _gunHotMax;//热度上限
+	bool _isGunHot;
+
 	Player();
 	void Move(char keys[], float bgWidth, float bgHeight, float minMapSize);
 	void Attack(Vector2 cameraPos);
+	void SteamPush();//蒸汽系统
+	void GunHot();//武器过热系统
 	void PatternChange(char keys[], char preKeys[]);
 	void CollideSystem();
 	void IsDead();

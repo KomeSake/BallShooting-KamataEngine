@@ -36,6 +36,8 @@ bool Map::IsThrough(vector<vector<char>> mapData, int line, int row)
 		return false;
 	case 'e':
 		return true;
+	case 'f':
+		return true;
 	}
 	return false;
 }

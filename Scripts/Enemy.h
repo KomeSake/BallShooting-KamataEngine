@@ -13,6 +13,7 @@ public:
 	static enum EnemyType
 	{
 		dog,
+		dog2,
 	}enumEnemy;
 
 	Vector2 _pos;
@@ -36,7 +37,7 @@ public:
 	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应
 	float _hitBox_enemy;//调整敌人之间碰撞的大小
 	float _bounceValue_bullet;//被子弹弹开的力大小
-	float _bounceValue_player;//被子弹弹开的力大小
+	float _bounceValue_player;//被玩家弹开的力大小
 
 	bool _isHarmed;//是否受到伤害（为了特效）
 
@@ -55,6 +56,7 @@ class EnemyManager {
 public:
 	inline static std::vector<Enemy*> _enemyUpdateVector;
 	inline static std::queue<Enemy*> _enemyIdiePool_dog;
+	inline static std::queue<Enemy*> _enemyIdiePool_dog2;
 
 	static void EnemyUpdata(Enemy::Vector2 playerPos, int playerPattern, float playerBallDamage);
 	static Enemy* AcquireEnemy(Enemy::EnemyType type);

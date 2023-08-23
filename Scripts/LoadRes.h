@@ -29,12 +29,14 @@ public:
 	inline static Sprite _spArrow;
 
 	inline static map<int, SpriteList> _spListPlayer;
+	inline static map<int, SpriteList> _spListPlayer_gun;
 	inline static map<int, SpriteList> _spListPlayer_down;
 	inline static map<int, SpriteList> _spListPlayer_ball;
 	inline static map<int, SpriteList> _spListPlayer_smoker;
 	inline static map<int, SpriteList> _spListPlayer_ChangeAni;
 	inline static map<int, SpriteList> _spListPlayer_ChangeAniTwo;
 	inline static map<int, SpriteList> _spListEnemy1;
+	inline static map<int, SpriteList> _spListEnemy2;
 
 	inline static map<int, SpriteList> _spListMap;
 

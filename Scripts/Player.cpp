@@ -41,6 +41,16 @@ Player::Player()
 	_bulletDir = { 0,0 };
 	_bulletTime = 100;
 
+	_steamMax = 500;
+	_steamPlusRate = 2.f;
+	_steamMinus = 1;
+	_steamValue = 100;
+	_gunHotMax = 100;
+	_gunHotPlus = 10;
+	_gunHotMinus = 1;
+	_gunHotValue = 0;
+	_isGunHot = false;
+
 	_spriteDownDegree = 0;
 	_ballStopSprite = 0;
 	_isBallStop = false;
@@ -165,11 +175,15 @@ void Player::Attack(Vector2 cameraPos)
 		_bulletDir.y = _bulletDir.y / vectorLength;
 	}
 
-	if (_pattern == 1 && _isManEntering == false) {
+	if (_pattern == 1
+		&& !_isManEntering
+		&& !_isGunHot) {
 		if (Novice::IsPressMouse(0)
 			&& MyTimers(_bulletTime, 1)) {
 			Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
 			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
+
+			_gunHotValue += _gunHotPlus;
 		}
 	}
 }
@@ -197,22 +211,38 @@ void Player::PatternChange(char keys[], char preKeys[])
 	if (!preKeys[DIK_LSHIFT] && keys[DIK_LSHIFT]) {
 		_isBallEntering = true;
 		_frameAniIndex[4] = 0;
-		_pattern = 0;
+		if (_steamValue > 0) {
+			_pattern = 0;
+			_color = WHITE;
+		}
+		else {
+			_pattern = 2;
+			_color = GREEN;
+		}
 	}
 	else if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
 		_isBallEntering = true;
 		_frameAniIndex[4] = 0;
-		_pattern = 0;
+		if (_steamValue > 0) {
+			_pattern = 0;
+			_color = WHITE;
+		}
+		else {
+			_pattern = 2;
+			_color = GREEN;
+		}
 	}
 	if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
 		_isManEntering = true;
 		_frameAniIndex[4] = 0;
 		_pattern = 1;
+		_color = WHITE;
 	}
 	else if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
 		_isManEntering = true;
 		_frameAniIndex[4] = 0;
 		_pattern = 1;
+		_color = WHITE;
 	}
 	//状态变换后的属性变化
 	switch (_pattern) {
@@ -231,6 +261,14 @@ void Player::PatternChange(char keys[], char preKeys[])
 		_velMax = _velMaxMan;
 		_width = 128;
 		_height = 128;
+		break;
+	case 2:
+		_speed = _speedBall / 2;
+		_bounce = _bounceBall;
+		_friction = _frictionBall;
+		_velMax = _velMaxBall / 2;
+		_width = 98;
+		_height = 98;
 		break;
 	}
 }
@@ -267,6 +305,19 @@ void Player::CollideSystem()
 			}
 		}
 		break; }
+	case 2: {
+		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length + 50 < element->_width / 2 + _width / 2) {
+				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+				hitDir = VectorNormalization(hitDir.x, hitDir.y);
+				_vel.x = hitDir.x * _bounceValue_enemy;
+				_vel.y = hitDir.y * _bounceValue_enemy;
+
+				_isHarmed = true;
+			}
+		}
+		break; }
 	}
 }
 
@@ -281,7 +332,8 @@ void Player::Show(char keys[])
 {
 	switch (_pattern)
 	{
-	case 0: {
+	case 0:
+	case 2: {
 		if (_isBallEntering) {
 			float rad = acosf(-1) / 180 * _spriteDownDegree;
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ChangeAniTwo, rad, _color, 100, 4);
@@ -362,7 +414,6 @@ void Player::Show(char keys[])
 
 	case 1: {
 		if (_isManEntering) {
-			//float rad = acosf(-1) / 180 * _spriteDownDegree;
 			float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
 			FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ChangeAni, rad, _color, 100, 4);
 			if (MyTimers(599, 3)) {
@@ -415,17 +466,53 @@ void Player::Show(char keys[])
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
 				FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_down, 1, rad, _color);
 			}
+			//跟随鼠标方向
 			float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
-			if (Novice::IsPressMouse(0)) {
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer, rad, _color, 30, 2);
+			//计算出过热的RGB值
+			unsigned int color = (int)(255 - (_gunHotValue * 2.55f));
+			if (color < 0) {
+				color = 0;
+			}
+			if (color > 255) {
+				color = 255;
+			}
+			unsigned int colorG = 0, colorB = 0;
+			colorG = (colorG >> 16) & 0xFF;
+			colorB = (colorB >> 8) & 0xFF;
+			colorG += color;
+			colorB += color;
+			unsigned int gunHotcolor = (255 << 24) | (colorG << 16) | (colorB << 8) | (255);
+			if (Novice::IsPressMouse(0) && !_isGunHot) {
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_gun, rad, gunHotcolor, 30, 2);
 			}
 			else {
-				FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer, 0, rad, _color);
+				FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer_gun, 0, rad, gunHotcolor);
 			}
+			FrameTexture(_pos.x, _pos.y, LoadRes::_spListPlayer, 0, rad, _color);
 			FrameTexture(_pos.x, _pos.y, LoadRes::_spArrow, rad, WHITE);
 		}
 		break; }
 	}
+}
+
+void Player::GunHot()
+{
+	if (_gunHotValue > _gunHotMax) {
+		_isGunHot = true;
+	}
+	if (_isGunHot && _gunHotValue <= 0) {
+		_isGunHot = false;
+	}
+	if (_gunHotValue > 0) {
+		_gunHotValue -= _gunHotMinus;
+		//转换成蒸汽值
+		if (_steamValue < _steamMax) {
+			_steamValue += (int)(_gunHotMinus * _steamPlusRate);
+		}
+	}
+
+
+	Novice::ScreenPrintf(10, 100, "GunHot:%d/%d", _gunHotValue, _gunHotMax);
 }
 
 void Player::Effect()
@@ -437,4 +524,21 @@ void Player::Effect()
 			_isHarmed = false;
 		}
 	}
+}
+
+void Player::SteamPush()
+{
+	switch (_pattern) {
+	case 0:
+		if (_steamValue > 0) {
+			_steamValue -= _steamMinus;
+		}
+		else {
+			_pattern = 2;
+			_color = GREEN;
+		}
+		break;
+	}
+
+	Novice::ScreenPrintf(10, 130, "Steam:%d/%d,type:%d", _steamValue, _steamMax, _pattern);
 }

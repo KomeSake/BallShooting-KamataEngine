@@ -19,6 +19,13 @@ void LoadRes::LoadResNovice()
 		_spListPlayer[i] = { path,x,y,w,h,listW,listH };
 	}
 	for (int i = 0; i < 4; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Player_gun.png");
+		w = 160, h = 160;
+		x = i * w, y = 0;
+		listW = 640, listH = 160;
+		_spListPlayer_gun[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 4; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Player_down.png");
 		w = 160, h = 160;
 		x = i * w, y = 0;
@@ -59,6 +66,13 @@ void LoadRes::LoadResNovice()
 		x = i * w, y = 0;
 		listW = 640, listH = 128;
 		_spListEnemy1[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 6; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Enemy2.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 640, listH = 128;
+		_spListEnemy2[i] = { path,x,y,w,h,listW,listH };
 	}
 	//Map
 	for (int i = 0; i < 4; i++) {

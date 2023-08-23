@@ -14,6 +14,7 @@
 3、蒸汽冲刺。可以蓄力消耗更多的蒸汽来一波大的、
 3、敌人陨落，敌人被撞击动画。敌人如果被装出平台，很应该直接死亡，同时要有相应的动画展示。还有敌人被撞应该有一个放大缩小的效果比较适合
 4、敌人种类增加。敌人肯定不能只有这些，不然太单调了
+4、敌人掉落，敌人会掉落燃料和子弹等等
 5、Boss。如果想弄成关卡制，那么Boss肯定也是需要的了
 6、地图设计，美术设计。现在是制作好了地图读取系统，但是地图还没设计好，还有美术也需要添加
 7、杂项：UI、关卡轮回（怎么感觉还挺多东西的）
@@ -21,7 +22,8 @@
 */
 
 
-const char kWindowTitle[] = "v20230707";
+//KamataEngine_v20230707
+const char kWindowTitle[] = "BallShooting（射撃之丸）";
 const int screenWidth = 1920;
 const int screenHeight = 1080;
 
@@ -30,7 +32,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, screenWidth, screenHeight);
-	Novice::SetWindowMode(kWindowed);
+	//Novice::SetWindowMode(kFullscreen);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -76,6 +78,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		CameraObj->Move(Camera::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
 		People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
 		PlayerObj->Attack(People::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y });
+		PlayerObj->GunHot();
+		PlayerObj->SteamPush();
 		PlayerObj->IsDead();
 
 

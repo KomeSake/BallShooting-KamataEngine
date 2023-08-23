@@ -43,6 +43,7 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
 				break;
 			case 'e':
+			case 'f':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
 				break;
 			}

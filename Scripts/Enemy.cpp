@@ -22,9 +22,9 @@ void Enemy::Inital(EnemyType type)
 	_color = WHITE;
 
 	_type = dog;
-	_hp = 20;
-	_damage = 10;
-	_warningLength = 700;
+	_hp = 10;
+	_damage = 5;
+	_warningLength = 850;
 	_isWarning = false;
 	_hitBox_enemy = -50;
 	_bounceValue_bullet = 10;
@@ -35,6 +35,17 @@ void Enemy::Inital(EnemyType type)
 	switch (type) {
 	case dog:
 		_type = type;
+		break;
+	case dog2:
+		_sprite = LoadRes::_spListEnemy2;
+		_type = type;
+		_hp = 20;
+		_damage = 10;
+		_warningLength = 700;
+		_bounce = 0.5f;
+		_velMax = 7;
+		_bounceValue_bullet = 5;
+		_bounceValue_player = 20;
 		break;
 	}
 }
@@ -188,12 +199,12 @@ void Enemy::Show()
 {
 	if (_isWarning) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
-		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemy1, rad, _color, 100, 1);
+		FrameAnimation(_pos.x, _pos.y, _sprite, rad, _color, 100, 1);
 	}
 	else {
 		srand(unsigned int(time(nullptr)));//随机数计算
 		float rad = (float)(rand() % 10);//随机个角度出来，让敌人的未警戒状态看着自然一些
-		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemy1, rad, _color, 100, 1);
+		FrameAnimation(_pos.x, _pos.y, _sprite, rad, _color, 100, 1);
 	}
 	if (_hp < 0) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
@@ -238,6 +249,18 @@ Enemy* EnemyManager::AcquireEnemy(Enemy::EnemyType type)
 			return enemy;
 		}
 		break;
+	case Enemy::dog2:
+		if (_enemyIdiePool_dog2.empty()) {
+			Enemy* enemy = new Enemy(type);
+			return enemy;
+		}
+		else {
+			Enemy* enemy = _enemyIdiePool_dog2.front();
+			_enemyIdiePool_dog2.pop();
+			enemy->Inital(type);
+			return enemy;
+		}
+		break;
 	}
 	return nullptr;
 }
@@ -245,13 +268,20 @@ Enemy* EnemyManager::AcquireEnemy(Enemy::EnemyType type)
 void EnemyManager::ReleaseEnemy(Enemy* enemy)
 {
 	switch (enemy->_type) {
-	case Enemy::dog:
+	case Enemy::dog: {
 		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
 		if (it != _enemyUpdateVector.end()) {
 			_enemyUpdateVector.erase(it);
 		}
 		_enemyIdiePool_dog.push(enemy);
-		break;
+		break; }
+	case Enemy::dog2: {
+		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
+		if (it != _enemyUpdateVector.end()) {
+			_enemyUpdateVector.erase(it);
+		}
+		_enemyIdiePool_dog2.push(enemy);
+		break; }
 	}
 }
 
@@ -262,10 +292,15 @@ void EnemyManager::EnemyBornToMap(vector<vector<char>> mapData, float bgW, float
 	minMapPos.x = minSize / 2;
 	minMapPos.y = bgH - minSize / 2;
 	for (const auto& row : mapData) {
+		Enemy* emeny = nullptr;
 		for (const char& line : row) {
 			switch (line) {
 			case 'e':
-				Enemy * emeny = EnemyManager::AcquireEnemy(Enemy::dog);
+				emeny = EnemyManager::AcquireEnemy(Enemy::dog);
+				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
+				break;
+			case 'f':
+				emeny = EnemyManager::AcquireEnemy(Enemy::dog2);
 				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
 				break;
 			}

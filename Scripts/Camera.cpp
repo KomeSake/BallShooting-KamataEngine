@@ -54,13 +54,6 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 	}
 }
 
-void Camera::BulletShow() {
-	for (Bullet* element : BulletManager::_bulletUpdata_player) {
-		float rad = SpriteToObjDir(Vector2{ element->_dir.x, element->_dir.y });
-		FrameTexture(element->_pos.x, element->_pos.y, element->_sprite, rad, element->_color);
-	}
-}
-
 bool Camera::CameraEffect(int index)
 {
 	switch (index) {

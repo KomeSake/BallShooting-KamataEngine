@@ -97,4 +97,11 @@ void LoadRes::LoadResNovice()
 		listW = 1152, listH = 128;
 		_spListEnemyExplode[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 4; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Effect/BulletExplode.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 512, listH = 128;
+		_spListBulletExplode[i] = { path,x,y,w,h,listW,listH };
+	}
 }

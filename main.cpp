@@ -1,11 +1,13 @@
 #pragma warning(disable: 28251)//无视了主函数WinMain出现的警告
 #include <Novice.h>
 #include "Scripts/LoadRes.h"
+#include "Scripts/People.h"
 #include "Scripts/Player.h"
 #include "Scripts/Enemy.h"
+#include "Scripts/ItemBase.h"
+#include "Scripts/Bullet.h"
 #include "Scripts/Camera.h"
 #include "Scripts/Map.h"
-#include "Scripts/Bullet.h"
 
 /*
 还需要制作的功能
@@ -77,6 +79,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->Move(Camera::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
 		People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
+		ItemBase::CheckCameraValume(ItemBase::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
 		PlayerObj->Attack(People::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y });
 		PlayerObj->GunHot();
 		PlayerObj->SteamPush();
@@ -84,8 +87,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-		CameraObj->BulletShow();
 		EnemyManager::EnemyShow();
+		BulletManager::BulletShow();
 		PlayerObj->Effect();
 		PlayerObj->Show(keys);
 

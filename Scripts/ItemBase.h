@@ -1,13 +1,14 @@
 ﻿#pragma once
-#include <vector>
+#include <Novice.h>
 #include <cmath>
-#include <map>
 #include <ctime>
+#include <random>
 #include "LoadRes.h"
-using namespace std;
+#include "Map.h"
 
-class Camera
+class ItemBase
 {
+	//从People类中偷来的模块(以后有空就把这些全部整理成基类了，反正经常用的)
 public:
 	struct Vector2
 	{
@@ -15,30 +16,19 @@ public:
 		float y;
 	};
 
-	Vector2 _cameraPos;
-	Vector2 _cameraOffset;//相机偏移量，用以给相机做位移效果
-	Vector2 _bgPos;
+	//用以获取Camera的参数，提供给从Camera类偷来的渲染函数
+	static void CheckCameraValume(Vector2 cameraPos, float screenW, float screenH);
+	inline static Vector2 _cameraPos;
+	inline static float _screenWidth;
+	inline static float _screenHeight;
 
-	float _bgWidth;
-	float _bgHeight;
-	float _screenWidth;
-	float _screenHeight;
-	float _minMapSize;
+	//计时器(共30格)
+	int MyTimers(int milli, int index);
+	clock_t _timeStart[31] = { 0 };
+	clock_t _timeEnd[31] = { 0 };
+	bool _isTimeOpen[31] = { 0 };
 
-	Camera(const int screenW, const int screenH, int bgW, int bgH, int minMapSize);
-	void Move(Vector2 playerPos);
-	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
-
-	bool CameraEffect(int index);
-	int _cameraEffect01[4];//屏幕抖动效果，0：x移动次数，1：y移动次数，2：总共几个轮回，3：移动的速度
-
-	//相机设置步骤
-	//1.所有坐标都必须是世界坐标
-	//2.设置一个相机的坐标
-	//3.将相机框选出的部分转换成相机坐标系
-	//4.将框选出的部分转换成屏幕坐标系
-
-
+	//从Camera类偷来的一些方法，帧动画渲染方法
 	//工具组
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, int color);
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color);
@@ -48,7 +38,6 @@ public:
 	//播放帧动画：位置x，位置y，播放文件，角度，每帧时间，几号位置
 	void FrameAnimation(float x, float y, map<int, LoadRes::SpriteList>spList, float rad, int color, int frameTime, int playIndex);
 
-
 	//将屏幕坐标变成世界坐标(为了方便，屏幕大小已定为1920*1080)
 	static Vector2 ScreenToWorld(float screenX, float screenY, float cameraX, float cameraY);
 	//将世界坐标变成屏幕坐标(为了方便，屏幕大小已定为1920*1080)
@@ -56,6 +45,8 @@ public:
 	//让图片旋转成和方向一致
 	static float SpriteToObjDir(Vector2 dir);
 
+	//加法定理，为了计算旋转后的图像位置
+	Vector2 AditionRule(Vector2 pos, float rad);
 
 	//帧动画所需变量&工具
 	static const int _frame_sum = 31;//准备多少个帧动画播放空间
@@ -64,7 +55,5 @@ public:
 	clock_t _frame_timeStart[_frame_sum] = { 0 };
 	clock_t _frame_timeEnd[_frame_sum] = { 0 };
 	bool _frame_isTimeOpen[_frame_sum] = { 0 };
-
-	//加法定理，为了计算旋转后的图像位置
-	Vector2 AditionRule(Vector2 pos, float rad);
 };
+

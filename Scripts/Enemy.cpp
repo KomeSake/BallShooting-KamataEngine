@@ -154,10 +154,12 @@ void Enemy::CollideSystem()
 			hitDir = VectorNormalization(hitDir.x, hitDir.y);
 			_vel.x = hitDir.x * _bounceValue_bullet;
 			_vel.y = hitDir.y * _bounceValue_bullet;
-
-			_hp -= element->_damage;
-			_isHarmed = true;
-			BulletManager::ReleaseBullet(element);
+			//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
+			if (element->_isAlive) {
+				element->_isAlive = false;
+				_hp -= element->_damage;
+				_isHarmed = true;
+			}
 		}
 	}
 	//和球形态玩家之间的碰撞(因为Player类中也会进行此计算，所以现在直接移过去了)
@@ -175,7 +177,7 @@ void Enemy::Effect()
 	}
 }
 
-void Enemy::IsDead()
+void Enemy::ToDead()
 {
 	_color = RED;
 	int aniTime = (int)(LoadRes::_spListEnemyExplode.size());
@@ -213,7 +215,7 @@ void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos)
 	//不过为了做的快，其实直接就是两个状态了，一个活着一个死亡
 	for (Enemy* element : _enemyUpdateVector) {
 		if (element->_hp < 0) {
-			element->IsDead();
+			element->ToDead();
 		}
 		else {
 			element->CollideSystem();

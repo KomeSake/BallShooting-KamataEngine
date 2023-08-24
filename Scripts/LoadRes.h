@@ -42,6 +42,7 @@ public:
 
 	inline static map<int, SpriteList> _spListExplode;
 	inline static map<int, SpriteList> _spListEnemyExplode;
+	inline static map<int, SpriteList> _spListBulletExplode;
 
 	static void LoadResNovice();
 };

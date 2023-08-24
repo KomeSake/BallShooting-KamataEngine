@@ -3,7 +3,6 @@
 #include <queue>
 #include <map>
 #include "People.h"
-#include "Bullet.h"
 using namespace std;
 
 class Enemy :
@@ -47,7 +46,7 @@ public:
 	void Fire(Vector2 bornPos);
 	void CollideSystem();
 	void Effect();
-	void IsDead();
+	void ToDead();
 	void Show();
 };
 

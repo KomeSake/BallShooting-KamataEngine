@@ -19,6 +19,8 @@ void Enemy::Inital(EnemyType type)
 	_sprite = LoadRes::_spListEnemy1;
 	_width = 128;
 	_height = 128;
+	_scaleX = 1;
+	_scaleY = 1;
 	_color = WHITE;
 
 	_type = dog;
@@ -28,7 +30,7 @@ void Enemy::Inital(EnemyType type)
 	_isWarning = false;
 	_hitBox_enemy = -50;
 	_bounceValue_bullet = 10;
-	_bounceValue_player = 50;
+	_bounceValue_player = 35;
 
 	_isHarmed = false;
 
@@ -50,7 +52,7 @@ void Enemy::Inital(EnemyType type)
 	}
 }
 
-void Enemy::Move(Vector2 playerPos)
+void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize)
 {
 	//移动前的位置
 	Vector2 originalPos = _pos;
@@ -68,8 +70,6 @@ void Enemy::Move(Vector2 playerPos)
 	}
 	if (_isWarning) {
 		//从Player类偷来的物理移动和地图碰撞检测
-		float bgHeight = 3200;
-		float minMapSize = 128;
 		int playerCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
 		int playerCheckLine = (int)(_pos.x / minMapSize);
 
@@ -86,15 +86,15 @@ void Enemy::Move(Vector2 playerPos)
 		int checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 		//通过4个角的格子来判断是否已经不在可通过格子中，如果不在就把player移回去
 		if (_vel.x > 0) {
-			if (!Map::IsThrough(Map::_mapData1, checkUp, checkRight)
-				|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
+			if (!Map::IsThrough(mapData, checkUp, checkRight)
+				|| !Map::IsThrough(mapData, checkDown, checkRight)) {
 				_pos.x = playerCheckLine * minMapSize + _width / 2;
 				_vel.x = _vel.x * -_bounce;
 			}
 		}
 		else if (_vel.x < 0) {
-			if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
-				|| !Map::IsThrough(Map::_mapData1, checkDown, checkLeft)) {
+			if (!Map::IsThrough(mapData, checkUp, checkLeft)
+				|| !Map::IsThrough(mapData, checkDown, checkLeft)) {
 				_pos.x = playerCheckLine * minMapSize + _width / 2;
 				_vel.x = _vel.x * -_bounce;
 			}
@@ -113,15 +113,15 @@ void Enemy::Move(Vector2 playerPos)
 		checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
 		checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 		if (_vel.y > 0) {
-			if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
-				|| !Map::IsThrough(Map::_mapData1, checkUp, checkRight)) {
+			if (!Map::IsThrough(mapData, checkUp, checkLeft)
+				|| !Map::IsThrough(mapData, checkUp, checkRight)) {
 				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
 				_vel.y = _vel.y * -_bounce;
 			}
 		}
 		else if (_vel.y < 0) {
-			if (!Map::IsThrough(Map::_mapData1, checkDown, checkLeft)
-				|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
+			if (!Map::IsThrough(mapData, checkDown, checkLeft)
+				|| !Map::IsThrough(mapData, checkDown, checkRight)) {
 				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
 				_vel.y = _vel.y * -_bounce;
 			}
@@ -209,7 +209,7 @@ void Enemy::Show()
 
 
 
-void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos)
+void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize)
 {
 	//应该要写上状态机变换才对，不应该直接就通过生命值来变换，这样不利于拓展
 	//不过为了做的快，其实直接就是两个状态了，一个活着一个死亡
@@ -219,7 +219,7 @@ void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos)
 		}
 		else {
 			element->CollideSystem();
-			element->Move(playerPos);
+			element->Move(playerPos, mapData, bgHeight, minMapSize);
 			element->Effect();
 		}
 	}

@@ -2,7 +2,7 @@
 
 Player::Player()
 {
-	_pos = { 1280 / 2 - 100,720 / 2 - 100 };
+	_pos = { 128 + 128.f / 2,128 + 128.f / 2 };
 	_dir = { 0,0 };
 	_vel = { 0,0 };
 	_acceleration = { 0,0 };
@@ -23,7 +23,7 @@ Player::Player()
 
 	_pattern = 1;
 	_hp = 30;
-	_bounceValue_enemy = 30;
+	_bounceValue_enemy = 25;
 	_ballDamage = 10;
 	_isBallTouch = false;
 	_isHarmed = false;
@@ -56,7 +56,7 @@ Player::Player()
 	_isBallStop = false;
 }
 
-void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
+void Player::Move(char keys[], vector<vector<char>> mapData, float bgWidth, float bgHeight, float minMapSize)
 {
 	//移动部分
 	if (keys[DIK_W]) {
@@ -103,15 +103,15 @@ void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 	int checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 	//通过4个角的格子来判断是否已经不在可通过格子中，如果不在就把player移回去
 	if (_vel.x > 0) {
-		if (!Map::IsThrough(Map::_mapData1, checkUp, checkRight)
-			|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
+		if (!Map::IsThrough(mapData, checkUp, checkRight)
+			|| !Map::IsThrough(mapData, checkDown, checkRight)) {
 			_pos.x = playerCheckLine * minMapSize + _width / 2;
 			_vel.x = _vel.x * -_bounce;
 		}
 	}
 	else if (_vel.x < 0) {
-		if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
-			|| !Map::IsThrough(Map::_mapData1, checkDown, checkLeft)) {
+		if (!Map::IsThrough(mapData, checkUp, checkLeft)
+			|| !Map::IsThrough(mapData, checkDown, checkLeft)) {
 			_pos.x = playerCheckLine * minMapSize + _width / 2;
 			_vel.x = _vel.x * -_bounce;
 		}
@@ -130,15 +130,15 @@ void Player::Move(char keys[], float bgWidth, float bgHeight, float minMapSize)
 	checkLeft = (int)((_pos.x - _width / 2) / minMapSize);
 	checkRight = (int)((_pos.x + _width / 2 - 1) / minMapSize);
 	if (_vel.y > 0) {
-		if (!Map::IsThrough(Map::_mapData1, checkUp, checkLeft)
-			|| !Map::IsThrough(Map::_mapData1, checkUp, checkRight)) {
+		if (!Map::IsThrough(mapData, checkUp, checkLeft)
+			|| !Map::IsThrough(mapData, checkUp, checkRight)) {
 			_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
 			_vel.y = _vel.y * -_bounce;
 		}
 	}
 	else if (_vel.y < 0) {
-		if (!Map::IsThrough(Map::_mapData1, checkDown, checkLeft)
-			|| !Map::IsThrough(Map::_mapData1, checkDown, checkRight)) {
+		if (!Map::IsThrough(mapData, checkDown, checkLeft)
+			|| !Map::IsThrough(mapData, checkDown, checkRight)) {
 			_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
 			_vel.y = _vel.y * -_bounce;
 		}
@@ -277,14 +277,18 @@ void Player::CollideSystem()
 {
 	switch (_pattern) {
 	case 0: {
-		//球状态撞敌人（现在会有点问题，因为碰撞距离计算的问题，不过现在先不用管，等做了蒸汽功能再说）
+		//球状态撞敌人
 		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
 			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
 			if (length + 50 < element->_width / 2 + _width / 2) {
+				//自身受到的反弹力
 				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
 				hitDir = VectorNormalization(hitDir.x, hitDir.y);
 				_vel.x = hitDir.x * _bounceValue_enemy;
 				_vel.y = hitDir.y * _bounceValue_enemy;
+				//敌人受到的反弹力
+				element->_vel.x = -hitDir.x * element->_bounceValue_player;
+				element->_vel.y = -hitDir.y * element->_bounceValue_player;
 
 				element->_hp -= _ballDamage;
 				element->_isHarmed = true;

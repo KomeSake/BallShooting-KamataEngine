@@ -2,7 +2,14 @@
 
 void Map::LoadNovice()
 {
+	_mapValue1[0] = 45 * 128;
+	_mapValue1[1] = 25 * 128;
+	_mapValue1[2] = 128;
 	LoaclMapLoad("./Resources/Map/Map1.txt", _mapData1);
+	_mapValue2[0] = 28 * 128;
+	_mapValue2[1] = 25 * 128;
+	_mapValue2[2] = 128;
+	LoaclMapLoad("./Resources/Map/Map2.txt", _mapData2);
 }
 
 void Map::LoaclMapLoad(string name, vector<vector<char>>& mapData)

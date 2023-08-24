@@ -51,7 +51,7 @@ public:
 	bool _isGunHot;
 
 	Player();
-	void Move(char keys[], float bgWidth, float bgHeight, float minMapSize);
+	void Move(char keys[], vector<vector<char>> mapData, float bgWidth, float bgHeight, float minMapSize);
 	void Attack(Vector2 cameraPos);
 	void SteamPush();//蒸汽系统
 	void GunHot();//武器过热系统

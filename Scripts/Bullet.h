@@ -28,7 +28,7 @@ public:
 
 	Bullet(BulletType type);
 	void Inital(BulletType type);
-	void Move(Vector2 cameraPos, float bgHeight, float minMapSize);
+	void Move(Vector2 cameraPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	void Show();
 	void Fire(Vector2 bornPos, Vector2 dir);
 	void ToDead();//里面是一些死亡时候要进行的事情(例如播放特效)
@@ -40,7 +40,7 @@ public:
 	inline static vector<Bullet*> _bulletUpdata_player;
 	inline static queue<Bullet*> _bulletIdiePool_normal;
 
-	static void BulletUpdata(Bullet::Vector2 cameraPos, float bgHeight, float minMapSize);
+	static void BulletUpdata(Bullet::Vector2 cameraPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	static Bullet* AcquireBullet(Bullet::BulletType type);
 	static void ReleaseBullet(Bullet* bullet);
 

@@ -27,7 +27,7 @@ void Bullet::Inital(BulletType type)
 	}
 }
 
-void Bullet::Move(Vector2 cameraPos, float bgHeight, float minMapSize)
+void Bullet::Move(Vector2 cameraPos, vector<vector<char>> mapData, float bgHeight, float minMapSize)
 {
 	if (_isAlive) {
 		//是否在屏幕内
@@ -44,7 +44,7 @@ void Bullet::Move(Vector2 cameraPos, float bgHeight, float minMapSize)
 		//判断是否碰到了不可通过格子
 		int posCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
 		int posCheckLine = (int)(_pos.x / minMapSize);
-		if (!Map::IsThrough(Map::_mapData1, posCheckRow, posCheckLine)) {
+		if (!Map::IsThrough(mapData, posCheckRow, posCheckLine)) {
 			_isAlive = false;
 		}
 	}
@@ -71,7 +71,6 @@ void Bullet::ToDead()
 		srand(unsigned int(time(nullptr)));//随机数计算
 		float rad = (float)(rand() % 10);//随机个角度出来
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListBulletExplode, rad, _color, 100, 1);
-		Novice::ConsolePrintf("rad:%f\n", rad);
 		if (MyTimers(399, 1)) {
 			//爆炸特效一共4张，少1帧减少卡帧现象
 			BulletManager::ReleaseBullet(this);
@@ -79,10 +78,10 @@ void Bullet::ToDead()
 	}
 }
 
-void BulletManager::BulletUpdata(Bullet::Vector2 cameraPos, float bgHeight, float minMapSize)
+void BulletManager::BulletUpdata(Bullet::Vector2 cameraPos, vector<vector<char>> mapData, float bgHeight, float minMapSize)
 {
 	for (Bullet* element : _bulletUpdata_player) {
-		element->Move(cameraPos, bgHeight, minMapSize);
+		element->Move(cameraPos, mapData, bgHeight, minMapSize);
 	}
 }
 

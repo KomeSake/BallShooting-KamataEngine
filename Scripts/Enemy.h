@@ -27,6 +27,8 @@ public:
 	map<int, LoadRes::SpriteList> _sprite;
 	float _width;
 	float _height;
+	float _scaleX;
+	float _scaleY;
 	unsigned int _color;
 
 	EnemyType _type;
@@ -42,7 +44,7 @@ public:
 
 	Enemy(EnemyType type);
 	void Inital(EnemyType type);
-	void Move(Vector2 playerPos);
+	void Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	void Fire(Vector2 bornPos);
 	void CollideSystem();
 	void Effect();
@@ -57,7 +59,7 @@ public:
 	inline static std::queue<Enemy*> _enemyIdiePool_dog;
 	inline static std::queue<Enemy*> _enemyIdiePool_dog2;
 
-	static void EnemyUpdata(Enemy::Vector2 playerPos);
+	static void EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	static Enemy* AcquireEnemy(Enemy::EnemyType type);
 	static void ReleaseEnemy(Enemy* enemy);
 

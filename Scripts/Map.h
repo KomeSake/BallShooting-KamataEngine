@@ -9,8 +9,10 @@ using namespace std;
 class Map
 {
 public:
-	//记录地图信息，参数为行列分布
-	inline static vector<vector<char>> _mapData1;
+	inline static int _mapValue1[3];//记录长度信息，width，height，minMapSize
+	inline static vector<vector<char>> _mapData1;//记录地图信息，参数为行列分布
+	inline static int _mapValue2[3];
+	inline static vector<vector<char>> _mapData2;
 
 	static void LoadNovice();
 	static void LoaclMapLoad(string name, vector<vector<char>>& mapData);

@@ -41,6 +41,7 @@ public:
 
 	//播放帧动画：位置x，位置y，播放文件，角度，每帧时间，几号位置
 	void FrameAnimation(float x, float y, map<int, LoadRes::SpriteList>spList, float rad, int color, int frameTime, int playIndex);
+	void FrameAnimation(float x, float y, map<int, LoadRes::SpriteList>spList, float scaleX, float scaleY, float rad, int color, int frameTime, int playIndex);
 
 	//将屏幕坐标变成世界坐标(为了方便，屏幕大小已定为1920*1080)
 	static Vector2 ScreenToWorld(float screenX, float screenY, float cameraX, float cameraY);

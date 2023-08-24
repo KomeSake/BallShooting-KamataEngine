@@ -97,6 +97,25 @@ void People::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spLi
 	Novice::DrawSpriteRect((int)rotated.x, (int)rotated.y, arrX, arrY, arrW, arrH, arrPath, ((float)arrW / (float)arrListW), ((float)arrH / (float)arrListH), rad, color);
 }
 
+void People::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spList, float scaleX, float scaleY, float rad, int color, int frameTime, int playIndex)
+{
+	if (FrameTimers(frameTime, playIndex)) {
+		_frameAniIndex[playIndex]++;
+	}
+	if (_frameAniIndex[playIndex] > (int)spList.size() - 1 || _frameAniIndex[playIndex] < 0) {
+		_frameAniIndex[playIndex] = 0;
+	}
+	int arrPath = spList[_frameAniIndex[playIndex]].path;
+	int arrW = spList[_frameAniIndex[playIndex]].w, arrH = spList[_frameAniIndex[playIndex]].h;
+	int arrX = spList[_frameAniIndex[playIndex]].x, arrY = spList[_frameAniIndex[playIndex]].y;
+	int arrListW = spList[_frameAniIndex[playIndex]].listW, arrListH = spList[_frameAniIndex[playIndex]].listH;
+	Vector2 rotated = { (float)spList[_frameAniIndex[playIndex]].w * -1 / 2,(float)spList[_frameAniIndex[playIndex]].h / 2 };
+	rotated = AditionRule(rotated, -rad);
+	rotated = { rotated.x + x ,rotated.y + y };
+	rotated = WorldToScreen(rotated, _cameraPos);
+	Novice::DrawSpriteRect((int)rotated.x, (int)rotated.y, arrX, arrY, arrW, arrH, arrPath, ((float)arrW / (float)arrListW) * scaleX, ((float)arrH / (float)arrListH) * scaleY, rad, color);
+}
+
 int People::FrameTimers(int milli, int index)
 {
 	if (!_frame_isTimeOpen[index]) {

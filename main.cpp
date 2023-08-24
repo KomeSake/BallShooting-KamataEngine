@@ -14,7 +14,7 @@
 1、状态转变动画，进入球和退出球。为了让玩家的转换不要这么瞬时，给一点小小的时间惩罚
 2、武器过热 -> 充能系统。初步想法是玩家需要攻击才会给自己充能，这样才可以用球去撞别人
 3、蒸汽冲刺。可以蓄力消耗更多的蒸汽来一波大的、
-3、敌人陨落，敌人被撞击动画。敌人如果被装出平台，很应该直接死亡，同时要有相应的动画展示。还有敌人被撞应该有一个放大缩小的效果比较适合
+3、敌人陨落，敌人被撞击动画。敌人如果被装出平台，应该直接死亡，同时要有相应的动画展示。还有敌人被撞应该有一个放大缩小的效果比较适合
 4、敌人种类增加。敌人肯定不能只有这些，不然太单调了
 4、敌人掉落，敌人会掉落燃料和子弹等等
 5、Boss。如果想弄成关卡制，那么Boss肯定也是需要的了
@@ -41,16 +41,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char preKeys[256] = { 0 };
 
 	//我的代码
-	int bgWidth = 5760;
-	int bgHeight = 3200;
-	int minMapSize = 128;
-
 	LoadRes::LoadResNovice();
 	Map::LoadNovice();
+	vector<vector<char>> _mapData = Map::_mapData1;
+	int bgWidth = Map::_mapValue1[0];
+	int bgHeight = Map::_mapValue1[1];
+	int minMapSize = Map::_mapValue1[2];
 
 	Player* PlayerObj = new Player;
 	Camera* CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
-	EnemyManager::EnemyBornToMap(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+	EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -66,17 +66,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y }, CameraObj->_bgHeight, CameraObj->_minMapSize);
-		EnemyManager::EnemyUpdata(Enemy::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
+		BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+		EnemyManager::EnemyUpdata(Enemy::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 
 		PlayerObj->PatternChange(keys, preKeys);
 		PlayerObj->CollideSystem();
 		if (PlayerObj->_isBallTouch) {
+			//这个相机的特效方法有点问题，有时候并没有晃动
 			if (CameraObj->CameraEffect(0)) {
 				PlayerObj->_isBallTouch = false;
 			}
 		}
-		PlayerObj->Move(keys, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+		PlayerObj->Move(keys, _mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->Move(Camera::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
 		People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
 		ItemBase::CheckCameraValume(ItemBase::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
@@ -86,7 +87,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		PlayerObj->IsDead();
 
 
-		CameraObj->MapShow(Map::_mapData1, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+		CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		EnemyManager::EnemyShow();
 		BulletManager::BulletShow();
 		PlayerObj->Effect();

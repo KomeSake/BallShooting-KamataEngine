@@ -31,6 +31,7 @@ void Camera::Move(Vector2 playerPos)
 void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize) {
 	bgW;
 	Vector2 minMapPos = { 0,0 };
+	//最下层的地图展示
 	minMapPos.x = minSize / 2;
 	minMapPos.y = bgH - minSize / 2;
 	for (const auto& row : mapData) {
@@ -45,6 +46,21 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 			case 'e':
 			case 'f':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
+				break;
+			}
+			minMapPos.x += minSize;
+		}
+		minMapPos.x = minSize / 2;
+		minMapPos.y -= minSize;
+	}
+	//在地图上面的图片(例如提示，地图装饰等。不会遮挡玩家)
+	minMapPos.x = minSize / 2;
+	minMapPos.y = bgH - minSize / 2;
+	for (const auto& row : mapData) {
+		for (const char& line : row) {
+			switch (line) {
+			case 'U':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spStart, WHITE);
 				break;
 			}
 			minMapPos.x += minSize;

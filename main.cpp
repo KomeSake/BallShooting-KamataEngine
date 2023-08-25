@@ -43,10 +43,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//我的代码
 	LoadRes::LoadResNovice();
 	Map::LoadNovice();
-	vector<vector<char>> _mapData = Map::_mapData1;
-	int bgWidth = Map::_mapValue1[0];
-	int bgHeight = Map::_mapValue1[1];
-	int minMapSize = Map::_mapValue1[2];
+	vector<vector<char>> _mapData = Map::_mapData_help;
+	int bgWidth = Map::_mapValue_help[0];
+	int bgHeight = Map::_mapValue_help[1];
+	int minMapSize = Map::_mapValue_help[2];
 
 	Player* PlayerObj = new Player;
 	Camera* CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
@@ -78,6 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		}
 		PlayerObj->Move(keys, _mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+		PlayerObj->DropSystem(_mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 		CameraObj->Move(Camera::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y });
 		People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
 		ItemBase::CheckCameraValume(ItemBase::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
@@ -91,7 +92,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		EnemyManager::EnemyShow();
 		BulletManager::BulletShow();
 		PlayerObj->Effect();
-		PlayerObj->Show(keys);
+		PlayerObj->Show();
 
 
 

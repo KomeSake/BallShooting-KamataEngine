@@ -33,6 +33,8 @@ public:
 	map<int, LoadRes::SpriteList> _sprite;
 	float _width;
 	float _height;
+	float _scaleX;
+	float _scaleY;
 	unsigned int _color;
 
 	Vector2 _mousePos;
@@ -58,7 +60,10 @@ public:
 	void PatternChange(char keys[], char preKeys[]);
 	void CollideSystem();
 	void IsDead();
-	void Show(char keys[]);
+	void DropSystem(vector<vector<char>> mapData, float bgHeight, float minMapSize);
+	bool _isDrop;//玩家在掉落的时候就不能移动和攻击了
+	Vector2 _dropPos[3];//记录下3个生前(跌落前)的坐标
+	void Show();
 	float _spriteDownDegree;//地盘动画的角度
 	int _ballStopSprite;//球停下来的时候需要用什么图片
 	bool _isBallStop;//球形态初次停下来了

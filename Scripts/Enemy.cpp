@@ -28,6 +28,7 @@ void Enemy::Inital(EnemyType type)
 	_damage = 5;
 	_warningLength = 850;
 	_isWarning = false;
+	_isDrop = false;
 	_hitBox_enemy = -50;
 	_bounceValue_bullet = 10;
 	_bounceValue_player = 35;
@@ -57,7 +58,10 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 	//移动前的位置
 	Vector2 originalPos = _pos;
 
-	Vector2 dir = { playerPos.x - _pos.x,playerPos.y - _pos.y };
+	Vector2 dir = { 0,0 };
+	if (!_isDrop) {
+		dir = { playerPos.x - _pos.x,playerPos.y - _pos.y };
+	}
 	float vectorLength = sqrtf(powf(dir.x, 2) + powf(dir.y, 2));
 	if (vectorLength != 0) {
 		dir.x = dir.x / vectorLength;
@@ -190,16 +194,40 @@ void Enemy::Show()
 {
 	if (_isWarning) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
-		FrameAnimation(_pos.x, _pos.y, _sprite, rad, _color, 100, 1);
+		if (_isDrop) {
+			//跌落的时候因为不追玩家了，所以角度也没了。随机一个角度出来显得不一样
+			srand(unsigned int(time(nullptr)));
+			rad = (float)(rand() % 10);
+		}
+		FrameAnimation(_pos.x, _pos.y, _sprite, _scaleX, _scaleY, rad, _color, 100, 1);
 	}
 	else {
 		srand(unsigned int(time(nullptr)));//随机数计算
 		float rad = (float)(rand() % 10);//随机个角度出来，让敌人的未警戒状态看着自然一些
-		FrameAnimation(_pos.x, _pos.y, _sprite, rad, _color, 100, 1);
+		FrameAnimation(_pos.x, _pos.y, _sprite, _scaleX, _scaleY, rad, _color, 100, 1);
 	}
-	if (_hp < 0) {
+	if (_hp <= 0) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
+	}
+}
+
+void Enemy::DropSystem(vector<vector<char>> mapData, float bgHeight, float minMapSize)
+{
+	//算出中心坐标的格子
+	int posCheckLine = (int)((bgHeight - _pos.y) / minMapSize);
+	int posCheckRow = (int)(_pos.x / minMapSize);
+
+	float scaleSpeed = 0.03f;//缩小速度
+	if (mapData[posCheckLine][posCheckRow] == '*') {
+		_isDrop = true;
+	}
+	if (_isDrop) {
+		_scaleX -= scaleSpeed;
+		_scaleY -= scaleSpeed;
+		if (_scaleX < 0 || _scaleY < 0) {
+			EnemyManager::ReleaseEnemy(this);
+		}
 	}
 }
 
@@ -214,12 +242,13 @@ void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> ma
 	//应该要写上状态机变换才对，不应该直接就通过生命值来变换，这样不利于拓展
 	//不过为了做的快，其实直接就是两个状态了，一个活着一个死亡
 	for (Enemy* element : _enemyUpdateVector) {
-		if (element->_hp < 0) {
+		if (element->_hp <= 0) {
 			element->ToDead();
 		}
 		else {
 			element->CollideSystem();
 			element->Move(playerPos, mapData, bgHeight, minMapSize);
+			element->DropSystem(mapData, bgHeight, minMapSize);
 			element->Effect();
 		}
 	}

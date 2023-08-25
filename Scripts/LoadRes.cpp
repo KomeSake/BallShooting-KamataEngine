@@ -5,6 +5,7 @@ void LoadRes::LoadResNovice()
 	//图片
 	_spBullet = { Novice::LoadTexture("./Resources/Textures/bullet.png"),64,64 };
 	_spArrow = { Novice::LoadTexture("./Resources/Textures/arrow.png"),384,384 };
+	_spStart = { Novice::LoadTexture("./Resources/Textures/UI/start.png"),437,698 };
 
 	//图集
 	int path = 0;

@@ -36,6 +36,7 @@ public:
 	float _damage;
 	float _warningLength;//距离玩家多远才开始产生警戒
 	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应
+	bool _isDrop;//正在陨落(通过这个值会让敌人不追玩家)
 	float _hitBox_enemy;//调整敌人之间碰撞的大小
 	float _bounceValue_bullet;//被子弹弹开的力大小
 	float _bounceValue_player;//被玩家弹开的力大小
@@ -50,6 +51,7 @@ public:
 	void Effect();
 	void ToDead();
 	void Show();
+	void DropSystem(vector<vector<char>> mapData, float bgHeight, float minMapSize);//跌落判断
 };
 
 class EnemyManager {

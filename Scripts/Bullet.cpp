@@ -42,9 +42,9 @@ void Bullet::Move(Vector2 cameraPos, vector<vector<char>> mapData, float bgHeigh
 			BulletManager::ReleaseBullet(this);
 		}
 		//判断是否碰到了不可通过格子
-		int posCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
-		int posCheckLine = (int)(_pos.x / minMapSize);
-		if (!Map::IsThrough(mapData, posCheckRow, posCheckLine)) {
+		int posCheckLine = (int)((bgHeight - _pos.y) / minMapSize);
+		int posCheckRow = (int)(_pos.x / minMapSize);
+		if (!Map::IsThrough(mapData, posCheckLine, posCheckRow)) {
 			_isAlive = false;
 		}
 	}

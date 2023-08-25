@@ -27,6 +27,7 @@ public:
 
 	inline static Sprite _spBullet;
 	inline static Sprite _spArrow;
+	inline static Sprite _spStart;
 
 	inline static map<int, SpriteList> _spListPlayer;
 	inline static map<int, SpriteList> _spListPlayer_gun;

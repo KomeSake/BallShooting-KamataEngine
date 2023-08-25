@@ -38,6 +38,10 @@ public:
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float rad, int color);
+	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, int color);
+	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, float rad, int color);
+	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float scaleX, float scaleY, int color);
+	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float scaleX, float scaleY, float rad, int color);
 
 	//播放帧动画：位置x，位置y，播放文件，角度，每帧时间，几号位置
 	void FrameAnimation(float x, float y, map<int, LoadRes::SpriteList>spList, float rad, int color, int frameTime, int playIndex);

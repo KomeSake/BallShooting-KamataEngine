@@ -25,10 +25,10 @@ public:
 		int listH = 0;
 	}structSL;
 
+	//图片
 	inline static Sprite _spBullet;
 	inline static Sprite _spArrow;
-	inline static Sprite _spStart;
-
+	//角色
 	inline static map<int, SpriteList> _spListPlayer;
 	inline static map<int, SpriteList> _spListPlayer_gun;
 	inline static map<int, SpriteList> _spListPlayer_down;
@@ -38,12 +38,17 @@ public:
 	inline static map<int, SpriteList> _spListPlayer_ChangeAniTwo;
 	inline static map<int, SpriteList> _spListEnemy1;
 	inline static map<int, SpriteList> _spListEnemy2;
-
-	inline static map<int, SpriteList> _spListMap;
-
+	//特效
 	inline static map<int, SpriteList> _spListExplode;
 	inline static map<int, SpriteList> _spListEnemyExplode;
 	inline static map<int, SpriteList> _spListBulletExplode;
+	//地图
+	inline static map<int, SpriteList> _spListMap;
+
+	//UI
+	inline static Sprite _spStart;
+	inline static map<int, SpriteList> _spUI_Hp;
+
 
 	static void LoadResNovice();
 };

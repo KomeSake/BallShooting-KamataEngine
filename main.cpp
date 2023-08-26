@@ -8,6 +8,7 @@
 #include "Scripts/Bullet.h"
 #include "Scripts/Camera.h"
 #include "Scripts/Map.h"
+#include "Scripts/GameUI.h"
 
 /*
 还需要制作的功能
@@ -34,7 +35,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, screenWidth, screenHeight);
-	//Novice::SetWindowMode(kFullscreen);
+	Novice::SetWindowMode(kFullscreen);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -43,15 +44,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//我的代码
 	LoadRes::LoadResNovice();
 	Map::LoadNovice();
-	vector<vector<char>> _mapData = Map::_mapData_help;
-	int bgWidth = Map::_mapValue_help[0];
-	int bgHeight = Map::_mapValue_help[1];
-	int minMapSize = Map::_mapValue_help[2];
+	vector<vector<char>> _mapData = Map::_mapData1;
+	int bgWidth = Map::_mapValue1[0];
+	int bgHeight = Map::_mapValue1[1];
+	int minMapSize = Map::_mapValue1[2];
 
 	Player* PlayerObj = new Player;
 	Camera* CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
 	EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 
+	PlayerUI_HP* UI_HPObj = new PlayerUI_HP(PlayerObj);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -94,8 +96,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		PlayerObj->Effect();
 		PlayerObj->Show();
 
-
-
+		UI_HPObj->UIOpen(PlayerObj);
 
 
 		//调试信息

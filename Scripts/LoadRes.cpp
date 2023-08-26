@@ -5,7 +5,6 @@ void LoadRes::LoadResNovice()
 	//图片
 	_spBullet = { Novice::LoadTexture("./Resources/Textures/bullet.png"),64,64 };
 	_spArrow = { Novice::LoadTexture("./Resources/Textures/arrow.png"),384,384 };
-	_spStart = { Novice::LoadTexture("./Resources/Textures/UI/start.png"),437,698 };
 
 	//图集
 	int path = 0;
@@ -105,4 +104,17 @@ void LoadRes::LoadResNovice()
 		listW = 512, listH = 128;
 		_spListBulletExplode[i] = { path,x,y,w,h,listW,listH };
 	}
+
+	//UI
+	_spStart = { Novice::LoadTexture("./Resources/Textures/UI/start.png"),437,698 };
+
+	path = Novice::LoadTexture("./Resources/Textures/UI/HP/List.png");
+	listW = 700, listH = 404;
+	w = 240, h = 404, x = 0, y = 0;
+	_spUI_Hp[0] = { path,x,y,w,h,listW,listH };
+	w = 460, h = 72, x = 240, y = 0;
+	_spUI_Hp[1] = { path,x,y,w,h,listW,listH };
+	//2:a75f53
+	w = 404, h = 44, x = 240, y = 72;
+	_spUI_Hp[3] = { path,x,y,w,h,listW,listH };
 }

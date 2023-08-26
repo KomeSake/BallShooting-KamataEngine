@@ -25,6 +25,8 @@ public:
 	bool _isBallEntering;//正在变成球形态
 	bool _isManEntering;//正在变成人形态
 	float _hp;
+	bool _isHpMinus;//判断是否被扣血了，扣血了就触发无敌时间
+	int _hpGodTime;//扣血无敌时间
 	float _bounceValue_enemy;//被敌人触碰的反弹力
 	float _ballDamage;
 	bool _isBallTouch;//球形态下是否撞中敌人(用于给Camera类指示)

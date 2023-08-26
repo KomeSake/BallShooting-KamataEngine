@@ -119,6 +119,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Scripts\Bullet.cpp" />
     <ClCompile Include="Scripts\Camera.cpp" />
     <ClCompile Include="Scripts\Enemy.cpp" />
+    <ClCompile Include="Scripts\GameUI.cpp" />
     <ClCompile Include="Scripts\ItemBase.cpp" />
     <ClCompile Include="Scripts\LoadRes.cpp" />
     <ClCompile Include="Scripts\Map.cpp" />
@@ -156,6 +157,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Scripts\Bullet.h" />
     <ClInclude Include="Scripts\Camera.h" />
     <ClInclude Include="Scripts\Enemy.h" />
+    <ClInclude Include="Scripts\GameUI.h" />
     <ClInclude Include="Scripts\ItemBase.h" />
     <ClInclude Include="Scripts\LoadRes.h" />
     <ClInclude Include="Scripts\Map.h" />

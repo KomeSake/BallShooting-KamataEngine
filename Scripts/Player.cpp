@@ -2,8 +2,7 @@
 
 Player::Player()
 {
-	//_pos = { 128 + 128.f / 2,128 + 128.f / 2 };
-	_pos = { 2 * 128 - 128.f / 2,15 * 128 - 128.f / 2 };
+	_pos = { 2 * 128 - 128.f / 2,2 * 128 - 128.f / 2 };
 	_dir = { 0,0 };
 	_vel = { 0,0 };
 	_acceleration = { 0,0 };
@@ -23,7 +22,9 @@ Player::Player()
 	_velMaxMan = 15;
 
 	_pattern = 1;
-	_hp = 30;
+	_hp = 100;
+	_isHpMinus = false;
+	_hpGodTime = 300;
 	_bounceValue_enemy = 25;
 	_ballDamage = 10;
 	_isBallTouch = false;
@@ -320,7 +321,16 @@ void Player::CollideSystem()
 				_vel.y = hitDir.y * _bounceValue_enemy;
 
 				_isHarmed = true;
-				_hp -= element->_damage;
+				//为了防止扣血过快，搞一个无敌时间
+				if (!_isHpMinus) {
+					_hp -= element->_damage;
+					_isHpMinus = true;
+				}
+				else {
+					if (MyTimers(_hpGodTime, 7)) {
+						_isHpMinus = false;
+					}
+				}
 			}
 		}
 		break; }
@@ -360,7 +370,7 @@ void Player::DropSystem(vector<vector<char>> mapData, float bgHeight, float minM
 			for (int i = 0; i < 3; i++) {
 				int line = (int)((bgHeight - _dropPos[i].y) / minMapSize);
 				int row = (int)(_dropPos[i].x / minMapSize);
-				if (Map::IsThrough(mapData, line, row)&&mapData[line][row]!='*') {
+				if (Map::IsThrough(mapData, line, row) && mapData[line][row] != '*') {
 					_pos = _dropPos[i];
 					return;
 				}

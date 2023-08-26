@@ -54,6 +54,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 
 	PlayerUI_HP* UI_HPObj = new PlayerUI_HP(PlayerObj);
+	PlayerUI_Gun* UI_GunObj = new PlayerUI_Gun;
+	PlayerUI_Steam* UI_SteamObj = new PlayerUI_Steam;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -97,7 +99,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		PlayerObj->Show();
 
 		UI_HPObj->UIOpen(PlayerObj);
-
+		UI_GunObj->UIOpen(PlayerObj);
+		UI_SteamObj->UIOpen(PlayerObj);
 
 		//调试信息
 		//Novice::DrawLine(0, (int)(CameraObj->_screenHeight / 2), (int)CameraObj->_screenWidth, (int)(CameraObj->_screenHeight / 2), RED);

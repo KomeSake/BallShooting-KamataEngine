@@ -47,3 +47,20 @@ public:
 	PlayerUI_HP(Player* obj);
 	void UIOpen(Player* obj);
 };
+
+class PlayerUI_Gun :
+	public GameUI
+{
+public:
+	PlayerUI_Gun();
+	void UIOpen(Player* obj);
+};
+
+class PlayerUI_Steam :
+	public GameUI
+{
+public:
+	bool _isSteamLight;//蒸汽缺少亮起指示灯
+	PlayerUI_Steam();
+	void UIOpen(Player* obj);
+};

@@ -111,10 +111,32 @@ void LoadRes::LoadResNovice()
 	path = Novice::LoadTexture("./Resources/Textures/UI/HP/List.png");
 	listW = 700, listH = 404;
 	w = 240, h = 404, x = 0, y = 0;
-	_spUI_Hp[0] = { path,x,y,w,h,listW,listH };
+	_spUI_playerHp[0] = { path,x,y,w,h,listW,listH };
 	w = 460, h = 72, x = 240, y = 0;
-	_spUI_Hp[1] = { path,x,y,w,h,listW,listH };
+	_spUI_playerHp[1] = { path,x,y,w,h,listW,listH };
 	//2:a75f53
 	w = 404, h = 44, x = 240, y = 72;
-	_spUI_Hp[3] = { path,x,y,w,h,listW,listH };
+	_spUI_playerHp[3] = { path,x,y,w,h,listW,listH };
+
+	path = Novice::LoadTexture("./Resources/Textures/UI/Gun/List.png");
+	listW = 1152, listH = 264;
+	w = 648, h = 264, x = 0, y = 0;
+	_spUI_playerGun[0] = { path,x,y,w,h,listW,listH };
+	w = 252, h = 92, x = 648, y = 0;
+	_spUI_playerGun[1] = { path,x,y,w,h,listW,listH };
+	w = 252, h = 92, x = 900, y = 0;
+	_spUI_playerGun[2] = { path,x,y,w,h,listW,listH };
+	_spUI_playerGun02 = { Novice::LoadTexture("./Resources/Textures/UI/Gun/List02.png") ,252,92 };
+
+	path = Novice::LoadTexture("./Resources/Textures/UI/Steam/List.png");
+	listW = 1664, listH = 124;
+	w = 876, h = 124, x = 0, y = 0;
+	_spUI_playerSteam[0] = { path,x,y,w,h,listW,listH };
+	w = 788, h = 32, x = 876, y = 48;
+	_spUI_playerSteam[1] = { path,x,y,w,h,listW,listH };
+	w = 592, h = 48, x = 876, y = 0;
+	_spUI_playerSteam[2] = { path,x,y,w,h,listW,listH };
+	w = 60, h = 36, x = 1468, y = 0;
+	_spUI_playerSteam[3] = { path,x,y,w,h,listW,listH };
+	_spUI_playerSteam01 = { Novice::LoadTexture("./Resources/Textures/UI/Steam/List01.png") ,788,32 };
 }

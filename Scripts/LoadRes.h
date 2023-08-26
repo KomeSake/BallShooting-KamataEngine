@@ -47,7 +47,13 @@ public:
 
 	//UI
 	inline static Sprite _spStart;
-	inline static map<int, SpriteList> _spUI_Hp;
+	inline static map<int, SpriteList> _spUI_playerHp;
+	inline static map<int, SpriteList> _spUI_playerGun;
+	inline static Sprite _spUI_playerGun02;
+	inline static map<int, SpriteList> _spUI_playerSteam;
+	inline static Sprite _spUI_playerSteam01;
+
+
 
 
 	static void LoadResNovice();

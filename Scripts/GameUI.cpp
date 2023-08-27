@@ -64,6 +64,12 @@ PlayerUI_HP::PlayerUI_HP(Player* obj)
 	_pos = { 8 * 4,1080 - _height - 4 * 4 };
 	_color = WHITE;
 
+	_radarPos = { _pos.x + 30 * 4,_pos.y + 70 * 4 };
+	_radarLengthMax = 1300;
+	_radarRate = 0.07f; 
+	_radarEnemyTimer = 700;
+	_isRadarMy = false;
+
 	_playerHpMax = obj->_hp;
 	_playerHpSpriteW = 113 * 4;
 	_hpSpriteRate = _playerHpSpriteW / _playerHpMax;
@@ -71,6 +77,7 @@ PlayerUI_HP::PlayerUI_HP(Player* obj)
 
 void PlayerUI_HP::UIOpen(Player* obj)
 {
+	//血量
 	FrameTexture(_pos.x, _pos.y, LoadRes::_spUI_playerHp, 0, _color);
 	FrameTexture(_pos.x + 60 * 4, _pos.y + 81 * 4, LoadRes::_spUI_playerHp, 1, _color);
 	float playerHp = obj->_hp;
@@ -78,6 +85,40 @@ void PlayerUI_HP::UIOpen(Player* obj)
 		Novice::DrawBox(int(_pos.x + 60 * 4), int(_pos.y + 85 * 4), int(playerHp * _hpSpriteRate), 9 * 4, 0, 0xa75f53ff, kFillModeSolid);
 	}
 	FrameTexture(_pos.x + 64 * 4, _pos.y + 85 * 4, LoadRes::_spUI_playerHp, 3, _color);
+	//雷达电台
+	//常态化显示敌人版
+	//for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+	//	Vector2 dir = { element->_pos.x - obj->_pos.x,element->_pos.y - obj->_pos.y };
+	//	float length = sqrtf(powf(dir.x, 2) + powf(dir.y, 2));
+	//	if (length < _radarLengthMax) {
+	//		Vector2 radarEnemy = { _radarPos.x + dir.x * _radarRate,_radarPos.y + dir.y * _radarRate * -1 };
+	//		Novice::DrawEllipse(int(radarEnemy.x), int(radarEnemy.y), 4, 4, 0, 0xe84e40ff, kFillModeSolid);
+	//	}
+	//}
+	//一段时间更新敌人坐标版
+	if (MyTimers(_radarEnemyTimer, 4)) {
+		_radarEnemyPos.clear();
+		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+			Vector2 dir = { element->_pos.x - obj->_pos.x,element->_pos.y - obj->_pos.y };
+			float length = sqrtf(powf(dir.x, 2) + powf(dir.y, 2));
+			if (length < _radarLengthMax) {
+				Vector2 radarEnemy = { _radarPos.x + dir.x * _radarRate,_radarPos.y + dir.y * _radarRate * -1 };
+				_radarEnemyPos.push_back(radarEnemy);
+			}
+		}
+	}
+	for (Vector2 it : _radarEnemyPos) {
+		Novice::DrawEllipse(int(it.x), int(it.y), 4, 4, 0, 0xe84e40ff, kFillModeSolid);
+	}
+	if (MyTimers(_radarEnemyTimer, 2)) {
+		_isRadarMy = true;
+	}
+	if (MyTimers(_radarEnemyTimer*3, 3)) {
+		_isRadarMy = false;
+	}
+	if (_isRadarMy) {
+		Novice::DrawEllipse(int(_radarPos.x+2), int(_radarPos.y+2), 6, 6, 0, 0xffa000ff, kFillModeSolid);
+	}
 }
 
 PlayerUI_Gun::PlayerUI_Gun()

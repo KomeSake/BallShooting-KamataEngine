@@ -195,7 +195,6 @@ People::Vector2 People::WorldToScreen(Vector2 worldPos, Vector2 cameraPos)
 
 float People::SpriteToObjDir(Vector2 dir)
 {
-
 	float rad = atan2f(dir.y, dir.x);
 	float degree = 180.f / acosf(-1) * rad;
 	if (degree < 0) {

@@ -27,6 +27,7 @@ public:
 	float _hp;
 	bool _isHpMinus;//判断是否被扣血了，扣血了就触发无敌时间
 	int _hpGodTime;//扣血无敌时间
+	float _dropDamage;//跌落伤害
 	float _bounceValue_enemy;//被敌人触碰的反弹力
 	float _ballDamage;
 	bool _isBallTouch;//球形态下是否撞中敌人(用于给Camera类指示)
@@ -44,8 +45,9 @@ public:
 	Vector2 _bulletDir;
 	int _bulletTime;//子弹间隔时间
 
-	int _steamValue;//蒸汽容量
+	int _steamValue;//蒸汽当前数量
 	int _steamMax;//蒸汽上限
+	int _steamEnemy;//撞击敌人后减少多少蒸汽
 	float _steamPlusRate;//增加增加比率
 	int _steamMinus;
 	int _gunHotPlus;//武器增加热度

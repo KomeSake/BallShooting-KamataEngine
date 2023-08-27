@@ -2,7 +2,7 @@
 
 Player::Player()
 {
-	_pos = { 2 * 128 - 128.f / 2,2 * 128 - 128.f / 2 };
+	_pos = { 2 * 128 - 128.f / 2,15 * 128 - 128.f / 2 };
 	_dir = { 0,0 };
 	_vel = { 0,0 };
 	_acceleration = { 0,0 };
@@ -24,8 +24,9 @@ Player::Player()
 	_pattern = 1;
 	_hp = 100;
 	_isHpMinus = false;
-	_hpGodTime = 300;
+	_hpGodTime = 100;
 	_bounceValue_enemy = 25;
+	_dropDamage = 20;
 	_ballDamage = 10;
 	_isBallTouch = false;
 	_isHarmed = false;
@@ -46,6 +47,7 @@ Player::Player()
 	_bulletTime = 100;
 
 	_steamMax = 500;
+	_steamEnemy = 100;
 	_steamPlusRate = 2.f;
 	_steamMinus = 1;
 	_steamValue = 100;
@@ -304,7 +306,14 @@ void Player::CollideSystem()
 
 					element->_hp -= _ballDamage;
 					element->_isHarmed = true;
-					_isBallTouch = true;
+					//撞击敌人要扣更多蒸汽值
+					if (_steamValue >= _steamEnemy) {
+						_steamValue -= _steamEnemy;
+					}
+					else {
+						_steamValue = 0;
+					}
+					_isBallTouch = true;//给Camera类提示要晃动镜头
 				}
 			}
 		}
@@ -368,6 +377,7 @@ void Player::DropSystem(vector<vector<char>> mapData, float bgHeight, float minM
 			_vel = { 0,0 };
 			//跌落到最低，重置玩家位置
 			for (int i = 0; i < 3; i++) {
+				_hp -= _dropDamage;//跌落伤害
 				int line = (int)((bgHeight - _dropPos[i].y) / minMapSize);
 				int row = (int)(_dropPos[i].x / minMapSize);
 				if (Map::IsThrough(mapData, line, row) && mapData[line][row] != '*') {
@@ -579,7 +589,7 @@ void Player::GunHot()
 	}
 
 
-	Novice::ScreenPrintf(10, 100, "GunHot:%d/%d", _gunHotValue, _gunHotMax);
+	//Novice::ScreenPrintf(10, 100, "GunHot:%d/%d", _gunHotValue, _gunHotMax);
 }
 
 void Player::Effect()
@@ -612,5 +622,5 @@ void Player::SteamPush()
 		break;
 	}
 
-	Novice::ScreenPrintf(10, 130, "Steam:%d/%d,type:%d", _steamValue, _steamMax, _pattern);
+	//Novice::ScreenPrintf(10, 130, "Steam:%d/%d,type:%d", _steamValue, _steamMax, _pattern);
 }

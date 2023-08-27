@@ -125,6 +125,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Scripts\Map.cpp" />
     <ClCompile Include="Scripts\People.cpp" />
     <ClCompile Include="Scripts\Player.cpp" />
+    <ClCompile Include="Scripts\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\base\StringUtility.h" />
@@ -163,6 +164,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Scripts\Map.h" />
     <ClInclude Include="Scripts\People.h" />
     <ClInclude Include="Scripts\Player.h" />
+    <ClInclude Include="Scripts\Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

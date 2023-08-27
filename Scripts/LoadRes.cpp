@@ -76,7 +76,7 @@ void LoadRes::LoadResNovice()
 	}
 	//Map
 	for (int i = 0; i < 4; i++) {
-		path = Novice::LoadTexture("./Resources/Textures/map2.png");
+		path = Novice::LoadTexture("./Resources/Textures/Map/List.png");
 		w = 128, h = 128;
 		x = i * w, y = 0;
 		listW = 512, listH = 128;

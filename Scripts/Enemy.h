@@ -33,6 +33,7 @@ public:
 
 	EnemyType _type;
 	float _hp;
+	float _hpMax;
 	float _damage;
 	float _warningLength;//距离玩家多远才开始产生警戒
 	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应

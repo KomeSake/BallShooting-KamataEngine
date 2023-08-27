@@ -58,8 +58,12 @@ bool Map::IsThrough(vector<vector<char>> mapData, int line, int row)
 	switch (mapData[line][row]) {
 	case 'o'://地板
 		return true;
+	case 'p'://地板2
+		return true;
 	case 'w'://墙壁
 		return false;
+	case 'z'://墙壁2
+		return true;
 	case 'e'://敌人1，狗
 		return true;
 	case 'f'://敌人2，裂嘴兽

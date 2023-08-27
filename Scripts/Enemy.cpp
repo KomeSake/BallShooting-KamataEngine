@@ -17,8 +17,8 @@ void Enemy::Inital(EnemyType type)
 	_velMax = 10;
 
 	_sprite = LoadRes::_spListEnemy1;
-	_width = 128;
-	_height = 128;
+	_width = 100;
+	_height = 100;
 	_scaleX = 1;
 	_scaleY = 1;
 	_color = WHITE;
@@ -41,6 +41,8 @@ void Enemy::Inital(EnemyType type)
 		break;
 	case dog2:
 		_sprite = LoadRes::_spListEnemy2;
+		_width = 128;
+		_height = 128;
 		_type = type;
 		_hp = 20;
 		_damage = 10;
@@ -51,6 +53,7 @@ void Enemy::Inital(EnemyType type)
 		_bounceValue_player = 20;
 		break;
 	}
+	_hpMax = _hp;
 }
 
 void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize)
@@ -209,6 +212,19 @@ void Enemy::Show()
 	if (_hp <= 0) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
+	}
+	//头顶上的血条
+	if (!_isDrop) {
+		LoadRes::Sprite sprite = { Novice::LoadTexture("white1x1.png") ,1,1 };
+		float hpSpriteW = 60;
+		float hpRate = hpSpriteW / _hpMax;
+		if (_hp > 0) {
+			FrameTexture(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
+			FrameTexture(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, _hp * hpRate, 10, 0xe84e40ff);
+		}
+		else {
+			FrameTexture(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
+		}
 	}
 }
 

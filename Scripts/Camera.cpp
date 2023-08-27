@@ -38,10 +38,16 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 		for (const char& line : row) {
 			switch (line) {
 			case 'w':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 1, WHITE);
+				break;
+			case 'z':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 2, WHITE);
 				break;
 			case 'o':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
+				break;
+			case 'p':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 3, WHITE);
 				break;
 			case 'e':
 			case 'f':

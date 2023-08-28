@@ -56,7 +56,7 @@ public:
 	int _gunHotMax;//热度上限
 	bool _isGunHot;
 
-	Player();
+	Player(Vector2 bornPos);//出生位置
 	void Move(char keys[], vector<vector<char>> mapData, float bgWidth, float bgHeight, float minMapSize);
 	void Attack(Vector2 cameraPos);
 	void SteamPush();//蒸汽系统

@@ -5,23 +5,33 @@ void Map::LoadNovice()
 	_mapValue1[0] = 45 * 128;
 	_mapValue1[1] = 25 * 128;
 	_mapValue1[2] = 128;
+	_mapValue1[3] = int(4 * 128 - 128.f / 2);
+	_mapValue1[4] = int(4 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map1.txt", _mapData1);
 	_mapValue2[0] = 28 * 128;
 	_mapValue2[1] = 25 * 128;
 	_mapValue2[2] = 128;
+	_mapValue2[3] = int(4 * 128 - 128.f / 2);
+	_mapValue2[4] = int(4 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map2.txt", _mapData2);
 	_mapValue_name[0] = 30 * 128;
 	_mapValue_name[1] = 25 * 128;
 	_mapValue_name[2] = 128;
+	_mapValue_name[3] = int(4 * 128 - 128.f / 2);
+	_mapValue_name[4] = int(4 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map_name.txt", _mapData_name);
 	_mapValue_help[0] = 51 * 128;
 	_mapValue_help[1] = 25 * 128;
 	_mapValue_help[2] = 128;
+	_mapValue_help[3] = int(2 * 128 - 128.f / 2);
+	_mapValue_help[4] = int(15 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map_help.txt", _mapData_help);
-	_mapValue_temp[0] = 20 * 128;
-	_mapValue_temp[1] = 20 * 128;
-	_mapValue_temp[2] = 128;
-	LoaclMapLoad("./Resources/Map/Map_temp.txt", _mapData_temp);
+	_mapValue_start[0] = 15 * 128;
+	_mapValue_start[1] = 9 * 128;
+	_mapValue_start[2] = 128;
+	_mapValue_start[3] = int(8 * 128 - 128.f / 2);
+	_mapValue_start[4] = int(2 * 128 - 128.f / 2);
+	LoaclMapLoad("./Resources/Map/Map_start.txt", _mapData_start);
 }
 
 void Map::LoaclMapLoad(string name, vector<vector<char>>& mapData)

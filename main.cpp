@@ -44,15 +44,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//我的代码
 	LoadRes::LoadResNovice();
 	Map::LoadNovice();
-	vector<vector<char>> _mapData = Map::_mapData_help;
-	int bgWidth = Map::_mapValue_help[0];
-	int bgHeight = Map::_mapValue_help[1];
-	int minMapSize = Map::_mapValue_help[2];
-
-	Player* PlayerObj = new Player;
-	Camera* CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
-	EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-	Scene* SceneObj = new Scene(PlayerObj);
+	vector<vector<char>> _mapData;
+	int bgWidth = 0;
+	int bgHeight = 0;
+	int minMapSize = 0;
+	int playerBornX = 0;
+	int playerBornY = 0;
+	Scene* SceneObj = new Scene;
+	Player* PlayerObj = new Player(People::Vector2{ 0 ,0 });
+	Camera* CameraObj = new Camera(0, 0, 0, 0, 0);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -68,6 +68,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		switch (SceneObj->_sceneIndex) {
+		case Scene::Loading:
+			switch (SceneObj->_levelNum) {
+			case 0:
+				_mapData = Map::_mapData_help;
+				bgWidth = Map::_mapValue_help[0];
+				bgHeight = Map::_mapValue_help[1];
+				minMapSize = Map::_mapValue_help[2];
+				playerBornX = Map::_mapValue_help[3];
+				playerBornY = Map::_mapValue_help[4];
+				break;
+			case 1:
+				_mapData = Map::_mapData1;
+				bgWidth = Map::_mapValue1[0];
+				bgHeight = Map::_mapValue1[1];
+				minMapSize = Map::_mapValue1[2];
+				playerBornX = Map::_mapValue1[3];
+				playerBornY = Map::_mapValue1[4];
+				break;
+			case 2:
+				_mapData = Map::_mapData2;
+				bgWidth = Map::_mapValue2[0];
+				bgHeight = Map::_mapValue2[1];
+				minMapSize = Map::_mapValue2[2];
+				playerBornX = Map::_mapValue2[3];
+				playerBornY = Map::_mapValue2[4];
+				break;
+			}
+			PlayerObj = new Player(People::Vector2{ float(playerBornX) ,float(playerBornY) });
+			CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
+			EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			SceneObj->_sceneIndex = SceneObj->Game;
+			break;
+		case Scene::Start:
+			//开始界面
+			break;
 		case Scene::Game:
 			BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 			EnemyManager::EnemyUpdata(Enemy::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
@@ -106,9 +141,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Novice::DrawLine(0, (int)(CameraObj->_screenHeight / 2), (int)CameraObj->_screenWidth, (int)(CameraObj->_screenHeight / 2), RED);
 		//Novice::DrawLine((int)(CameraObj->_screenWidth / 2), 0, (int)(CameraObj->_screenWidth / 2), (int)CameraObj->_screenHeight, RED);
 
-		Novice::ScreenPrintf(10, 10, "Player(%d,%d)", (int)PlayerObj->_pos.x, (int)PlayerObj->_pos.y);
-		Novice::ScreenPrintf(10, 30, "Camera(%d,%d)", (int)CameraObj->_cameraPos.x, (int)CameraObj->_cameraPos.y);
-		Novice::ScreenPrintf(10, 70, "PlayerRL(%d,%d)", (int)((bgHeight - PlayerObj->_pos.y) / minMapSize), (int)(PlayerObj->_pos.x / minMapSize));
+		//Novice::ScreenPrintf(10, 10, "Player(%d,%d)", (int)PlayerObj->_pos.x, (int)PlayerObj->_pos.y);
+		//Novice::ScreenPrintf(10, 30, "Camera(%d,%d)", (int)CameraObj->_cameraPos.x, (int)CameraObj->_cameraPos.y);
+		//Novice::ScreenPrintf(10, 70, "PlayerRL(%d,%d)", (int)((bgHeight - PlayerObj->_pos.y) / minMapSize), (int)(PlayerObj->_pos.x / minMapSize));
 
 
 		///

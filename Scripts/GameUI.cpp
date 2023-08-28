@@ -57,7 +57,7 @@ int GameUI::FrameTimers(int milli, int index)
 	return 0;
 }
 
-PlayerUI_HP::PlayerUI_HP(Player* obj)
+PlayerUI_HP::PlayerUI_HP()
 {
 	_width = 700;
 	_height = 404;
@@ -70,13 +70,21 @@ PlayerUI_HP::PlayerUI_HP(Player* obj)
 	_radarEnemyTimer = 700;
 	_isRadarMy = false;
 
-	_playerHpMax = obj->_hp;
-	_playerHpSpriteW = 113 * 4;
-	_hpSpriteRate = _playerHpSpriteW / _playerHpMax;
+	_isInitial = false; 
+	_playerHpMax = 0;
+	_playerHpSpriteW = 0;
+	_hpSpriteRate = 0;
 }
 
 void PlayerUI_HP::UIOpen(Player* obj)
 {
+	//进行一些初始化操作
+	if (!_isInitial) {
+		_playerHpMax = obj->_hp;
+		_playerHpSpriteW = 113 * 4;
+		_hpSpriteRate = _playerHpSpriteW / _playerHpMax;
+		_isInitial = true;
+	}
 	//血量
 	FrameTexture(_pos.x, _pos.y, LoadRes::_spUI_playerHp, 0, _color);
 	FrameTexture(_pos.x + 60 * 4, _pos.y + 81 * 4, LoadRes::_spUI_playerHp, 1, _color);

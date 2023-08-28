@@ -1,8 +1,8 @@
 ﻿#include "Player.h"
 
-Player::Player()
+Player::Player(Vector2 bornPos)
 {
-	_pos = { 2 * 128 - 128.f / 2,15 * 128 - 128.f / 2 };
+	_pos = bornPos;
 	_dir = { 0,0 };
 	_vel = { 0,0 };
 	_acceleration = { 0,0 };

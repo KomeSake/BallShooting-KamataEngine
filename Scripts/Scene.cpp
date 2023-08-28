@@ -1,10 +1,11 @@
-#include "Scene.h"
+﻿#include "Scene.h"
 
-Scene::Scene(Player* playerObj)
+Scene::Scene()
 {
-	_sceneIndex = Game;
+	_sceneIndex = Loading;
+	_levelNum = 1;
 
-	PlayerUI_HPObj = new PlayerUI_HP(playerObj);
+	PlayerUI_HPObj = new PlayerUI_HP();
 	PlayerUI_GunObj = new PlayerUI_Gun;
 	PlayerUI_SteamObj = new PlayerUI_Steam;
 }

@@ -51,7 +51,7 @@ public:
 	void CollideSystem();
 	void Effect();
 	void ToDead();
-	void Show();
+	void Show(bool isHpLine);
 	void DropSystem(vector<vector<char>> mapData, float bgHeight, float minMapSize);//跌落判断
 };
 
@@ -67,6 +67,7 @@ public:
 	static void ReleaseEnemy(Enemy* enemy);
 
 	static void EnemyBornToMap(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
-	static void EnemyShow();
+	//是否显示头顶的血条
+	static void EnemyShow(bool isHpLine);
 };
 

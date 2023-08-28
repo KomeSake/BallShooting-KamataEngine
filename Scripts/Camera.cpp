@@ -49,6 +49,13 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 			case 'p':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 3, WHITE);
 				break;
+			case'A':
+			case'B':
+			case'C':
+			case'D':
+			case'E':
+			case'F':
+			case'G':
 			case 'e':
 			case 'f':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
@@ -65,8 +72,29 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 	for (const auto& row : mapData) {
 		for (const char& line : row) {
 			switch (line) {
-			case 'U':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spStart, WHITE);
+			case 'd':
+				FrameAnimation(minMapPos.x, minMapPos.y, LoadRes::_spListExit, 0, WHITE, 100, 1);
+				break;
+			case 'A':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText,0,0.2f, WHITE);
+				break;
+			case 'B':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText,1, -0.07f, WHITE);
+				break;
+			case 'C':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 2,0.13f, WHITE);
+				break;
+			case 'D':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 3,-0.2f, WHITE);
+				break;
+			case 'E':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 4,0.17f, WHITE);
+				break;
+			case 'F':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 5,-0.05f, WHITE);
+				break;
+			case 'G':
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 6,0.1f, WHITE);
 				break;
 			}
 			minMapPos.x += minSize;

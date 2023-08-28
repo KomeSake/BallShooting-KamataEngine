@@ -67,8 +67,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		int mouseX = 0, mouseY = 0;
+		Novice::GetMousePosition(&mouseX, &mouseY);
+
 		switch (SceneObj->_sceneIndex) {
 		case Scene::Loading:
+			//初始载入
 			switch (SceneObj->_levelNum) {
 			case 0:
 				_mapData = Map::_mapData_help;
@@ -77,6 +81,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				minMapSize = Map::_mapValue_help[2];
 				playerBornX = Map::_mapValue_help[3];
 				playerBornY = Map::_mapValue_help[4];
+				SceneObj->_sceneIndex = SceneObj->Game;
 				break;
 			case 1:
 				_mapData = Map::_mapData1;
@@ -85,6 +90,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				minMapSize = Map::_mapValue1[2];
 				playerBornX = Map::_mapValue1[3];
 				playerBornY = Map::_mapValue1[4];
+				SceneObj->_sceneIndex = SceneObj->Game;
 				break;
 			case 2:
 				_mapData = Map::_mapData2;
@@ -93,17 +99,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				minMapSize = Map::_mapValue2[2];
 				playerBornX = Map::_mapValue2[3];
 				playerBornY = Map::_mapValue2[4];
+				SceneObj->_sceneIndex = SceneObj->Game;
+				break;
+			case Scene::StartScreen:
+				_mapData = Map::_mapData_start;
+				bgWidth = Map::_mapValue_start[0];
+				bgHeight = Map::_mapValue_start[1];
+				minMapSize = Map::_mapValue_start[2];
+				playerBornX = Map::_mapValue_start[3];
+				playerBornY = Map::_mapValue_start[4];
+				SceneObj->_sceneIndex = SceneObj->Start;
 				break;
 			}
 			PlayerObj = new Player(People::Vector2{ float(playerBornX) ,float(playerBornY) });
 			CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
 			EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-			SceneObj->_sceneIndex = SceneObj->Game;
 			break;
 		case Scene::Start:
 			//开始界面
+			EnemyManager::EnemyUpdata(Enemy::Vector2{ float(mouseX), float(mouseY - 1080) * -1 }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
+
+			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			EnemyManager::EnemyShow(false);
+
+			SceneObj->ScreenStart(mouseX, mouseY);
 			break;
 		case Scene::Game:
+			//游玩
 			BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 			EnemyManager::EnemyUpdata(Enemy::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 
@@ -127,7 +150,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景
 			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
-			EnemyManager::EnemyShow();
+			EnemyManager::EnemyShow(true);
 			BulletManager::BulletShow();
 			PlayerObj->Effect();
 			PlayerObj->Show();
@@ -135,9 +158,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			SceneObj->ScreenGame(PlayerObj);
 			break;
 		}
-
+		//隐藏鼠标，换成用自己的(鼠标贴图不知道为什么有点偏移，我加了补偿距离了)
+		Novice::SetMouseCursorVisibility(0);
+		Novice::DrawSprite(mouseX - 64 + 10, mouseY - 64 + 15, LoadRes::_spArrow_mouse.path, 0.8f, 0.8f, 0, WHITE);
 
 		//调试信息
+		//int path = Novice::LoadTexture("./Resources/Textures/temp.png");
+		//Novice::DrawSprite(0, 0, path, 1, 1, 0, WHITE);
 		//Novice::DrawLine(0, (int)(CameraObj->_screenHeight / 2), (int)CameraObj->_screenWidth, (int)(CameraObj->_screenHeight / 2), RED);
 		//Novice::DrawLine((int)(CameraObj->_screenWidth / 2), 0, (int)(CameraObj->_screenWidth / 2), (int)CameraObj->_screenHeight, RED);
 

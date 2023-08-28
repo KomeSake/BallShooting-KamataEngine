@@ -28,6 +28,7 @@ public:
 	//图片
 	inline static Sprite _spBullet;
 	inline static Sprite _spArrow;
+	inline static Sprite _spArrow_mouse;
 	//角色
 	inline static map<int, SpriteList> _spListPlayer;
 	inline static map<int, SpriteList> _spListPlayer_gun;
@@ -44,6 +45,8 @@ public:
 	inline static map<int, SpriteList> _spListBulletExplode;
 	//地图
 	inline static map<int, SpriteList> _spListMap;
+	inline static map<int, SpriteList> _spListHelpText;
+	inline static map<int, SpriteList> _spListExit;
 
 	//UI
 	inline static Sprite _spStart;
@@ -52,6 +55,7 @@ public:
 	inline static Sprite _spUI_playerGun02;
 	inline static map<int, SpriteList> _spUI_playerSteam;
 	inline static Sprite _spUI_playerSteam01;
+	inline static map<int, SpriteList> _spUI_screenStart;
 
 
 

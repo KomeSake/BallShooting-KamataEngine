@@ -193,7 +193,7 @@ void Enemy::ToDead()
 	}
 }
 
-void Enemy::Show()
+void Enemy::Show(bool isHpLine)
 {
 	if (_isWarning) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
@@ -214,7 +214,7 @@ void Enemy::Show()
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
 	}
 	//头顶上的血条
-	if (!_isDrop) {
+	if (!_isDrop&& isHpLine) {
 		LoadRes::Sprite sprite = { Novice::LoadTexture("white1x1.png") ,1,1 };
 		float hpSpriteW = 60;
 		float hpRate = hpSpriteW / _hpMax;
@@ -347,9 +347,9 @@ void EnemyManager::EnemyBornToMap(vector<vector<char>> mapData, float bgW, float
 	}
 }
 
-void EnemyManager::EnemyShow()
+void EnemyManager::EnemyShow(bool isHpLine)
 {
 	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-		element->Show();
+		element->Show(isHpLine);
 	}
 }

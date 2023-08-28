@@ -200,3 +200,36 @@ void PlayerUI_Steam::UIOpen(Player* obj)
 		FrameTexture(_pos.x, _pos.y, LoadRes::_spUI_playerSteam, 3, _color);
 	}
 }
+
+ScreenUI_Start::ScreenUI_Start()
+{
+	_width = 1920;
+	_height = 1080;
+	_pos = { 0,0 };
+	_color = WHITE;
+
+	_isStartButton = false;
+	_isLevelButton = false;
+}
+
+void ScreenUI_Start::UIOpen(Vector2 mousePos)
+{
+	FrameTexture(40 * 4, 35 * 4, LoadRes::_spUI_screenStart, 0, _color);
+	FrameTexture(232 * 4, 116 * 4, LoadRes::_spUI_screenStart, 1, _color);
+	FrameTexture(295 * 4, 166 * 4, LoadRes::_spUI_screenStart, 2, _color);
+	FrameTexture(295 * 4, 203 * 4, LoadRes::_spUI_screenStart, 2, _color);
+	FrameTexture(317 * 4, 171 * 4, LoadRes::_spUI_screenStart, 4, _color);
+	FrameTexture(317 * 4, 208 * 4, LoadRes::_spUI_screenStart, 5, _color);
+	if (mousePos.x > 295 * 4 && mousePos.y > 166 * 4 && mousePos.x < 371 * 4 && mousePos.y < 193 * 4) {
+		FrameTexture(295 * 4, 166 * 4, LoadRes::_spUI_screenStart, 3, _color);
+		if (Novice::IsTriggerMouse(0)) {
+			_isStartButton = true;
+		}
+	}
+	if (mousePos.x > 295 * 4 && mousePos.y > 203 * 4 && mousePos.x < 371 * 4 && mousePos.y < 230 * 4) {
+		FrameTexture(295 * 4, 203 * 4, LoadRes::_spUI_screenStart, 3, _color);
+		if (Novice::IsTriggerMouse(0)) {
+			_isLevelButton = true;
+		}
+	}
+}

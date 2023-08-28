@@ -20,7 +20,7 @@ void Map::LoadNovice()
 	_mapValue_name[3] = int(4 * 128 - 128.f / 2);
 	_mapValue_name[4] = int(4 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map_name.txt", _mapData_name);
-	_mapValue_help[0] = 51 * 128;
+	_mapValue_help[0] = 56 * 128;
 	_mapValue_help[1] = 25 * 128;
 	_mapValue_help[2] = 128;
 	_mapValue_help[3] = int(2 * 128 - 128.f / 2);
@@ -29,7 +29,7 @@ void Map::LoadNovice()
 	_mapValue_start[0] = 15 * 128;
 	_mapValue_start[1] = 9 * 128;
 	_mapValue_start[2] = 128;
-	_mapValue_start[3] = int(8 * 128 - 128.f / 2);
+	_mapValue_start[3] = int(7 * 128 - 128.f / 2);
 	_mapValue_start[4] = int(2 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map_start.txt", _mapData_start);
 }
@@ -66,24 +66,11 @@ bool Map::IsThrough(vector<vector<char>> mapData, int line, int row)
 		return false;
 	}
 	switch (mapData[line][row]) {
-	case 'o'://地板
-		return true;
-	case 'p'://地板2
-		return true;
 	case 'w'://墙壁
 		return false;
-	case 'z'://墙壁2
-		return true;
-	case 'e'://敌人1，狗
-		return true;
-	case 'f'://敌人2，裂嘴兽
-		return true;
-	case 'U'://提示1
-		return true;
-	case '*'://虚空（会掉落）
-		return true;
 	case '/'://虚空墙壁（谨防任何东西超出地图最大范围）
 		return false;
+	//可以穿过的东西多得多，所以只有不可穿过的才记录下来了
 	}
-	return false;
+	return true;
 }

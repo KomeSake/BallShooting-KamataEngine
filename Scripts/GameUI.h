@@ -73,3 +73,13 @@ public:
 	PlayerUI_Steam();
 	void UIOpen(Player* obj);
 };
+
+class ScreenUI_Start :
+	public GameUI
+{
+public:
+	bool _isStartButton;
+	bool _isLevelButton;
+	ScreenUI_Start();
+	void UIOpen(Vector2 mousePos);
+};

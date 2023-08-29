@@ -27,6 +27,8 @@ public:
 
 	//图片
 	inline static Sprite _spBullet;
+	inline static Sprite _spBullet_enemy_shoot;
+	inline static Sprite _spBullet_player_shoot;
 	inline static Sprite _spArrow;
 	inline static Sprite _spArrow_mouse;
 	//角色
@@ -38,7 +40,9 @@ public:
 	inline static map<int, SpriteList> _spListPlayer_ChangeAni;
 	inline static map<int, SpriteList> _spListPlayer_ChangeAniTwo;
 	inline static map<int, SpriteList> _spListEnemy1;
+	inline static map<int, SpriteList> _spListEnemy1_1;
 	inline static map<int, SpriteList> _spListEnemy2;
+	inline static map<int, SpriteList> _spListEnemy3;
 	//特效
 	inline static map<int, SpriteList> _spListExplode;
 	inline static map<int, SpriteList> _spListEnemyExplode;

@@ -22,7 +22,17 @@ void Bullet::Inital(BulletType type)
 	_toDeadEffect = false;
 
 	switch (type) {
-	case normal:
+	case enemy_shoot:
+		_type = type;
+		_sprite = LoadRes::_spBullet_enemy_shoot;
+		_speed = 10;
+		_damage = 5;
+		break;
+	case player_shoot:
+		_type = type;
+		_sprite = LoadRes::_spBullet_player_shoot;
+		_speed = 20;
+		_damage = 10;
 		break;
 	}
 }
@@ -62,7 +72,17 @@ void Bullet::Fire(Vector2 bornPos, Vector2 dir)
 {
 	_pos = bornPos;
 	_dir = dir;
-	BulletManager::_bulletUpdata_player.push_back(this);
+	switch (_type) {
+	case normal:
+		BulletManager::_bulletUpdata_player.push_back(this);
+		break;
+	case enemy_shoot:
+		BulletManager::_bulletUpdata_enemy.push_back(this);
+		break;
+	case player_shoot:
+		BulletManager::_bulletUpdata_player.push_back(this);
+		break;
+	}
 }
 
 void Bullet::ToDead()
@@ -83,6 +103,9 @@ void BulletManager::BulletUpdata(Bullet::Vector2 cameraPos, vector<vector<char>>
 	for (Bullet* element : _bulletUpdata_player) {
 		element->Move(cameraPos, mapData, bgHeight, minMapSize);
 	}
+	for (Bullet* element : _bulletUpdata_enemy) {
+		element->Move(cameraPos, mapData, bgHeight, minMapSize);
+	}
 }
 
 Bullet* BulletManager::AcquireBullet(Bullet::BulletType type)
@@ -100,6 +123,30 @@ Bullet* BulletManager::AcquireBullet(Bullet::BulletType type)
 			return bullet;
 		}
 		break;
+	case Bullet::enemy_shoot:
+		if (_bulletIdiePool_enemy_shoot.empty()) {
+			Bullet* bullet = new Bullet(type);
+			return bullet;
+		}
+		else {
+			Bullet* bullet = _bulletIdiePool_enemy_shoot.front();
+			_bulletIdiePool_enemy_shoot.pop();
+			bullet->Inital(type);
+			return bullet;
+		}
+		break;
+	case Bullet::player_shoot:
+		if (_bulletIdiePool_player_shoot.empty()) {
+			Bullet* bullet = new Bullet(type);
+			return bullet;
+		}
+		else {
+			Bullet* bullet = _bulletIdiePool_player_shoot.front();
+			_bulletIdiePool_player_shoot.pop();
+			bullet->Inital(type);
+			return bullet;
+		}
+		break;
 	}
 	return nullptr;
 }
@@ -107,19 +154,37 @@ Bullet* BulletManager::AcquireBullet(Bullet::BulletType type)
 void BulletManager::ReleaseBullet(Bullet* bullet)
 {
 	switch (bullet->_type) {
-	case Bullet::normal:
+	case Bullet::normal: {
 		auto it = find(_bulletUpdata_player.begin(), _bulletUpdata_player.end(), bullet);
 		if (it != _bulletUpdata_player.end()) {
 			_bulletUpdata_player.erase(it);
 		}
 		_bulletIdiePool_normal.push(bullet);
-		break;
+		break; }
+	case Bullet::enemy_shoot: {
+		auto it = find(_bulletUpdata_enemy.begin(), _bulletUpdata_enemy.end(), bullet);
+		if (it != _bulletUpdata_enemy.end()) {
+			_bulletUpdata_enemy.erase(it);
+		}
+		_bulletIdiePool_enemy_shoot.push(bullet);
+		break; }
+	case Bullet::player_shoot: {
+		auto it = find(_bulletUpdata_player.begin(), _bulletUpdata_player.end(), bullet);
+		if (it != _bulletUpdata_player.end()) {
+			_bulletUpdata_player.erase(it);
+		}
+		_bulletIdiePool_normal.push(bullet);
+		break; }
 	}
 }
 
 void BulletManager::BulletShow()
 {
 	for (Bullet* element : _bulletUpdata_player) {
+		element->Show();
+		element->ToDead();
+	}
+	for (Bullet* element : _bulletUpdata_enemy) {
 		element->Show();
 		element->ToDead();
 	}

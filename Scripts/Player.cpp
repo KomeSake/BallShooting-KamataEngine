@@ -198,7 +198,9 @@ void Player::Attack(Vector2 cameraPos)
 			&& MyTimers(_bulletTime, 1)) {
 			Bullet* bullet = BulletManager::AcquireBullet(Bullet::normal);
 			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
-
+			if (_steamValue > 0) {
+				_color = WHITE;
+			}
 			_gunHotValue += _gunHotPlus;
 		}
 	}
@@ -253,13 +255,23 @@ void Player::PatternChange(char keys[], char preKeys[])
 			_isManEntering = true;
 			_frameAniIndex[4] = 0;
 			_pattern = 1;
-			_color = WHITE;
+			if (_steamValue > 0) {
+				_color = WHITE;
+			}
+			else {
+				_color = BLUE;
+			}
 		}
 		else if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
 			_isManEntering = true;
 			_frameAniIndex[4] = 0;
 			_pattern = 1;
-			_color = WHITE;
+			if (_steamValue > 0) {
+				_color = WHITE;
+			}
+			else {
+				_color = BLUE;
+			}
 		}
 	}
 	//状态变换后的属性变化
@@ -322,6 +334,30 @@ void Player::CollideSystem()
 				}
 			}
 		}
+		//球形和子弹之间的碰撞（会把子弹弹回去）
+		for (Bullet* element : BulletManager::_bulletUpdata_enemy) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length + 50 < element->_width / 2 + _width / 2) {
+				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+				hitDir = VectorNormalization(hitDir.x, hitDir.y);
+				_vel.x = hitDir.x * _bounceValue_enemy;
+				_vel.y = hitDir.y * _bounceValue_enemy;
+				//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
+				if (element->_isAlive) {
+					element->_isAlive = false;
+					//把子弹弹回去
+					switch (element->_type) {
+					case Bullet::enemy_shoot:
+						Bullet* bullet = BulletManager::AcquireBullet(Bullet::player_shoot);
+						Vector2 newDir = { element->_dir.x,element->_dir.y };
+						bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ -newDir.x, -newDir.y });
+						//下面这种是按照鼠标方向反弹子弹
+						//bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
+						break;
+					}
+				}
+			}
+		}
 		break; }
 	case 1:
 	case 2: {
@@ -344,6 +380,22 @@ void Player::CollideSystem()
 					if (MyTimers(_hpGodTime, 7)) {
 						_isHpMinus = false;
 					}
+				}
+			}
+		}
+		//和子弹之间的碰撞
+		for (Bullet* element : BulletManager::_bulletUpdata_enemy) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length + 50 < element->_width / 2 + _width / 2) {
+				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+				hitDir = VectorNormalization(hitDir.x, hitDir.y);
+				_vel.x = hitDir.x * _bounceValue_enemy;
+				_vel.y = hitDir.y * _bounceValue_enemy;
+				//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
+				if (element->_isAlive) {
+					element->_isAlive = false;
+					_hp -= element->_damage;
+					_isHarmed = true;
 				}
 			}
 		}

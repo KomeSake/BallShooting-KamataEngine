@@ -4,6 +4,8 @@ void LoadRes::LoadResNovice()
 {
 	//图片
 	_spBullet = { Novice::LoadTexture("./Resources/Textures/bullet.png"),64,64 };
+	_spBullet_enemy_shoot = { Novice::LoadTexture("./Resources/Textures/bullet_enemy_shoot.png"),64,64 };
+	_spBullet_player_shoot = { Novice::LoadTexture("./Resources/Textures/bullet_player_shoot.png"),64,64 };
 	_spArrow = { Novice::LoadTexture("./Resources/Textures/arrow.png"),384,384 };
 	_spArrow_mouse = { Novice::LoadTexture("./Resources/Textures/arrow_mouse.png"),128,128 };
 
@@ -68,12 +70,26 @@ void LoadRes::LoadResNovice()
 		listW = 640, listH = 128;
 		_spListEnemy1[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 5; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Enemy1-1.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 640, listH = 128;
+		_spListEnemy1_1[i] = { path,x,y,w,h,listW,listH };
+	}
 	for (int i = 0; i < 6; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Enemy2.png");
 		w = 128, h = 128;
 		x = i * w, y = 0;
-		listW = 640, listH = 128;
+		listW = 768, listH = 128;
 		_spListEnemy2[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 5; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Enemy3.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 640, listH = 128;
+		_spListEnemy3[i] = { path,x,y,w,h,listW,listH };
 	}
 	//Map
 	for (int i = 0; i < 4; i++) {

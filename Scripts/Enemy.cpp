@@ -26,8 +26,11 @@ void Enemy::Inital(EnemyType type)
 	_type = dog;
 	_hp = 10;
 	_damage = 5;
+	_shootTimer = 0;
 	_warningLength = 850;
 	_isWarning = false;
+	_toPlayerLengthStop = 0;
+	_isRunToPlayer = true;
 	_isDrop = false;
 	_hitBox_enemy = -50;
 	_bounceValue_bullet = 10;
@@ -39,18 +42,46 @@ void Enemy::Inital(EnemyType type)
 	case dog:
 		_type = type;
 		break;
+	case dog1_1:
+		_sprite = LoadRes::_spListEnemy1_1;
+		_width = 128;
+		_height = 128;
+		_type = type;
+		_hp = 30;
+		_damage = 20;
+		_warningLength = 700;
+		_bounce = 0.5f;
+		_velMax = 10;
+		_bounceValue_bullet = 5;
+		_bounceValue_player = 20;
+		break;
 	case dog2:
 		_sprite = LoadRes::_spListEnemy2;
 		_width = 128;
 		_height = 128;
 		_type = type;
 		_hp = 20;
-		_damage = 10;
+		_damage = 15;
 		_warningLength = 700;
 		_bounce = 0.5f;
 		_velMax = 7;
 		_bounceValue_bullet = 5;
 		_bounceValue_player = 20;
+		break;
+	case shoot:
+		_sprite = LoadRes::_spListEnemy3;
+		_width = 118;
+		_height = 118;
+		_type = type;
+		_hp = 7;
+		_damage = 10;
+		_shootTimer = 500;
+		_warningLength = 900;
+		_toPlayerLengthStop = 400;
+		_bounce = 0.5f;
+		_velMax = 5;
+		_bounceValue_bullet = 8;
+		_bounceValue_player = 30;
 		break;
 	}
 	_hpMax = _hp;
@@ -66,6 +97,12 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 		dir = { playerPos.x - _pos.x,playerPos.y - _pos.y };
 	}
 	float vectorLength = sqrtf(powf(dir.x, 2) + powf(dir.y, 2));
+	if (vectorLength < _toPlayerLengthStop) {
+		_isRunToPlayer = false;
+	}
+	else {
+		_isRunToPlayer = true;
+	}
 	if (vectorLength != 0) {
 		dir.x = dir.x / vectorLength;
 		dir.y = dir.y / vectorLength;
@@ -133,6 +170,10 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 				_vel.y = _vel.y * -_bounce;
 			}
 		}
+
+		if (!_isRunToPlayer) {
+			_pos = originalPos;
+		}
 	}
 	//和其他敌人的碰撞检测
 	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
@@ -170,6 +211,16 @@ void Enemy::CollideSystem()
 		}
 	}
 	//和球形态玩家之间的碰撞(因为Player类中也会进行此计算，所以现在直接移过去了)
+}
+
+void Enemy::ShootAttack()
+{
+	if (!_isRunToPlayer) {
+		if (MyTimers(_shootTimer, 2)) {
+			Bullet* bullet = BulletManager::AcquireBullet(Bullet::enemy_shoot);
+			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _dir.x, _dir.y });
+		}
+	}
 }
 
 void Enemy::Effect()
@@ -264,6 +315,7 @@ void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> ma
 		else {
 			element->CollideSystem();
 			element->Move(playerPos, mapData, bgHeight, minMapSize);
+			element->ShootAttack();
 			element->DropSystem(mapData, bgHeight, minMapSize);
 			element->Effect();
 		}
@@ -285,6 +337,18 @@ Enemy* EnemyManager::AcquireEnemy(Enemy::EnemyType type)
 			return enemy;
 		}
 		break;
+	case Enemy::dog1_1:
+		if (_enemyIdiePool_dog1_1.empty()) {
+			Enemy* enemy = new Enemy(type);
+			return enemy;
+		}
+		else {
+			Enemy* enemy = _enemyIdiePool_dog1_1.front();
+			_enemyIdiePool_dog1_1.pop();
+			enemy->Inital(type);
+			return enemy;
+		}
+		break;
 	case Enemy::dog2:
 		if (_enemyIdiePool_dog2.empty()) {
 			Enemy* enemy = new Enemy(type);
@@ -293,6 +357,18 @@ Enemy* EnemyManager::AcquireEnemy(Enemy::EnemyType type)
 		else {
 			Enemy* enemy = _enemyIdiePool_dog2.front();
 			_enemyIdiePool_dog2.pop();
+			enemy->Inital(type);
+			return enemy;
+		}
+		break;
+	case Enemy::shoot:
+		if (_enemyIdiePool_shoot.empty()) {
+			Enemy* enemy = new Enemy(type);
+			return enemy;
+		}
+		else {
+			Enemy* enemy = _enemyIdiePool_shoot.front();
+			_enemyIdiePool_shoot.pop();
 			enemy->Inital(type);
 			return enemy;
 		}
@@ -311,12 +387,26 @@ void EnemyManager::ReleaseEnemy(Enemy* enemy)
 		}
 		_enemyIdiePool_dog.push(enemy);
 		break; }
+	case Enemy::dog1_1: {
+		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
+		if (it != _enemyUpdateVector.end()) {
+			_enemyUpdateVector.erase(it);
+		}
+		_enemyIdiePool_dog1_1.push(enemy);
+		break; }
 	case Enemy::dog2: {
 		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
 		if (it != _enemyUpdateVector.end()) {
 			_enemyUpdateVector.erase(it);
 		}
 		_enemyIdiePool_dog2.push(enemy);
+		break; }
+	case Enemy::shoot: {
+		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
+		if (it != _enemyUpdateVector.end()) {
+			_enemyUpdateVector.erase(it);
+		}
+		_enemyIdiePool_shoot.push(enemy);
 		break; }
 	}
 }
@@ -337,6 +427,14 @@ void EnemyManager::EnemyBornToMap(vector<vector<char>> mapData, float bgW, float
 				break;
 			case 'f':
 				emeny = EnemyManager::AcquireEnemy(Enemy::dog2);
+				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
+				break;
+			case 'g':
+				emeny = EnemyManager::AcquireEnemy(Enemy::shoot);
+				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
+				break;
+			case 'h':
+				emeny = EnemyManager::AcquireEnemy(Enemy::dog1_1);
 				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
 				break;
 			}

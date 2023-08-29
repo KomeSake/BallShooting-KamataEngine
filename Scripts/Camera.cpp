@@ -51,15 +51,11 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 			case 'p':
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 3, WHITE);
 				break;
-			case'A':
-			case'B':
-			case'C':
-			case'D':
-			case'E':
-			case'F':
-			case'G':
-			case 'e':
-			case 'f':
+			case '*':
+			case '/':
+				//空着就会显示底下的深渊背景了
+				break;
+			default:
 				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListMap, 0, WHITE);
 				break;
 			}

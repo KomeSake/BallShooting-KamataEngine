@@ -78,6 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		case Scene::Loading:
 			//初始载入
 			BulletManager::_bulletUpdata_player.clear();
+			BulletManager::_bulletUpdata_enemy.clear();
 			EnemyManager::_enemyUpdateVector.clear();
 			switch (SceneObj->_levelNum) {
 			case 0:

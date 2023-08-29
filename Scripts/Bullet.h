@@ -11,6 +11,8 @@ public:
 	static enum BulletType
 	{
 		normal,
+		enemy_shoot,
+		player_shoot,//反弹敌人的子弹
 	}enumBullet;
 
 	Vector2 _pos;
@@ -38,7 +40,11 @@ public:
 class BulletManager {
 public:
 	inline static vector<Bullet*> _bulletUpdata_player;
+	inline static vector<Bullet*> _bulletUpdata_enemy;
+
 	inline static queue<Bullet*> _bulletIdiePool_normal;
+	inline static queue<Bullet*> _bulletIdiePool_enemy_shoot;
+	inline static queue<Bullet*> _bulletIdiePool_player_shoot;
 
 	static void BulletUpdata(Bullet::Vector2 cameraPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	static Bullet* AcquireBullet(Bullet::BulletType type);

@@ -46,6 +46,8 @@ void Enemy::Inital(EnemyType type)
 		_sprite = LoadRes::_spListEnemy1_1;
 		_width = 128;
 		_height = 128;
+		_scaleX = 1.2f;
+		_scaleY = 1.2f;
 		_type = type;
 		_hp = 30;
 		_damage = 20;
@@ -82,6 +84,21 @@ void Enemy::Inital(EnemyType type)
 		_velMax = 5;
 		_bounceValue_bullet = 8;
 		_bounceValue_player = 30;
+		break;
+	case doubleShoot:
+		_sprite = LoadRes::_spListEnemy4;
+		_width = 128;
+		_height = 128;
+		_type = type;
+		_hp = 20;
+		_damage = 20;
+		_shootTimer = 700;
+		_warningLength = 700;
+		_toPlayerLengthStop = 500;
+		_bounce = 0.5f;
+		_velMax = 3;
+		_bounceValue_bullet = 4;
+		_bounceValue_player = 15;
 		break;
 	}
 	_hpMax = _hp;
@@ -194,23 +211,25 @@ void Enemy::Fire(Vector2 bornPos)
 
 void Enemy::CollideSystem()
 {
-	//和子弹之间的碰撞
-	for (Bullet* element : BulletManager::_bulletUpdata_player) {
-		float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-		if (length + 50 < element->_width / 2 + _width / 2) {
-			Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
-			hitDir = VectorNormalization(hitDir.x, hitDir.y);
-			_vel.x = hitDir.x * _bounceValue_bullet;
-			_vel.y = hitDir.y * _bounceValue_bullet;
-			//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
-			if (element->_isAlive) {
-				element->_isAlive = false;
-				_hp -= element->_damage;
-				_isHarmed = true;
+	if (!_isDrop) {
+		//和子弹之间的碰撞
+		for (Bullet* element : BulletManager::_bulletUpdata_player) {
+			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+			if (length + 50 < element->_width / 2 + _width / 2) {
+				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+				hitDir = VectorNormalization(hitDir.x, hitDir.y);
+				_vel.x = hitDir.x * _bounceValue_bullet;
+				_vel.y = hitDir.y * _bounceValue_bullet;
+				//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
+				if (element->_isAlive) {
+					element->_isAlive = false;
+					_hp -= element->_damage;
+					_isHarmed = true;
+				}
 			}
 		}
+		//和球形态玩家之间的碰撞(因为Player类中也会进行此计算，所以现在直接移过去了)
 	}
-	//和球形态玩家之间的碰撞(因为Player类中也会进行此计算，所以现在直接移过去了)
 }
 
 void Enemy::ShootAttack()
@@ -219,6 +238,12 @@ void Enemy::ShootAttack()
 		if (MyTimers(_shootTimer, 2)) {
 			Bullet* bullet = BulletManager::AcquireBullet(Bullet::enemy_shoot);
 			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _dir.x, _dir.y });
+			if (_type == doubleShoot) {
+				Bullet* bullet2 = BulletManager::AcquireBullet(Bullet::enemy_shoot);
+				bullet2->Fire(Bullet::Vector2{ _pos.x + 30, _pos.y + 30 }, Bullet::Vector2{ _dir.x, _dir.y });
+				Bullet* bullet3 = BulletManager::AcquireBullet(Bullet::enemy_shoot);
+				bullet3->Fire(Bullet::Vector2{ _pos.x - 30, _pos.y - 30 }, Bullet::Vector2{ _dir.x, _dir.y });
+			}
 		}
 	}
 }
@@ -373,6 +398,18 @@ Enemy* EnemyManager::AcquireEnemy(Enemy::EnemyType type)
 			return enemy;
 		}
 		break;
+	case Enemy::doubleShoot:
+		if (_enemyIdiePool_doubleShoot.empty()) {
+			Enemy* enemy = new Enemy(type);
+			return enemy;
+		}
+		else {
+			Enemy* enemy = _enemyIdiePool_doubleShoot.front();
+			_enemyIdiePool_doubleShoot.pop();
+			enemy->Inital(type);
+			return enemy;
+		}
+		break;
 	}
 	return nullptr;
 }
@@ -408,6 +445,13 @@ void EnemyManager::ReleaseEnemy(Enemy* enemy)
 		}
 		_enemyIdiePool_shoot.push(enemy);
 		break; }
+	case Enemy::doubleShoot: {
+		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
+		if (it != _enemyUpdateVector.end()) {
+			_enemyUpdateVector.erase(it);
+		}
+		_enemyIdiePool_doubleShoot.push(enemy);
+		break; }
 	}
 }
 
@@ -435,6 +479,10 @@ void EnemyManager::EnemyBornToMap(vector<vector<char>> mapData, float bgW, float
 				break;
 			case 'h':
 				emeny = EnemyManager::AcquireEnemy(Enemy::dog1_1);
+				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
+				break;
+			case 'i':
+				emeny = EnemyManager::AcquireEnemy(Enemy::doubleShoot);
 				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
 				break;
 			}

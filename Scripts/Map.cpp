@@ -2,11 +2,11 @@
 
 void Map::LoadNovice()
 {
-	_mapValue1[0] = 45 * 128;
-	_mapValue1[1] = 25 * 128;
+	_mapValue1[0] = 55 * 128;
+	_mapValue1[1] = 27 * 128;
 	_mapValue1[2] = 128;
-	_mapValue1[3] = int(4 * 128 - 128.f / 2);
-	_mapValue1[4] = int(4 * 128 - 128.f / 2);
+	_mapValue1[3] = int(3 * 128 - 128.f / 2);
+	_mapValue1[4] = int(6 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map1.txt", _mapData1);
 	_mapValue2[0] = 28 * 128;
 	_mapValue2[1] = 25 * 128;
@@ -70,7 +70,7 @@ bool Map::IsThrough(vector<vector<char>> mapData, int line, int row)
 		return false;
 	case '/'://虚空墙壁（谨防任何东西超出地图最大范围）
 		return false;
-	//可以穿过的东西多得多，所以只有不可穿过的才记录下来了
+		//可以穿过的东西多得多，所以只有不可穿过的才记录下来了
 	}
 	return true;
 }

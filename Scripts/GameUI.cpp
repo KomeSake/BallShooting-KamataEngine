@@ -74,6 +74,7 @@ PlayerUI_HP::PlayerUI_HP()
 	_playerHpMax = 0;
 	_playerHpSpriteW = 0;
 	_hpSpriteRate = 0;
+	_radarSpritePos = _pos;
 }
 
 void PlayerUI_HP::UIOpen(Player* obj)
@@ -86,13 +87,24 @@ void PlayerUI_HP::UIOpen(Player* obj)
 		_isInitial = true;
 	}
 	//血量
-	FrameTexture(_pos.x, _pos.y, LoadRes::_spUI_playerHp, 0, _color);
+	FrameTexture(_radarSpritePos.x, _radarSpritePos.y, LoadRes::_spUI_playerHp, 0, _color);
 	FrameTexture(_pos.x + 60 * 4, _pos.y + 81 * 4, LoadRes::_spUI_playerHp, 1, _color);
 	float playerHp = obj->_hp;
 	if (playerHp > 0) {
 		Novice::DrawBox(int(_pos.x + 60 * 4), int(_pos.y + 85 * 4), int(playerHp * _hpSpriteRate), 9 * 4, 0, 0xa75f53ff, kFillModeSolid);
 	}
 	FrameTexture(_pos.x + 64 * 4, _pos.y + 85 * 4, LoadRes::_spUI_playerHp, 3, _color);
+	//受伤抖动效果
+	if (obj->_isHarmed && !obj->_isDead) {
+		float moveSpeedX = 5;
+		if (MyTimers(50, 5)) {
+			moveSpeedX *= -1;
+		}
+		_radarSpritePos.x += moveSpeedX;
+	}
+	else {
+		_radarSpritePos = _pos;
+	}
 	//雷达电台
 	//常态化显示敌人版
 	//for (Enemy* element : EnemyManager::_enemyUpdateVector) {
@@ -135,25 +147,47 @@ PlayerUI_Gun::PlayerUI_Gun()
 	_height = 66 * 4;
 	_pos = { 1920 - _width - 3 * 4,1080 - _height - 2 * 4 };
 	_color = WHITE;
+
+	_gunHotPos = _pos;
 }
 
 void PlayerUI_Gun::UIOpen(Player* obj)
 {
 	FrameTexture(_pos.x, _pos.y, LoadRes::_spUI_playerGun, 0, _color);
-	FrameTexture(_pos.x + 90 * 4, _pos.y + 14 * 4, LoadRes::_spUI_playerGun, 1, _color);
+	if (!obj->_isGunHot) {
+		FrameTexture(_gunHotPos.x + 90 * 4, _gunHotPos.y + 14 * 4, LoadRes::_spUI_playerGun, 1, _color);
+	}
 	float gunhot = float(obj->_gunHotValue);
 	float gunhotSpriteW = 252.f;
 	float gunhotRate = gunhotSpriteW / float(obj->_gunHotMax);
 	if (gunhot > 0) {
 		Novice::DrawQuad(
-			int(_pos.x + 90 * 4), int(_pos.y + 14 * 4),
-			int(_pos.x + 90 * 4 + gunhot * gunhotRate), int(_pos.y + 14 * 4),
-			int(_pos.x + 90 * 4), int(_pos.y + 14 * 4 + LoadRes::_spUI_playerGun02.h),
-			int(_pos.x + 90 * 4 + gunhot * gunhotRate), int(_pos.y + 14 * 4 + LoadRes::_spUI_playerGun02.h),
+			int(_gunHotPos.x + 90 * 4), int(_gunHotPos.y + 14 * 4),
+			int(_gunHotPos.x + 90 * 4 + gunhot * gunhotRate), int(_gunHotPos.y + 14 * 4),
+			int(_gunHotPos.x + 90 * 4), int(_gunHotPos.y + 14 * 4 + LoadRes::_spUI_playerGun02.h),
+			int(_gunHotPos.x + 90 * 4 + gunhot * gunhotRate), int(_gunHotPos.y + 14 * 4 + LoadRes::_spUI_playerGun02.h),
 			0, 0,
 			int(gunhot * gunhotRate), LoadRes::_spUI_playerGun02.h,
 			LoadRes::_spUI_playerGun02.path,
 			_color);
+	}
+
+	//如果在枪冷却途中也按下鼠标左键，就晃动
+	if (obj->_isGunHot && Novice::IsPressMouse(0)) {
+		float moveSpeedX = 5;
+		float moveSpeedY = 5;
+		if (MyTimers(50, 6)) {
+			moveSpeedX *= -1;
+			moveSpeedY *= -1;
+		}
+		_gunHotPos.x += moveSpeedX;
+		_gunHotPos.y -= moveSpeedY;
+		if (MyTimers(100, 7)) {
+			_gunHotPos = _pos;
+		}
+	}
+	else {
+		_gunHotPos = _pos;
 	}
 }
 

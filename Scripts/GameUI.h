@@ -52,7 +52,8 @@ public:
 	float _radarRate;//缩放到雷达中的比率
 	vector<Vector2> _radarEnemyPos;//存放要显示在雷达上的敌人坐标
 	int _radarEnemyTimer;//多久更新一次敌人坐标
-	bool _isRadarMy;//显示自身
+	bool _isRadarMy;//显示自身在雷达上
+	Vector2 _radarSpritePos;//雷达贴图坐标(用以扣血都用雷达用)
 	PlayerUI_HP();
 	void UIOpen(Player* obj);
 };
@@ -61,6 +62,7 @@ class PlayerUI_Gun :
 	public GameUI
 {
 public:
+	Vector2 _gunHotPos;//特别用于枪冷却图标
 	PlayerUI_Gun();
 	void UIOpen(Player* obj);
 };

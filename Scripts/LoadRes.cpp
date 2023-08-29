@@ -91,6 +91,13 @@ void LoadRes::LoadResNovice()
 		listW = 640, listH = 128;
 		_spListEnemy3[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 6; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Enemy4.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 768, listH = 128;
+		_spListEnemy4[i] = { path,x,y,w,h,listW,listH };
+	}
 	//Map
 	for (int i = 0; i < 4; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Map/List.png");

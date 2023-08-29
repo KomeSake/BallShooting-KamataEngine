@@ -15,6 +15,7 @@ public:
 		dog1_1,
 		dog2,
 		shoot,
+		doubleShoot,
 	}enumEnemy;
 
 	Vector2 _pos;
@@ -39,7 +40,7 @@ public:
 	float _damage;
 	int _shootTimer;//远程攻击间隔
 	float _warningLength;//距离玩家多远才开始产生警戒
-	float _toPlayerLengthStop;//距离玩家多远会停下
+	float _toPlayerLengthStop;//距离玩家多远会停下(这个值为0就是近战)
 	bool _isRunToPlayer;//是否追逐玩家
 	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应
 	bool _isDrop;//正在陨落(通过这个值会让敌人不追玩家)
@@ -69,6 +70,7 @@ public:
 	inline static std::queue<Enemy*> _enemyIdiePool_dog1_1;
 	inline static std::queue<Enemy*> _enemyIdiePool_dog2;
 	inline static std::queue<Enemy*> _enemyIdiePool_shoot;
+	inline static std::queue<Enemy*> _enemyIdiePool_doubleShoot;
 
 	static void EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	static Enemy* AcquireEnemy(Enemy::EnemyType type);

@@ -54,7 +54,7 @@ void Scene::ScreenStart(int mouseX, int mouseY)
 	ScreenUI_StartObj->UIOpen(GameUI::Vector2{ float(mouseX),float(mouseY) });
 	if (ScreenUI_StartObj->_isStartButton) {
 		_sceneIndex = Loading;
-		_levelNum = 0;
+		_levelNum = 1;
 		ScreenUI_StartObj->_isStartButton = false;
 	}
 }

@@ -43,6 +43,7 @@ public:
 	inline static map<int, SpriteList> _spListEnemy1_1;
 	inline static map<int, SpriteList> _spListEnemy2;
 	inline static map<int, SpriteList> _spListEnemy3;
+	inline static map<int, SpriteList> _spListEnemy4;
 	//特效
 	inline static map<int, SpriteList> _spListExplode;
 	inline static map<int, SpriteList> _spListEnemyExplode;

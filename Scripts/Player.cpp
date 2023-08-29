@@ -34,11 +34,12 @@ Player::Player(Vector2 bornPos)
 	_isManEntering = false;
 
 	_sprite = LoadRes::_spListPlayer;
-	_width = 128;
-	_height = 128;
+	_width = 110;//小一点点，不然有些关卡不好过
+	_height = 110;
 	_scaleX = 1;
 	_scaleY = 1;
 	_color = WHITE;
+	_steamNoColor = 0x00796bff;
 
 	_mousePos.x = 0;
 	_mousePos.y = 0;
@@ -236,7 +237,7 @@ void Player::PatternChange(char keys[], char preKeys[])
 			}
 			else {
 				_pattern = 2;
-				_color = BLUE;
+				_color = _steamNoColor;
 			}
 		}
 		else if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
@@ -248,7 +249,7 @@ void Player::PatternChange(char keys[], char preKeys[])
 			}
 			else {
 				_pattern = 2;
-				_color = BLUE;
+				_color = _steamNoColor;
 			}
 		}
 		if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
@@ -259,7 +260,7 @@ void Player::PatternChange(char keys[], char preKeys[])
 				_color = WHITE;
 			}
 			else {
-				_color = BLUE;
+				_color = _steamNoColor;
 			}
 		}
 		else if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
@@ -270,7 +271,7 @@ void Player::PatternChange(char keys[], char preKeys[])
 				_color = WHITE;
 			}
 			else {
-				_color = BLUE;
+				_color = _steamNoColor;
 			}
 		}
 	}
@@ -289,8 +290,8 @@ void Player::PatternChange(char keys[], char preKeys[])
 		_bounce = _bounceMan;
 		_friction = _frictionMan;
 		_velMax = _velMaxMan;
-		_width = 128;
-		_height = 128;
+		_width = 110;
+		_height = 110;
 		break;
 	case 2:
 		_speed = _speedBall / 2;
@@ -492,6 +493,12 @@ void Player::Show()
 {
 	//其实不用这么麻烦，只需要把对应的上下左右速度算出一个角度值即可
 	//然后图片按照这个角度值就可以自然摆出想要的样式了
+
+	//如果在掉落，就把烟雾贴图变成透明的(就因为写的太傻逼了，所以只可以用这个方法了)
+	unsigned int smokerColor = WHITE;
+	if (_isDrop) {
+		smokerColor = 0x00000000;
+	}
 	switch (_pattern)
 	{
 	case 0:
@@ -510,56 +517,56 @@ void Player::Show()
 				_isBallStop = true;
 				_spriteDownDegree = -45;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.x > spriteVel && _vel.y > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 45;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.x < -spriteVel && _vel.y < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = -135;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.x > spriteVel && _vel.y < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 135;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.y > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 0;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.y < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 180;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.x < -spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = -90;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else if (_vel.x > spriteVel) {
 				_isBallStop = true;
 				_spriteDownDegree = 90;
 				float rad = acosf(-1) / 180 * _spriteDownDegree;
-				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, WHITE, 70, 3);
+				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_smoker, _scaleX, _scaleY, rad, smokerColor, 70, 3);
 				FrameAnimation(_pos.x, _pos.y, LoadRes::_spListPlayer_ball, _scaleX, _scaleY, rad, _color, 10, 1);
 			}
 			else {
@@ -691,7 +698,7 @@ void Player::Effect()
 				_color = WHITE;
 			}
 			else {
-				_color = BLUE;
+				_color = _steamNoColor;
 			}
 			_isHarmed = false;
 		}
@@ -707,7 +714,7 @@ void Player::SteamPush()
 		}
 		else {
 			_pattern = 2;
-			_color = BLUE;
+			_color = _steamNoColor;
 		}
 		break;
 	}

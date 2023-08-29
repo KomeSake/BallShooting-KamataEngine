@@ -64,12 +64,15 @@ Player::Player(Vector2 bornPos)
 	_dropPos[0] = { 0,0 };
 	_dropPos[1] = { 0,0 };
 	_dropPos[2] = { 0,0 };
+	_isExit = false;
+	_isExitAniStart = false;
+	_isDead = false;
 }
 
 void Player::Move(char keys[], vector<vector<char>> mapData, float bgWidth, float bgHeight, float minMapSize)
 {
 	//移动部分
-	if (!_isDrop) {
+	if (!_isDrop && !_isExit && !_isDead) {
 		if (keys[DIK_W]) {
 			_dir.y = 1;
 		}
@@ -220,42 +223,44 @@ void Player::PatternChange(char keys[], char preKeys[])
 	//	_pattern = 1;
 	//}	
 
-	//状态变换(按住按键变成球版)
-	if (!preKeys[DIK_LSHIFT] && keys[DIK_LSHIFT]) {
-		_isBallEntering = true;
-		_frameAniIndex[4] = 0;
-		if (_steamValue > 0) {
-			_pattern = 0;
+	if (!_isExit && !_isDead) {
+		//状态变换(按住按键变成球版)
+		if (!preKeys[DIK_LSHIFT] && keys[DIK_LSHIFT]) {
+			_isBallEntering = true;
+			_frameAniIndex[4] = 0;
+			if (_steamValue > 0) {
+				_pattern = 0;
+				_color = WHITE;
+			}
+			else {
+				_pattern = 2;
+				_color = BLUE;
+			}
+		}
+		else if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
+			_isBallEntering = true;
+			_frameAniIndex[4] = 0;
+			if (_steamValue > 0) {
+				_pattern = 0;
+				_color = WHITE;
+			}
+			else {
+				_pattern = 2;
+				_color = BLUE;
+			}
+		}
+		if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
+			_isManEntering = true;
+			_frameAniIndex[4] = 0;
+			_pattern = 1;
 			_color = WHITE;
 		}
-		else {
-			_pattern = 2;
-			_color = BLUE;
-		}
-	}
-	else if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
-		_isBallEntering = true;
-		_frameAniIndex[4] = 0;
-		if (_steamValue > 0) {
-			_pattern = 0;
+		else if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
+			_isManEntering = true;
+			_frameAniIndex[4] = 0;
+			_pattern = 1;
 			_color = WHITE;
 		}
-		else {
-			_pattern = 2;
-			_color = BLUE;
-		}
-	}
-	if (preKeys[DIK_LSHIFT] && !keys[DIK_LSHIFT]) {
-		_isManEntering = true;
-		_frameAniIndex[4] = 0;
-		_pattern = 1;
-		_color = WHITE;
-	}
-	else if (preKeys[DIK_SPACE] && !keys[DIK_SPACE]) {
-		_isManEntering = true;
-		_frameAniIndex[4] = 0;
-		_pattern = 1;
-		_color = WHITE;
 	}
 	//状态变换后的属性变化
 	switch (_pattern) {
@@ -395,10 +400,39 @@ void Player::DropSystem(vector<vector<char>> mapData, float bgHeight, float minM
 	}
 }
 
+void Player::IsExit(vector<vector<char>> mapData, float bgHeight, float minMapSize)
+{
+	int posCheckLine = (int)((bgHeight - _pos.y) / minMapSize);
+	int posCheckRow = (int)(_pos.x / minMapSize);
+
+	if (mapData[posCheckLine][posCheckRow] == 'd'
+		&& !_isExit) {
+		_isExit = true;
+		return;
+	}
+	if (_isExit) {
+		_pos.x = posCheckRow * minMapSize + minMapSize / 2;
+		_pos.y = bgHeight - (posCheckLine * minMapSize) - minMapSize / 2;
+		_vel = { 0,0 };
+		if (_pattern != 0) {
+			_pattern = 0;
+			_isBallEntering = true;
+		}
+		if (MyTimers(int(LoadRes::_spListExit2.size() * 100 - 1), 0)) {
+			_isExitAniStart = true;
+		}
+		if (_isExitAniStart && _scaleX > 0) {
+			_scaleX -= 0.05f;
+			_scaleY -= 0.05f;
+		}
+	}
+}
+
 void Player::IsDead()
 {
 	if (_hp < 0) {
-		//这里写上需要的效果
+		_isDead = true;
+		_vel = { 0,0 };
 	}
 }
 
@@ -569,6 +603,10 @@ void Player::Show()
 			FrameTexture(_pos.x, _pos.y, LoadRes::_spArrow, _scaleX, _scaleY, rad, WHITE);
 		}
 		break; }
+	}
+	if (_isDead) {
+		_color = RED;
+		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListExplode, 1.5f, 1.5f, 0, WHITE, 70, 5);
 	}
 }
 

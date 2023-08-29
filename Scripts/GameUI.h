@@ -83,3 +83,23 @@ public:
 	ScreenUI_Start();
 	void UIOpen(Vector2 mousePos);
 };
+
+class ScreenUI_LevelClear :
+	public GameUI
+{
+public:
+	bool _isLevelNext;//是否下一关
+	bool _isBackMenu;//是否回到主菜单
+	ScreenUI_LevelClear();
+	void UIOpen(Vector2 mousePos);
+};
+
+class ScreenUI_Dead :
+	public GameUI
+{
+public:
+	bool _isRestart;//是否重试
+	bool _isBackMenu;//是否回到主菜单
+	ScreenUI_Dead();
+	void UIOpen(Vector2 mousePos);
+};

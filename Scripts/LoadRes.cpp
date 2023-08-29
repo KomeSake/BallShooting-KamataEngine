@@ -106,6 +106,13 @@ void LoadRes::LoadResNovice()
 		listW = 4992, listH = 384;
 		_spListExit[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 12; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Map/Exit2.png");
+		w = 384, h = 384;
+		x = i * w, y = 0;
+		listW = 4608, listH = 384;
+		_spListExit2[i] = { path,x,y,w,h,listW,listH };
+	}
 	//特效
 	for (int i = 0; i < 10; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Effect/Explode.png");
@@ -178,4 +185,38 @@ void LoadRes::LoadResNovice()
 	_spUI_screenStart[4] = { path,x,y,w,h,listW,listH };
 	w = 128, h = 64, x = 1660, y = 64;
 	_spUI_screenStart[5] = { path,x,y,w,h,listW,listH };
+
+	path = Novice::LoadTexture("./Resources/Textures/UI/LevelClear/List.png");
+	listW = 1700, listH = 396;
+	w = 880, h = 344, x = 0, y = 0;
+	_spUI_screenLevelClear[0] = { path,x,y,w,h,listW,listH };
+	w = 684, h = 172, x = 880, y = 0;
+	_spUI_screenLevelClear[1] = { path,x,y,w,h,listW,listH };
+	w = 308, h = 112, x = 880, y = 172;
+	_spUI_screenLevelClear[2] = { path,x,y,w,h,listW,listH };
+	w = 308, h = 112, x = 1188, y = 172;
+	_spUI_screenLevelClear[3] = { path,x,y,w,h,listW,listH };
+	w = 308, h = 112, x = 880, y = 284;
+	_spUI_screenLevelClear[4] = { path,x,y,w,h,listW,listH };
+	w = 120, h = 68, x = 1564, y = 68;
+	_spUI_screenLevelClear[5] = { path,x,y,w,h,listW,listH };
+	w = 136, h = 68, x = 1564, y = 0;
+	_spUI_screenLevelClear[6] = { path,x,y,w,h,listW,listH };
+
+	path = Novice::LoadTexture("./Resources/Textures/UI/Dead/List.png");
+	listW = 1448, listH = 692;
+	w = 572, h = 576, x = 740, y = 0;
+	_spUI_screenDead[0] = { path,x,y,w,h,listW,listH };
+	w = 740, h = 580, x = 0, y = 0;
+	_spUI_screenDead[1] = { path,x,y,w,h,listW,listH };
+	w = 308, h = 112, x = 740, y = 576;
+	_spUI_screenDead[2] = { path,x,y,w,h,listW,listH };
+	w = 308, h = 112, x = 1048, y = 576;
+	_spUI_screenDead[3] = { path,x,y,w,h,listW,listH };
+	w = 308, h = 112, x = 0, y = 580;
+	_spUI_screenDead[4] = { path,x,y,w,h,listW,listH };
+	w = 136, h = 68, x = 1312, y = 0;
+	_spUI_screenDead[5] = { path,x,y,w,h,listW,listH };
+	w = 200, h = 68, x = 308, y = 580;
+	_spUI_screenDead[6] = { path,x,y,w,h,listW,listH };
 }

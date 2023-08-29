@@ -214,16 +214,16 @@ void Enemy::Show(bool isHpLine)
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
 	}
 	//头顶上的血条
-	if (!_isDrop&& isHpLine) {
+	if (!_isDrop && isHpLine) {
 		LoadRes::Sprite sprite = { Novice::LoadTexture("white1x1.png") ,1,1 };
 		float hpSpriteW = 60;
 		float hpRate = hpSpriteW / _hpMax;
 		if (_hp > 0) {
-			FrameTexture(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
-			FrameTexture(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, _hp * hpRate, 10, 0xe84e40ff);
+			FrameTexture_OLD(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
+			FrameTexture_OLD(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, _hp * hpRate, 10, 0xe84e40ff);
 		}
 		else {
-			FrameTexture(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
+			FrameTexture_OLD(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
 		}
 	}
 }

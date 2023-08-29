@@ -27,10 +27,12 @@ public:
 
 	Camera(const int screenW, const int screenH, int bgW, int bgH, int minMapSize);
 	void Move(Vector2 playerPos);
-	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize);
+	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize, bool playerIsExit);
 
 	bool CameraEffect(int index);
 	int _cameraEffect01[4];//屏幕抖动效果，0：x移动次数，1：y移动次数，2：总共几个轮回，3：移动的速度
+
+	bool _isExitAniOver;//用于结束大门的播放
 
 	//相机设置步骤
 	//1.所有坐标都必须是世界坐标
@@ -67,4 +69,10 @@ public:
 
 	//加法定理，为了计算旋转后的图像位置
 	Vector2 AditionRule(Vector2 pos, float rad);
+
+	//计时器(共30格)
+	int MyTimers(int milli, int index);
+	clock_t _timeStart[31] = { 0 };
+	clock_t _timeEnd[31] = { 0 };
+	bool _isTimeOpen[31] = { 0 };
 };

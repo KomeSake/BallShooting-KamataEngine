@@ -16,6 +16,8 @@ Camera::Camera(const int screenW, const int screenH, int bgW, int bgH, int minMa
 	_cameraEffect01[1] = 5;
 	_cameraEffect01[2] = 2;
 	_cameraEffect01[3] = 5;
+
+	_isExitAniOver = false;
 }
 
 void Camera::Move(Vector2 playerPos)
@@ -28,7 +30,7 @@ void Camera::Move(Vector2 playerPos)
 	}
 }
 
-void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize) {
+void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize, bool playerIsExit) {
 	bgW;
 	Vector2 minMapPos = { 0,0 };
 	//最下层的地图展示
@@ -73,28 +75,43 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 		for (const char& line : row) {
 			switch (line) {
 			case 'd':
-				FrameAnimation(minMapPos.x, minMapPos.y, LoadRes::_spListExit, 0, WHITE, 100, 1);
+				if (!playerIsExit) {
+					FrameAnimation(minMapPos.x, minMapPos.y, LoadRes::_spListExit, 0, WHITE, 100, 1);
+					_frameAniIndex[2] = 0;
+					_isExitAniOver = false;
+				}
+				else {
+					if (MyTimers(int(LoadRes::_spListExit2.size() * 100 - 1), 0)) {
+						_isExitAniOver = true;
+					}
+					if (!_isExitAniOver) {
+						FrameAnimation(minMapPos.x, minMapPos.y, LoadRes::_spListExit2, 0, WHITE, 100, 2);
+					}
+					else {
+						FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListExit2, 11, WHITE);
+					}
+				}
 				break;
 			case 'A':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText,0,0.2f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 0, 0.2f, WHITE);
 				break;
 			case 'B':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText,1, -0.07f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 1, -0.07f, WHITE);
 				break;
 			case 'C':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 2,0.13f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 2, 0.13f, WHITE);
 				break;
 			case 'D':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 3,-0.2f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 3, -0.2f, WHITE);
 				break;
 			case 'E':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 4,0.17f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 4, 0.17f, WHITE);
 				break;
 			case 'F':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 5,-0.05f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 5, -0.05f, WHITE);
 				break;
 			case 'G':
-				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 6,0.1f, WHITE);
+				FrameTexture(minMapPos.x, minMapPos.y, LoadRes::_spListHelpText, 6, 0.1f, WHITE);
 				break;
 			}
 			minMapPos.x += minSize;
@@ -217,6 +234,20 @@ Camera::Vector2 Camera::AditionRule(Vector2 pos, float rad)
 	float aditionX = pos.x * cosf(rad) - pos.y * sinf(rad);
 	float aditionY = pos.y * cosf(rad) + pos.x * sinf(rad);
 	return Vector2{ aditionX,aditionY };
+}
+
+int Camera::MyTimers(int milli, int index)
+{
+	if (!_isTimeOpen[index]) {
+		_timeStart[index] = clock();
+		_isTimeOpen[index] = true;
+	}
+	_timeEnd[index] = clock();
+	if (_timeEnd[index] - _timeStart[index] > milli) {
+		_isTimeOpen[index] = false;
+		return 1;
+	}
+	return 0;
 }
 
 Camera::Vector2 Camera::ScreenToWorld(float screenX, float screenY, float cameraX, float cameraY) {

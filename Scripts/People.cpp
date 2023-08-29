@@ -81,6 +81,14 @@ void People::FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX
 {
 	float screenPosX = x - _cameraPos.x + _screenWidth / 2;
 	float screenPosY = (y - _cameraPos.y + _screenHeight / 2 - _screenHeight) * -1;
+	Vector2 zoom = { float(sprite.w) / 2 - float(sprite.w) / 2 * scaleX,float(sprite.h) / 2 - float(sprite.h) / 2 * scaleY };
+	Novice::DrawSprite((int)(screenPosX - (float)(sprite.w) / 2 + zoom.x), (int)(screenPosY - (float)(sprite.h) / 2 + zoom.y), sprite.path, scaleX, scaleY, 0, color);
+}
+void People::FrameTexture_OLD(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, int color)
+{
+	float screenPosX = x - _cameraPos.x + _screenWidth / 2;
+	float screenPosY = (y - _cameraPos.y + _screenHeight / 2 - _screenHeight) * -1;
+	//Vector2 zoom = { float(sprite.w) / 2 - float(sprite.w) / 2 * scaleX,float(sprite.h) / 2 - float(sprite.h) / 2 * scaleY };
 	Novice::DrawSprite((int)(screenPosX - (float)(sprite.w) / 2), (int)(screenPosY - (float)(sprite.h) / 2), sprite.path, scaleX, scaleY, 0, color);
 }
 
@@ -92,8 +100,9 @@ void People::FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX
 	//ScreenPos
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
+	Vector2 zoom = { float(sprite.w) / 2 - float(sprite.w) / 2 * scaleX,float(sprite.h) / 2 - float(sprite.h) / 2 * scaleY };
 
-	Novice::DrawSprite((int)rotated.x, (int)rotated.y, sprite.path, scaleX, scaleY, rad, color);
+	Novice::DrawSprite((int)(rotated.x + zoom.x), (int)(rotated.y + zoom.y), sprite.path, scaleX, scaleY, rad, color);
 }
 
 void People::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList, int index, float scaleX, float scaleY, int color)
@@ -104,7 +113,8 @@ void People::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList
 	int arrX = spList[index].x, arrY = spList[index].y;
 
 	Vector2 pos = WorldToScreen({ x,y }, _cameraPos);
-	Novice::DrawSpriteRect((int)(pos.x - (float)(arrW) / 2), (int)(pos.y - (float)(arrH) / 2), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW) * scaleX, ((float)arrH / (float)arrSpriteH) * scaleY, 0, color);
+	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
+	Novice::DrawSpriteRect((int)(pos.x - (float)(arrW) / 2 + zoom.x), (int)(pos.y - (float)(arrH) / 2 + zoom.y), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW) * scaleX, ((float)arrH / (float)arrSpriteH) * scaleY, 0, color);
 }
 
 void People::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList, int index, float scaleX, float scaleY, float rad, int color)
@@ -118,7 +128,8 @@ void People::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList
 	rotated = AditionRule(rotated, -rad);
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
-	Novice::DrawSpriteRect((int)rotated.x, (int)rotated.y, arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW) * scaleX, ((float)arrH / (float)arrSpriteH) * scaleY, rad, color);
+	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
+	Novice::DrawSpriteRect((int)(rotated.x + zoom.x), (int)(rotated.y + zoom.y), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW) * scaleX, ((float)arrH / (float)arrSpriteH) * scaleY, rad, color);
 }
 
 void People::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spList, float rad, int color, int frameTime, int playIndex)
@@ -156,7 +167,8 @@ void People::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spLi
 	rotated = AditionRule(rotated, -rad);
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
-	Novice::DrawSpriteRect((int)rotated.x, (int)rotated.y, arrX, arrY, arrW, arrH, arrPath, ((float)arrW / (float)arrListW) * scaleX, ((float)arrH / (float)arrListH) * scaleY, rad, color);
+	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
+	Novice::DrawSpriteRect((int)(rotated.x + zoom.x), (int)(rotated.y + zoom.y), arrX, arrY, arrW, arrH, arrPath, ((float)arrW / (float)arrListW) * scaleX, ((float)arrH / (float)arrListH) * scaleY, rad, color);
 }
 
 int People::FrameTimers(int milli, int index)

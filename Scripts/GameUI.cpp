@@ -66,11 +66,11 @@ PlayerUI_HP::PlayerUI_HP()
 
 	_radarPos = { _pos.x + 30 * 4,_pos.y + 70 * 4 };
 	_radarLengthMax = 1300;
-	_radarRate = 0.07f; 
+	_radarRate = 0.07f;
 	_radarEnemyTimer = 700;
 	_isRadarMy = false;
 
-	_isInitial = false; 
+	_isInitial = false;
 	_playerHpMax = 0;
 	_playerHpSpriteW = 0;
 	_hpSpriteRate = 0;
@@ -121,11 +121,11 @@ void PlayerUI_HP::UIOpen(Player* obj)
 	if (MyTimers(_radarEnemyTimer, 2)) {
 		_isRadarMy = true;
 	}
-	if (MyTimers(_radarEnemyTimer*3, 3)) {
+	if (MyTimers(_radarEnemyTimer * 3, 3)) {
 		_isRadarMy = false;
 	}
 	if (_isRadarMy) {
-		Novice::DrawEllipse(int(_radarPos.x+2), int(_radarPos.y+2), 6, 6, 0, 0xffa000ff, kFillModeSolid);
+		Novice::DrawEllipse(int(_radarPos.x + 2), int(_radarPos.y + 2), 6, 6, 0, 0xffa000ff, kFillModeSolid);
 	}
 }
 
@@ -230,6 +230,72 @@ void ScreenUI_Start::UIOpen(Vector2 mousePos)
 		FrameTexture(295 * 4, 203 * 4, LoadRes::_spUI_screenStart, 3, _color);
 		if (Novice::IsTriggerMouse(0)) {
 			_isLevelButton = true;
+		}
+	}
+}
+
+ScreenUI_LevelClear::ScreenUI_LevelClear()
+{
+	_width = 1920;
+	_height = 1080;
+	_pos = { 0,0 };
+	_color = WHITE;
+	_isLevelNext = false;
+	_isBackMenu = false;
+}
+
+void ScreenUI_LevelClear::UIOpen(Vector2 mousePos)
+{
+	Novice::DrawBox(0, 0, 1920, 1080, 0, 0x21212190, kFillModeSolid);
+	FrameTexture(_pos.x + 38 * 4, _pos.y + 14 * 4, LoadRes::_spUI_screenLevelClear, 0, _color);
+	FrameTexture(_pos.x + 253 * 4, _pos.y + 108 * 4, LoadRes::_spUI_screenLevelClear, 1, _color);
+	FrameTexture(_pos.x + 277 * 4, _pos.y + 211 * 4, LoadRes::_spUI_screenLevelClear, 2, _color);
+	FrameTexture(_pos.x + 136 * 4, _pos.y + 211 * 4, LoadRes::_spUI_screenLevelClear, 3, _color);
+	FrameTexture(_pos.x + 301 * 4, _pos.y + 215 * 4, LoadRes::_spUI_screenLevelClear, 5, _color);
+	FrameTexture(_pos.x + 157 * 4, _pos.y + 215 * 4, LoadRes::_spUI_screenLevelClear, 6, _color);
+	if (mousePos.x > 277 * 4 && mousePos.y > 211 * 4 && mousePos.x < 353 * 4 && mousePos.y < 238 * 4) {
+		FrameTexture(277 * 4, 211 * 4, LoadRes::_spUI_screenLevelClear, 4, _color);
+		if (Novice::IsTriggerMouse(0)) {
+			_isLevelNext = true;
+		}
+	}
+	if (mousePos.x > 136 * 4 && mousePos.y > 211 * 4 && mousePos.x < 212 * 4 && mousePos.y < 238 * 4) {
+		FrameTexture(136 * 4, 211 * 4, LoadRes::_spUI_screenLevelClear, 4, _color);
+		if (Novice::IsTriggerMouse(0)) {
+			_isBackMenu = true;
+		}
+	}
+}
+
+ScreenUI_Dead::ScreenUI_Dead()
+{
+	_width = 1920;
+	_height = 1080;
+	_pos = { 0,0 };
+	_color = WHITE;
+	_isRestart = false;
+	_isBackMenu = false;
+}
+
+void ScreenUI_Dead::UIOpen(Vector2 mousePos)
+{
+	Novice::DrawBox(0, 0, 1920, 1080, 0, 0x832f2690, kFillModeSolid);
+	FrameTexture(_pos.x + 56 * 4, _pos.y + 35 * 4, LoadRes::_spUI_screenDead, 0, _color);
+	FrameTexture(_pos.x + 245 * 4, _pos.y + 35 * 4, LoadRes::_spUI_screenDead, 1, _color);
+	FrameTexture(_pos.x + 277 * 4, _pos.y + 211 * 4, LoadRes::_spUI_screenDead, 2, _color);
+	FrameTexture(_pos.x + 136 * 4, _pos.y + 211 * 4, LoadRes::_spUI_screenDead, 3, _color);
+	FrameTexture(_pos.x + 157 * 4, _pos.y + 215 * 4, LoadRes::_spUI_screenDead, 5, _color);
+	FrameTexture(_pos.x + 292 * 4, _pos.y + 215 * 4, LoadRes::_spUI_screenDead, 6, _color);
+	if (mousePos.x > 277 * 4 && mousePos.y > 211 * 4 && mousePos.x < 353 * 4 && mousePos.y < 238 * 4) {
+		FrameTexture(277 * 4, 211 * 4, LoadRes::_spUI_screenDead, 4, _color);
+		if (Novice::IsTriggerMouse(0)) {
+			_isRestart = true;
+		}
+	}
+	if (mousePos.x > 136 * 4 && mousePos.y > 211 * 4 && mousePos.x < 212 * 4 && mousePos.y < 238 * 4) {
+		FrameTexture(136 * 4, 211 * 4, LoadRes::_spUI_screenDead, 4, _color);
+		if (Novice::IsTriggerMouse(0)) {
+			_isBackMenu = true;
 		}
 	}
 }

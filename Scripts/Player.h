@@ -55,6 +55,8 @@ public:
 	int _gunHotValue;//当前热度容量
 	int _gunHotMax;//热度上限
 	bool _isGunHot;
+	bool _isExit;//是否已经到达出口
+	bool _isDead;
 
 	Player(Vector2 bornPos);//出生位置
 	void Move(char keys[], vector<vector<char>> mapData, float bgWidth, float bgHeight, float minMapSize);
@@ -72,4 +74,6 @@ public:
 	int _ballStopSprite;//球停下来的时候需要用什么图片
 	bool _isBallStop;//球形态初次停下来了
 	void Effect();
+	void IsExit(vector<vector<char>> mapData, float bgHeight, float minMapSize);//是否已经到达出口，相关的实现代码
+	bool _isExitAniStart;//开始播放跌落动画
 };

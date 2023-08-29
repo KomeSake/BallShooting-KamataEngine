@@ -47,6 +47,7 @@ public:
 	inline static map<int, SpriteList> _spListMap;
 	inline static map<int, SpriteList> _spListHelpText;
 	inline static map<int, SpriteList> _spListExit;
+	inline static map<int, SpriteList> _spListExit2;
 
 	//UI
 	inline static Sprite _spStart;
@@ -56,6 +57,8 @@ public:
 	inline static map<int, SpriteList> _spUI_playerSteam;
 	inline static Sprite _spUI_playerSteam01;
 	inline static map<int, SpriteList> _spUI_screenStart;
+	inline static map<int, SpriteList> _spUI_screenLevelClear;
+	inline static map<int, SpriteList> _spUI_screenDead;
 
 
 

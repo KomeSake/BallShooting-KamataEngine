@@ -22,6 +22,8 @@
 6、地图设计，美术设计。现在是制作好了地图读取系统，但是地图还没设计好，还有美术也需要添加
 7、杂项：UI、关卡轮回（怎么感觉还挺多东西的）
 8、地图机制，像是把人推开等等的
+
+!!!现在的撞击敌人机制太简单粗暴！要按照球的速度来决定伤害，这样可以让游戏机制跟上一层楼
 */
 
 
@@ -67,12 +69,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景(防止更换场景时候的颜色错误)
 		int mouseX = 0, mouseY = 0;
 		Novice::GetMousePosition(&mouseX, &mouseY);
+		//char* tempKeys = 0;//为了剥夺玩家的控制，随便创建一个空的输入key
 
 		switch (SceneObj->_sceneIndex) {
 		case Scene::Loading:
 			//初始载入
+			BulletManager::_bulletUpdata_player.clear();
+			EnemyManager::_enemyUpdateVector.clear();
 			switch (SceneObj->_levelNum) {
 			case 0:
 				_mapData = Map::_mapData_help;
@@ -120,7 +126,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			EnemyManager::EnemyUpdata(Enemy::Vector2{ float(mouseX), float(mouseY - 1080) * -1 }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 			People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
 
-			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize, false);
 			EnemyManager::EnemyShow(false);
 
 			SceneObj->ScreenStart(mouseX, mouseY);
@@ -149,13 +155,52 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			PlayerObj->IsDead();
 
 			Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景
-			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize, PlayerObj->_isExit);
 			EnemyManager::EnemyShow(true);
 			BulletManager::BulletShow();
 			PlayerObj->Effect();
 			PlayerObj->Show();
 
 			SceneObj->ScreenGame(PlayerObj);
+			PlayerObj->IsExit(_mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			//如果玩家到达终点
+			if (PlayerObj->_isExit) {
+				SceneObj->_sceneIndex = Scene::LevelClear;
+			}
+			//如果玩家死亡
+			if (PlayerObj->_isDead) {
+				SceneObj->_sceneIndex = Scene::GameOver;
+			}
+			break;
+		case Scene::LevelClear:
+			//关卡通过
+			EnemyManager::EnemyUpdata(Enemy::Vector2{ float(mouseX), float(mouseY - 1080) * -1 }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
+			PlayerObj->IsExit(_mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			PlayerObj->PatternChange(keys, preKeys);
+
+			Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景
+			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize, PlayerObj->_isExit);
+			EnemyManager::EnemyShow(false);
+			PlayerObj->Show();
+
+			SceneObj->ScreenGame(PlayerObj);
+			SceneObj->ScreenLevelClear(mouseX, mouseY);
+			break;
+		case Scene::GameOver:
+			//游戏失败
+			EnemyManager::EnemyUpdata(Enemy::Vector2{ float(mouseX), float(mouseY - 1080) * -1 }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
+			PlayerObj->IsExit(_mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
+			PlayerObj->PatternChange(keys, preKeys);
+
+			Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景
+			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize, PlayerObj->_isExit);
+			EnemyManager::EnemyShow(false);
+			PlayerObj->Show();
+
+			SceneObj->ScreenGame(PlayerObj);
+			SceneObj->ScreenDead(mouseX, mouseY);
 			break;
 		}
 		//隐藏鼠标，换成用自己的(鼠标贴图不知道为什么有点偏移，我加了补偿距离了)

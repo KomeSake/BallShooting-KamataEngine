@@ -33,12 +33,14 @@ public:
 	Vector2 VectorNormalization(float x, float y);
 
 	//从Camera类偷来的一些方法，帧动画渲染方法
+	//(但是这里的更多功能，例如缩放，但是缩放还是不太对劲，需要修改，不过暂时够用了)
 	//工具组
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, int color);
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float rad, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float rad, int color);
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, int color);
+	void FrameTexture_OLD(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, int color);
 	void FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, float rad, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float scaleX, float scaleY, int color);
 	void FrameTexture(float x, float y, map<int, LoadRes::SpriteList>spList, int index, float scaleX, float scaleY, float rad, int color);

@@ -13,6 +13,10 @@ public:
 	inline static vector<vector<char>> _mapData1;//记录地图信息，参数为行列分布
 	inline static int _mapValue2[5];
 	inline static vector<vector<char>> _mapData2;
+	inline static int _mapValue3[5];
+	inline static vector<vector<char>> _mapData3;
+	inline static int _mapValue4[5];
+	inline static vector<vector<char>> _mapData4;
 	inline static int _mapValue_name[5];
 	inline static vector<vector<char>> _mapData_name;
 	inline static int _mapValue_help[5];

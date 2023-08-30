@@ -28,6 +28,8 @@ public:
 	Camera(const int screenW, const int screenH, int bgW, int bgH, int minMapSize);
 	void Move(Vector2 playerPos);
 	void MapShow(vector<vector<char>>mapData, float bgW, float bgH, float minSize, bool playerIsExit);
+	void MouseShow(float mouseX, float mouseY,bool isPlay);
+	bool _isPlayMouseShow;//是否播放鼠标特效
 
 	bool CameraEffect(int index);
 	int _cameraEffect01[4];//屏幕抖动效果，0：x移动次数，1：y移动次数，2：总共几个轮回，3：移动的速度

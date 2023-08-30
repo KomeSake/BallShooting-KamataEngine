@@ -82,8 +82,11 @@ class ScreenUI_Start :
 public:
 	bool _isStartButton;
 	bool _isLevelButton;
+	bool _isExitButton;
+	Vector2 _levelPos;//选关条的基准位置
+	Vector2 _levelArrow;//关卡选择指示箭头
 	ScreenUI_Start();
-	void UIOpen(Vector2 mousePos);
+	void UIOpen(Vector2 mousePos, int& levelNum, int levelLockNum);
 };
 
 class ScreenUI_LevelClear :
@@ -92,8 +95,9 @@ class ScreenUI_LevelClear :
 public:
 	bool _isLevelNext;//是否下一关
 	bool _isBackMenu;//是否回到主菜单
+	float _allLevelScale;//全清标记的大小
 	ScreenUI_LevelClear();
-	void UIOpen(Vector2 mousePos);
+	void UIOpen(Vector2 mousePos, int levelNum, int levelLockNum);
 };
 
 class ScreenUI_Dead :

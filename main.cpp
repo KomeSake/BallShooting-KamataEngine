@@ -53,6 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int playerBornX = 0;
 	int playerBornY = 0;
 	Scene* SceneObj = new Scene;
+	SceneObj->LocalSave(0);
 	Player* PlayerObj = new Player(People::Vector2{ 0 ,0 });
 	Camera* CameraObj = new Camera(0, 0, 0, 0, 0);
 
@@ -108,7 +109,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				playerBornY = Map::_mapValue2[4];
 				SceneObj->_sceneIndex = SceneObj->Game;
 				break;
-			case Scene::StartScreen:
+			case 3:
+				_mapData = Map::_mapData3;
+				bgWidth = Map::_mapValue3[0];
+				bgHeight = Map::_mapValue3[1];
+				minMapSize = Map::_mapValue3[2];
+				playerBornX = Map::_mapValue3[3];
+				playerBornY = Map::_mapValue3[4];
+				SceneObj->_sceneIndex = SceneObj->Game;
+				break;
+			case 4:
+				_mapData = Map::_mapData4;
+				bgWidth = Map::_mapValue4[0];
+				bgHeight = Map::_mapValue4[1];
+				minMapSize = Map::_mapValue4[2];
+				playerBornX = Map::_mapValue4[3];
+				playerBornY = Map::_mapValue4[4];
+				SceneObj->_sceneIndex = SceneObj->Game;
+				break;
+			}
+			if (SceneObj->_isStartMapData) {
 				_mapData = Map::_mapData_start;
 				bgWidth = Map::_mapValue_start[0];
 				bgHeight = Map::_mapValue_start[1];
@@ -116,22 +136,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				playerBornX = Map::_mapValue_start[3];
 				playerBornY = Map::_mapValue_start[4];
 				SceneObj->_sceneIndex = SceneObj->Start;
-				break;
+				SceneObj->_isStartMapData = false;
 			}
 			PlayerObj = new Player(People::Vector2{ float(playerBornX) ,float(playerBornY) });
 			CameraObj = new Camera(screenWidth, screenHeight, bgWidth, bgHeight, minMapSize);
 			EnemyManager::EnemyBornToMap(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize);
 			break;
-		case Scene::Start:
+		case Scene::Start: {
 			//开始界面
 			EnemyManager::EnemyUpdata(Enemy::Vector2{ float(mouseX), float(mouseY - 1080) * -1 }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 			People::CheckCameraValume(People::Vector2{ CameraObj->_cameraPos.x,CameraObj->_cameraPos.y }, screenWidth, screenHeight);
-
+			//鼠标弹开的效果（我好无聊啊，这么紧张的时间还写这些小机制）
+			bool isTriggerMouse = false;
+			if (Novice::IsTriggerMouse(0)) {
+				Camera::Vector2 worldMouse = Camera::ScreenToWorld(float(mouseX), float(mouseY), CameraObj->_cameraPos.x, CameraObj->_cameraPos.y);
+				isTriggerMouse = true;
+				for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+					float length = sqrtf(powf(element->_pos.x - worldMouse.x, 2) + powf(element->_pos.y - worldMouse.y, 2));
+					if (length < element->_width / 2) {
+						element->_vel.x = -element->_dir.x * element->_bounceValue_player;
+						element->_vel.y = -element->_dir.y * element->_bounceValue_player;
+					}
+				}
+			}
 			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize, false);
 			EnemyManager::EnemyShow(false);
 
 			SceneObj->ScreenStart(mouseX, mouseY);
-			break;
+			CameraObj->MouseShow(float(mouseX), float(mouseY), isTriggerMouse);
+			break; }
 		case Scene::Game:
 			//游玩
 			BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
@@ -208,6 +241,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Novice::SetMouseCursorVisibility(0);
 		Novice::DrawSprite(mouseX - 64 + 10, mouseY - 64 + 15, LoadRes::_spArrow_mouse.path, 0.8f, 0.8f, 0, WHITE);
 
+		//退出的时候保存一下解说关卡信息
+		if (SceneObj->_isExitButton) {
+			SceneObj->LocalSave(1);
+			break;
+		}
+
 		//调试信息
 		//int path = Novice::LoadTexture("./Resources/Textures/temp.png");
 		//Novice::DrawSprite(0, 0, path, 1, 1, 0, WHITE);
@@ -216,7 +255,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//Novice::ScreenPrintf(10, 10, "Player(%d,%d)", (int)PlayerObj->_pos.x, (int)PlayerObj->_pos.y);
 		//Novice::ScreenPrintf(10, 30, "Camera(%d,%d)", (int)CameraObj->_cameraPos.x, (int)CameraObj->_cameraPos.y);
-		//Novice::ScreenPrintf(10, 70, "PlayerRL(%d,%d)", (int)((bgHeight - PlayerObj->_pos.y) / minMapSize), (int)(PlayerObj->_pos.x / minMapSize));
+		//Novice::ScreenPrintf(10, 50, "PlayerRL(%d,%d)", (int)((bgHeight - PlayerObj->_pos.y) / minMapSize), (int)(PlayerObj->_pos.x / minMapSize));
+		//Novice::ScreenPrintf(10, 70, "level:%d,lock:%d", SceneObj->_levelNum, SceneObj->_levelLockNum);
 
 
 		///
@@ -228,6 +268,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// ESCキーが押されたらループを抜ける
 		if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
+			SceneObj->LocalSave(1);
 			break;
 		}
 	}

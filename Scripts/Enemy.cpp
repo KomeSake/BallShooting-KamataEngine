@@ -26,17 +26,26 @@ void Enemy::Inital(EnemyType type)
 	_type = dog;
 	_hp = 10;
 	_damage = 5;
-	_shootTimer = 0;
-	_warningLength = 850;
-	_isWarning = false;
-	_toPlayerLengthStop = 0;
+
 	_isRunToPlayer = true;
-	_isDrop = false;
+	_toPlayerLengthStop = 0;
+	_shootTimer = 0;
+
+	_isWarning = false;
+	_warningLength = 850;
+
+	_isCrash = false;
+	_crashScaleSpeed = 0.03f;
+	_crashScaleMax = 1.3f;
+	_crashScaleReset = _scaleX;
+
 	_hitBox_enemy = -50;
 	_bounceValue_bullet = 10;
 	_bounceValue_player = 35;
 
+	_isDrop = false;
 	_isHarmed = false;
+	_isDead = false;
 
 	switch (type) {
 	case dog:
@@ -56,6 +65,8 @@ void Enemy::Inital(EnemyType type)
 		_velMax = 10;
 		_bounceValue_bullet = 5;
 		_bounceValue_player = 20;
+		_crashScaleMax = 1.5f;
+		_crashScaleReset = _scaleX;
 		break;
 	case dog2:
 		_sprite = LoadRes::_spListEnemy2;
@@ -194,10 +205,16 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 	}
 	//和其他敌人的碰撞检测
 	for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-		if (element != this) {
+		if (element != this && !element->_isDead) {
 			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
 			if (length - _hitBox_enemy < element->_width / 2 + _width / 2) {
 				_pos = originalPos;
+				//如果在被撞飞途中碰到友方就立马结束特效
+				if (_isCrash) {
+					_scaleX = _crashScaleReset;
+					_scaleY = _crashScaleReset;
+					_isCrash = false;
+				}
 			}
 		}
 	}
@@ -235,7 +252,7 @@ void Enemy::CollideSystem()
 void Enemy::ShootAttack()
 {
 	if (!_isRunToPlayer) {
-		if (MyTimers(_shootTimer, 2)) {
+		if (MyTimers(_shootTimer, 4)) {
 			Bullet* bullet = BulletManager::AcquireBullet(Bullet::enemy_shoot);
 			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _dir.x, _dir.y });
 			if (_type == doubleShoot) {
@@ -258,13 +275,28 @@ void Enemy::Effect()
 			_isHarmed = false;
 		}
 	}
+	//被撞击效果
+	if (_isCrash && !_isDrop) {
+		if (_scaleX > _crashScaleMax) {
+			_crashScaleSpeed *= -1;
+		}
+		_scaleX += _crashScaleSpeed;
+		_scaleY += _crashScaleSpeed;
+		if (_scaleX <= _crashScaleReset || _scaleY <= _crashScaleReset) {
+			_scaleX = _crashScaleReset;
+			_scaleY = _crashScaleReset;
+			_isCrash = false;
+			//在Move方法中的和队友碰撞也会变成false，不然碰到队友还在放大缩小有点怪
+		}
+	}
 }
 
 void Enemy::ToDead()
 {
+	_isDead = true;
 	_color = RED;
 	int aniTime = (int)(LoadRes::_spListEnemyExplode.size());
-	if (MyTimers(aniTime * 100, 2)) {
+	if (MyTimers(aniTime * 100, 3)) {
 		EnemyManager::ReleaseEnemy(this);
 	}
 }

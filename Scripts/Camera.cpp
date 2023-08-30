@@ -18,6 +18,7 @@ Camera::Camera(const int screenW, const int screenH, int bgW, int bgH, int minMa
 	_cameraEffect01[3] = 5;
 
 	_isExitAniOver = false;
+	_isPlayMouseShow = false;
 }
 
 void Camera::Move(Vector2 playerPos)
@@ -114,6 +115,23 @@ void Camera::MapShow(vector<vector<char>>mapData, float bgW, float bgH, float mi
 		}
 		minMapPos.x = minSize / 2;
 		minMapPos.y -= minSize;
+	}
+}
+
+void Camera::MouseShow(float mouseX, float mouseY, bool isPlay)
+{
+	if (isPlay) {
+		_isPlayMouseShow = true;
+	}
+	if (_isPlayMouseShow) {
+		srand(unsigned int(time(nullptr)));//随机数计算
+		float rad = (float)(rand() % 10);//随机个角度出来
+		Vector2 mousePos = ScreenToWorld(mouseX, mouseY, _cameraPos.x, _cameraPos.y);
+		FrameAnimation(mousePos.x, mousePos.y, LoadRes::_spListMouseExplode, rad, WHITE, 70, 3);
+		if (MyTimers(int(LoadRes::_spListMouseExplode.size()) * 70 - 1, 1)) {
+			_frameAniIndex[3] = 0;
+			_isPlayMouseShow = false;
+		}
 	}
 }
 

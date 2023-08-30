@@ -158,10 +158,29 @@ void LoadRes::LoadResNovice()
 		listW = 512, listH = 128;
 		_spListBulletExplode[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 4; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Effect/MouseExplode.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 512, listH = 128;
+		_spListMouseExplode[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 5; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Effect/CrashExplode.png");
+		w = 160, h = 240;
+		x = i * w, y = 0;
+		listW = 800, listH = 240;
+		_spListCrashExplode[i] = { path,x,y,w,h,listW,listH };
+	}
 
 	//UI
-	_spStart = { Novice::LoadTexture("./Resources/Textures/UI/start.png"),437,698 };
-
+	for (int i = 0; i < 10; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/UI/Number.png");
+		w = 30, h = 50;
+		x = i * w, y = 0;
+		listW = 300, listH = 50;
+		_spUI_number[i] = { path,x,y,w,h,listW,listH };
+	}
 	path = Novice::LoadTexture("./Resources/Textures/UI/HP/List.png");
 	listW = 700, listH = 404;
 	w = 240, h = 404, x = 0, y = 0;
@@ -208,6 +227,25 @@ void LoadRes::LoadResNovice()
 	_spUI_screenStart[4] = { path,x,y,w,h,listW,listH };
 	w = 128, h = 64, x = 1660, y = 64;
 	_spUI_screenStart[5] = { path,x,y,w,h,listW,listH };
+	_spUI_screenStart_exit = { Novice::LoadTexture("./Resources/Textures/UI/Start/exit.png"),308,112 };
+	path = Novice::LoadTexture("./Resources/Textures/UI/Start/level.png");
+	listW = 356, listH = 88;
+	w = 96, h = 88, x = 0, y = 0;
+	_spUI_screenStart_level[0] = { path,x,y,w,h,listW,listH };
+	w = 44, h = 32, x = 96, y = 0;
+	_spUI_screenStart_level[1] = { path,x,y,w,h,listW,listH };
+	w = 64, h = 60, x = 140, y = 0;
+	_spUI_screenStart_level[2] = { path,x,y,w,h,listW,listH };
+	w = 24, h = 52, x = 204, y = 0;
+	_spUI_screenStart_level[3] = { path,x,y,w,h,listW,listH };
+	w = 32, h = 52, x = 228, y = 0;
+	_spUI_screenStart_level[4] = { path,x,y,w,h,listW,listH };
+	w = 32, h = 52, x = 260, y = 0;
+	_spUI_screenStart_level[5] = { path,x,y,w,h,listW,listH };
+	w = 32, h = 52, x = 292, y = 0;
+	_spUI_screenStart_level[6] = { path,x,y,w,h,listW,listH };
+	w = 32, h = 52, x = 324, y = 0;
+	_spUI_screenStart_level[7] = { path,x,y,w,h,listW,listH };
 
 	path = Novice::LoadTexture("./Resources/Textures/UI/LevelClear/List.png");
 	listW = 1700, listH = 396;
@@ -225,6 +263,7 @@ void LoadRes::LoadResNovice()
 	_spUI_screenLevelClear[5] = { path,x,y,w,h,listW,listH };
 	w = 136, h = 68, x = 1564, y = 0;
 	_spUI_screenLevelClear[6] = { path,x,y,w,h,listW,listH };
+	_spUI_screenLevel_all = { Novice::LoadTexture("./Resources/Textures/UI/LevelClear/all.png"),2300,424 };
 
 	path = Novice::LoadTexture("./Resources/Textures/UI/Dead/List.png");
 	listW = 1448, listH = 692;

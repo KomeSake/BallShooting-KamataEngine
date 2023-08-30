@@ -48,6 +48,8 @@ public:
 	inline static map<int, SpriteList> _spListExplode;
 	inline static map<int, SpriteList> _spListEnemyExplode;
 	inline static map<int, SpriteList> _spListBulletExplode;
+	inline static map<int, SpriteList> _spListMouseExplode;
+	inline static map<int, SpriteList> _spListCrashExplode;
 	//地图
 	inline static map<int, SpriteList> _spListMap;
 	inline static map<int, SpriteList> _spListHelpText;
@@ -55,14 +57,17 @@ public:
 	inline static map<int, SpriteList> _spListExit2;
 
 	//UI
-	inline static Sprite _spStart;
+	inline static map<int, SpriteList> _spUI_number;
 	inline static map<int, SpriteList> _spUI_playerHp;
 	inline static map<int, SpriteList> _spUI_playerGun;
 	inline static Sprite _spUI_playerGun02;
 	inline static map<int, SpriteList> _spUI_playerSteam;
 	inline static Sprite _spUI_playerSteam01;
 	inline static map<int, SpriteList> _spUI_screenStart;
+	inline static Sprite _spUI_screenStart_exit;
+	inline static map<int, SpriteList> _spUI_screenStart_level;
 	inline static map<int, SpriteList> _spUI_screenLevelClear;
+	inline static Sprite _spUI_screenLevel_all;
 	inline static map<int, SpriteList> _spUI_screenDead;
 
 

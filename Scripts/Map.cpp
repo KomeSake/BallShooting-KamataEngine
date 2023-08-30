@@ -14,6 +14,18 @@ void Map::LoadNovice()
 	_mapValue2[3] = int(4 * 128 - 128.f / 2);
 	_mapValue2[4] = int(4 * 128 - 128.f / 2);
 	LoaclMapLoad("./Resources/Map/Map2.txt", _mapData2);
+	_mapValue3[0] = 28 * 128;
+	_mapValue3[1] = 25 * 128;
+	_mapValue3[2] = 128;
+	_mapValue3[3] = int(4 * 128 - 128.f / 2);
+	_mapValue3[4] = int(4 * 128 - 128.f / 2);
+	LoaclMapLoad("./Resources/Map/Map3.txt", _mapData3);
+	_mapValue4[0] = 28 * 128;
+	_mapValue4[1] = 25 * 128;
+	_mapValue4[2] = 128;
+	_mapValue4[3] = int(4 * 128 - 128.f / 2);
+	_mapValue4[4] = int(4 * 128 - 128.f / 2);
+	LoaclMapLoad("./Resources/Map/Map4.txt", _mapData4);
 	_mapValue_name[0] = 30 * 128;
 	_mapValue_name[1] = 25 * 128;
 	_mapValue_name[2] = 128;

@@ -244,9 +244,13 @@ ScreenUI_Start::ScreenUI_Start()
 
 	_isStartButton = false;
 	_isLevelButton = false;
+	_isExitButton = false;
+
+	_levelPos = { _pos.x + 40 * 4,_pos.y + 210 * 4 };
+	_levelArrow = { _levelPos.x + 6 * 4,_levelPos.y + 17 * 4 };
 }
 
-void ScreenUI_Start::UIOpen(Vector2 mousePos)
+void ScreenUI_Start::UIOpen(Vector2 mousePos, int& levelNum, int levelLockNum)
 {
 	FrameTexture(40 * 4, 35 * 4, LoadRes::_spUI_screenStart, 0, _color);
 	FrameTexture(232 * 4, 116 * 4, LoadRes::_spUI_screenStart, 1, _color);
@@ -254,6 +258,8 @@ void ScreenUI_Start::UIOpen(Vector2 mousePos)
 	FrameTexture(295 * 4, 203 * 4, LoadRes::_spUI_screenStart, 2, _color);
 	FrameTexture(317 * 4, 171 * 4, LoadRes::_spUI_screenStart, 4, _color);
 	FrameTexture(317 * 4, 208 * 4, LoadRes::_spUI_screenStart, 5, _color);
+	//直接在Level按钮上面盖Exit按钮
+	FrameTexture(295 * 4, 203 * 4, LoadRes::_spUI_screenStart_exit.path, WHITE);
 	if (mousePos.x > 295 * 4 && mousePos.y > 166 * 4 && mousePos.x < 371 * 4 && mousePos.y < 193 * 4) {
 		FrameTexture(295 * 4, 166 * 4, LoadRes::_spUI_screenStart, 3, _color);
 		if (Novice::IsTriggerMouse(0)) {
@@ -263,9 +269,90 @@ void ScreenUI_Start::UIOpen(Vector2 mousePos)
 	if (mousePos.x > 295 * 4 && mousePos.y > 203 * 4 && mousePos.x < 371 * 4 && mousePos.y < 230 * 4) {
 		FrameTexture(295 * 4, 203 * 4, LoadRes::_spUI_screenStart, 3, _color);
 		if (Novice::IsTriggerMouse(0)) {
-			_isLevelButton = true;
+			//_isLevelButton = true;
+			_isExitButton = true;
 		}
 	}
+
+	//Level
+	FrameTexture(_levelPos.x - 15, _levelPos.y - 80, LoadRes::_spUI_screenStart, 5, _color);//level
+	FrameTexture(_levelPos.x, _levelPos.y, LoadRes::_spUI_screenStart_level, 0, _color);
+	FrameTexture(_levelPos.x + 8 * 4, _levelPos.y + 4 * 4, LoadRes::_spUI_screenStart_level, 3, _color);
+	FrameTexture(_levelPos.x + 30 * 4, _levelPos.y, LoadRes::_spUI_screenStart_level, 0, _color);
+	FrameTexture(_levelPos.x + 30 * 4 + 8 * 4, _levelPos.y + 4 * 4, LoadRes::_spUI_screenStart_level, 4, _color);
+	FrameTexture(_levelPos.x + 30 * 8, _levelPos.y, LoadRes::_spUI_screenStart_level, 0, _color);
+	FrameTexture(_levelPos.x + 30 * 8 + 8 * 4, _levelPos.y + 4 * 4, LoadRes::_spUI_screenStart_level, 5, _color);
+	FrameTexture(_levelPos.x + 30 * 12, _levelPos.y, LoadRes::_spUI_screenStart_level, 0, _color);
+	FrameTexture(_levelPos.x + 30 * 12 + 8 * 4, _levelPos.y + 4 * 4, LoadRes::_spUI_screenStart_level, 6, _color);
+	FrameTexture(_levelPos.x + 30 * 16, _levelPos.y, LoadRes::_spUI_screenStart_level, 0, _color);
+	FrameTexture(_levelPos.x + 30 * 16 + 8 * 4, _levelPos.y + 4 * 4, LoadRes::_spUI_screenStart_level, 7, _color);
+
+	switch (levelLockNum) {
+	case 0:
+		FrameTexture(_levelPos.x + 30 * 4 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		FrameTexture(_levelPos.x + 30 * 8 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		FrameTexture(_levelPos.x + 30 * 12 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		FrameTexture(_levelPos.x + 30 * 16 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		break;
+	case 1:
+		FrameTexture(_levelPos.x + 30 * 8 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		FrameTexture(_levelPos.x + 30 * 12 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		FrameTexture(_levelPos.x + 30 * 16 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		break;
+	case 2:
+		FrameTexture(_levelPos.x + 30 * 12 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		FrameTexture(_levelPos.x + 30 * 16 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		break;
+	case 3:
+		FrameTexture(_levelPos.x + 30 * 16 + 4 * 4, _levelPos.y + 2 * 4, LoadRes::_spUI_screenStart_level, 2, _color);
+		break;
+	}
+
+	//关卡选择的箭头
+	if (mousePos.x > _levelPos.x && mousePos.y > _levelPos.y && mousePos.x < _levelPos.x + 88 && mousePos.y < _levelPos.y + 96) {
+		if (Novice::IsTriggerMouse(0)) {
+			levelNum = 0;
+		}
+	}
+	if (mousePos.x > _levelPos.x + 30 * 4 && mousePos.y > _levelPos.y && mousePos.x < _levelPos.x + 30 * 4 + 88 && mousePos.y < _levelPos.y + 96) {
+		if (Novice::IsTriggerMouse(0) && levelLockNum >= 1) {
+			levelNum = 1;
+		}
+	}
+	if (mousePos.x > _levelPos.x + 30 * 8 && mousePos.y > _levelPos.y && mousePos.x < _levelPos.x + 30 * 8 + 88 && mousePos.y < _levelPos.y + 96) {
+		if (Novice::IsTriggerMouse(0) && levelLockNum >= 2) {
+			levelNum = 2;
+		}
+	}
+	if (mousePos.x > _levelPos.x + 30 * 12 && mousePos.y > _levelPos.y && mousePos.x < _levelPos.x + 30 * 12 + 88 && mousePos.y < _levelPos.y + 96) {
+		if (Novice::IsTriggerMouse(0) && levelLockNum >= 3) {
+			levelNum = 3;
+		}
+	}
+	if (mousePos.x > _levelPos.x + 30 * 16 && mousePos.y > _levelPos.y && mousePos.x < _levelPos.x + 30 * 16 + 88 && mousePos.y < _levelPos.y + 96) {
+		if (Novice::IsTriggerMouse(0) && levelLockNum >= 4) {
+			levelNum = 4;
+		}
+	}
+	//箭头自动摆放到对的位置
+	switch (levelNum) {
+	case 0:
+		_levelArrow = { _levelPos.x + 6 * 4,_levelPos.y + 17 * 4 };
+		break;
+	case 1:
+		_levelArrow = { _levelPos.x + 30 * 4 + 6 * 4,_levelPos.y + 17 * 4 };
+		break;
+	case 2:
+		_levelArrow = { _levelPos.x + 30 * 8 + 6 * 4,_levelPos.y + 17 * 4 };
+		break;
+	case 3:
+		_levelArrow = { _levelPos.x + 30 * 12 + 6 * 4,_levelPos.y + 17 * 4 };
+		break;
+	case 4:
+		_levelArrow = { _levelPos.x + 30 * 16 + 6 * 4,_levelPos.y + 17 * 4 };
+		break;
+	}
+	FrameTexture(_levelArrow.x, _levelArrow.y, LoadRes::_spUI_screenStart_level, 1, _color);
 }
 
 ScreenUI_LevelClear::ScreenUI_LevelClear()
@@ -276,10 +363,12 @@ ScreenUI_LevelClear::ScreenUI_LevelClear()
 	_color = WHITE;
 	_isLevelNext = false;
 	_isBackMenu = false;
+	_allLevelScale = 2;
 }
 
-void ScreenUI_LevelClear::UIOpen(Vector2 mousePos)
+void ScreenUI_LevelClear::UIOpen(Vector2 mousePos, int levelNum, int levelLockNum)
 {
+	levelLockNum;
 	Novice::DrawBox(0, 0, 1920, 1080, 0, 0x21212190, kFillModeSolid);
 	FrameTexture(_pos.x + 38 * 4, _pos.y + 14 * 4, LoadRes::_spUI_screenLevelClear, 0, _color);
 	FrameTexture(_pos.x + 253 * 4, _pos.y + 108 * 4, LoadRes::_spUI_screenLevelClear, 1, _color);
@@ -298,6 +387,34 @@ void ScreenUI_LevelClear::UIOpen(Vector2 mousePos)
 		if (Novice::IsTriggerMouse(0)) {
 			_isBackMenu = true;
 		}
+	}
+
+	//在Next按钮上显示下一关卡数
+	FrameTexture(_pos.x + 277 * 4 + 15 * 4, _pos.y + 211 * 4 - 20 * 4, LoadRes::_spUI_screenStart, 5, GREEN);
+	switch (levelNum) {
+	case 0:
+		FrameTexture(_pos.x + 277 * 4 + 55 * 4, _pos.y + 211 * 4 - 17 * 4, LoadRes::_spUI_screenStart_level, 4, WHITE);
+		break;
+	case 1:
+		FrameTexture(_pos.x + 277 * 4 + 55 * 4, _pos.y + 211 * 4 - 17 * 4, LoadRes::_spUI_screenStart_level, 5, WHITE);
+		break;
+	case 2:
+		FrameTexture(_pos.x + 277 * 4 + 55 * 4, _pos.y + 211 * 4 - 17 * 4, LoadRes::_spUI_screenStart_level, 6, WHITE);
+		break;
+	case 3:
+		FrameTexture(_pos.x + 277 * 4 + 55 * 4, _pos.y + 211 * 4 - 17 * 4, LoadRes::_spUI_screenStart_level, 7, WHITE);
+		break;
+	case 4:
+		FrameTexture(_pos.x + 277 * 4 + 55 * 4, _pos.y + 211 * 4 - 17 * 4, LoadRes::_spUI_screenStart_level, 7, WHITE);
+		break;
+	}
+
+	//全清关卡的特殊演示
+	if (levelNum == 4) {
+		if (_allLevelScale > 1) {
+			_allLevelScale -= 0.03f;
+		}
+		Novice::DrawSprite(-200, 200, LoadRes::_spUI_screenLevel_all.path, _allLevelScale, _allLevelScale, -acosf(-1) * 0.06f, WHITE);
 	}
 }
 

@@ -22,19 +22,19 @@ Player::Player(Vector2 bornPos)
 	_velMaxMan = 15;
 
 	_pattern = 1;
-	_hp = 100;
+	_hp = 99;
 	_isHpMinus = false;
 	_hpGodTime = 100;
 	_bounceValue_enemy = 25;
+	_ballDamage = 7;
 	_dropDamage = 20;
-	_ballDamage = 10;
 	_isBallTouch = false;
 	_isHarmed = false;
 	_isBallEntering = false;
 	_isManEntering = false;
 
 	_sprite = LoadRes::_spListPlayer;
-	_width = 110;//小一点点，不然有些关卡不好过
+	_width = 110;//小一点点，不然有些地图不好过
 	_height = 110;
 	_scaleX = 1;
 	_scaleY = 1;
@@ -51,7 +51,7 @@ Player::Player(Vector2 bornPos)
 	_steamEnemy = 100;
 	_steamPlusRate = 2.f;
 	_steamMinus = 1;
-	_steamValue = 100;
+	_steamValue = 25000;
 	_gunHotMax = 100;
 	_gunHotPlus = 10;
 	_gunHotMinus = 1;
@@ -104,6 +104,9 @@ void Player::Move(char keys[], vector<vector<char>> mapData, float bgWidth, floa
 		//先计算出当前所在的格子
 		int playerCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
 		int playerCheckLine = (int)(_pos.x / minMapSize);
+		//为了更好通过一些地图，所以我缩小了一些，这会导致退回的位置不正确，所以需要加上这个补充量(只需要下和右方向)
+		float minusWidth = 128 - _width;
+		float minusHeight = 128 - _height;
 
 		//开始x轴的移动，移动后算出新的上下左右4个角的格子位置
 		_acceleration.x = _dir.x * _speed;
@@ -120,7 +123,7 @@ void Player::Move(char keys[], vector<vector<char>> mapData, float bgWidth, floa
 		if (_vel.x > 0) {
 			if (!Map::IsThrough(mapData, checkUp, checkRight)
 				|| !Map::IsThrough(mapData, checkDown, checkRight)) {
-				_pos.x = playerCheckLine * minMapSize + _width / 2;
+				_pos.x = playerCheckLine * minMapSize + _width / 2 + minusWidth;
 				_vel.x = _vel.x * -_bounce;
 			}
 		}
@@ -154,7 +157,7 @@ void Player::Move(char keys[], vector<vector<char>> mapData, float bgWidth, floa
 		else if (_vel.y < 0) {
 			if (!Map::IsThrough(mapData, checkDown, checkLeft)
 				|| !Map::IsThrough(mapData, checkDown, checkRight)) {
-				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2 - minusHeight;
 				_vel.y = _vel.y * -_bounce;
 			}
 		}
@@ -306,101 +309,119 @@ void Player::PatternChange(char keys[], char preKeys[])
 
 void Player::CollideSystem()
 {
-	switch (_pattern) {
-	case 0: {
-		//球状态撞敌人
-		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-			if (element->_hp > 0) {
+	if (!_isDrop) {
+		switch (_pattern) {
+		case 0: {
+			//球状态撞敌人
+			for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+				if (element->_hp > 0) {
+					float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+					if (length + 50 < element->_width / 2 + _width / 2) {
+						//自身受到的反弹力
+						Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+						hitDir = VectorNormalization(hitDir.x, hitDir.y);
+						_vel.x = hitDir.x * _bounceValue_enemy;
+						_vel.y = hitDir.y * _bounceValue_enemy;
+						//敌人受到的反弹力
+						element->_vel.x = -hitDir.x * element->_bounceValue_player;
+						element->_vel.y = -hitDir.y * element->_bounceValue_player;
+						//敌人受伤和激活受伤，被撞击状态
+						element->_hp -= _ballDamage;
+						element->_isHarmed = true;
+						element->_isCrash = true;
+						//撞击敌人要扣更多蒸汽值
+						if (_steamValue >= _steamEnemy) {
+							_steamValue -= _steamEnemy;
+						}
+						else {
+							_steamValue = 0;
+						}
+						_isBallTouch = true;//给Camera类提示要晃动镜头
+						//撞击敌人特效
+						for (int i = 0; i < 3; i++) {
+							if (!_isCrashEffect[i]) {
+								_isCrashEffect[i] = true;
+								_crashEffectDir[i] = { -hitDir.x,-hitDir.y };
+								_crashEffectPos[i] = { _pos.x,_pos.y };
+								break;
+							}
+						}
+					}
+				}
+			}
+			//球形和子弹之间的碰撞（会把子弹弹回去）
+			for (Bullet* element : BulletManager::_bulletUpdata_enemy) {
 				float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
 				if (length + 50 < element->_width / 2 + _width / 2) {
-					//自身受到的反弹力
 					Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
 					hitDir = VectorNormalization(hitDir.x, hitDir.y);
 					_vel.x = hitDir.x * _bounceValue_enemy;
 					_vel.y = hitDir.y * _bounceValue_enemy;
-					//敌人受到的反弹力
-					element->_vel.x = -hitDir.x * element->_bounceValue_player;
-					element->_vel.y = -hitDir.y * element->_bounceValue_player;
+					//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
+					if (element->_isAlive) {
+						element->_isAlive = false;
+						//把子弹弹回去
+						switch (element->_type) {
+						case Bullet::enemy_shoot:
+							Bullet* bullet = BulletManager::AcquireBullet(Bullet::player_shoot);
+							Vector2 newDir = { element->_dir.x,element->_dir.y };
+							bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ -newDir.x, -newDir.y });
+							//下面这种是按照鼠标方向反弹子弹
+							//bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
+							break;
+						}
+					}
+				}
+			}
+			break; }
+		case 1:
+		case 2: {
+			//被敌人碰撞
+			for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+				if (!element->_isDead) {
+					float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+					if (length + 50 < element->_width / 2 + _width / 2) {
+						Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+						hitDir = VectorNormalization(hitDir.x, hitDir.y);
+						//受到敌人的反弹力
+						_vel.x = hitDir.x * _bounceValue_enemy;
+						_vel.y = hitDir.y * _bounceValue_enemy;
+						//敌人受到的反弹力(因为这不是玩家撞敌人，所以反弹力要缩小)
+						element->_vel.x = -hitDir.x * (element->_bounceValue_player * 0.3f);
+						element->_vel.y = -hitDir.y * (element->_bounceValue_player * 0.3f);
 
-					element->_hp -= _ballDamage;
-					element->_isHarmed = true;
-					//撞击敌人要扣更多蒸汽值
-					if (_steamValue >= _steamEnemy) {
-						_steamValue -= _steamEnemy;
-					}
-					else {
-						_steamValue = 0;
-					}
-					_isBallTouch = true;//给Camera类提示要晃动镜头
-				}
-			}
-		}
-		//球形和子弹之间的碰撞（会把子弹弹回去）
-		for (Bullet* element : BulletManager::_bulletUpdata_enemy) {
-			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-			if (length + 50 < element->_width / 2 + _width / 2) {
-				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
-				hitDir = VectorNormalization(hitDir.x, hitDir.y);
-				_vel.x = hitDir.x * _bounceValue_enemy;
-				_vel.y = hitDir.y * _bounceValue_enemy;
-				//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
-				if (element->_isAlive) {
-					element->_isAlive = false;
-					//把子弹弹回去
-					switch (element->_type) {
-					case Bullet::enemy_shoot:
-						Bullet* bullet = BulletManager::AcquireBullet(Bullet::player_shoot);
-						Vector2 newDir = { element->_dir.x,element->_dir.y };
-						bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ -newDir.x, -newDir.y });
-						//下面这种是按照鼠标方向反弹子弹
-						//bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
-						break;
+						_isHarmed = true;
+						//为了防止扣血过快，搞一个无敌时间
+						if (!_isHpMinus) {
+							_hp -= element->_damage;
+							_isHpMinus = true;
+						}
+						else {
+							if (MyTimers(_hpGodTime, 7)) {
+								_isHpMinus = false;
+							}
+						}
 					}
 				}
 			}
-		}
-		break; }
-	case 1:
-	case 2: {
-		//被敌人碰撞
-		for (Enemy* element : EnemyManager::_enemyUpdateVector) {
-			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-			if (length + 50 < element->_width / 2 + _width / 2) {
-				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
-				hitDir = VectorNormalization(hitDir.x, hitDir.y);
-				_vel.x = hitDir.x * _bounceValue_enemy;
-				_vel.y = hitDir.y * _bounceValue_enemy;
-
-				_isHarmed = true;
-				//为了防止扣血过快，搞一个无敌时间
-				if (!_isHpMinus) {
-					_hp -= element->_damage;
-					_isHpMinus = true;
-				}
-				else {
-					if (MyTimers(_hpGodTime, 7)) {
-						_isHpMinus = false;
+			//和子弹之间的碰撞
+			for (Bullet* element : BulletManager::_bulletUpdata_enemy) {
+				float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
+				if (length + 50 < element->_width / 2 + _width / 2) {
+					Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
+					hitDir = VectorNormalization(hitDir.x, hitDir.y);
+					_vel.x = hitDir.x * _bounceValue_enemy;
+					_vel.y = hitDir.y * _bounceValue_enemy;
+					//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
+					if (element->_isAlive) {
+						element->_isAlive = false;
+						_hp -= element->_damage;
+						_isHarmed = true;
 					}
 				}
 			}
+			break; }
 		}
-		//和子弹之间的碰撞
-		for (Bullet* element : BulletManager::_bulletUpdata_enemy) {
-			float length = sqrtf(powf(element->_pos.x - _pos.x, 2) + powf(element->_pos.y - _pos.y, 2));
-			if (length + 50 < element->_width / 2 + _width / 2) {
-				Vector2 hitDir = { _pos.x - element->_pos.x,_pos.y - element->_pos.y };
-				hitDir = VectorNormalization(hitDir.x, hitDir.y);
-				_vel.x = hitDir.x * _bounceValue_enemy;
-				_vel.y = hitDir.y * _bounceValue_enemy;
-				//判断前必须查看子弹是否存活，存活才和他进行碰撞反应
-				if (element->_isAlive) {
-					element->_isAlive = false;
-					_hp -= element->_damage;
-					_isHarmed = true;
-				}
-			}
-		}
-		break; }
 	}
 }
 
@@ -666,6 +687,18 @@ void Player::Show()
 	if (_isDead) {
 		_color = RED;
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListExplode, 1.5f, 1.5f, 0, WHITE, 70, 5);
+	}
+
+	//撞击敌人的特效(用到了 6 + 3 的动画格子，和 8 + i 的时间格子)
+	for (int i = 0; i < 3; i++) {
+		if (_isCrashEffect[i]) {
+			float rad = SpriteToObjDir(_crashEffectDir[i]);
+			FrameAnimation(_crashEffectPos[i].x, _crashEffectPos[i].y, LoadRes::_spListCrashExplode, rad, WHITE, 100, 6 + i);
+			if (MyTimers(int(LoadRes::_spListCrashExplode.size()) * 100 - 1, 8 + i)) {
+				_isCrashEffect[i] = false;
+				_frameAniIndex[6 + i] = 0;
+			}
+		}
 	}
 }
 

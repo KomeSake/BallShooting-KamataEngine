@@ -38,17 +38,26 @@ public:
 	float _hp;
 	float _hpMax;
 	float _damage;
-	int _shootTimer;//远程攻击间隔
-	float _warningLength;//距离玩家多远才开始产生警戒
-	float _toPlayerLengthStop;//距离玩家多远会停下(这个值为0就是近战)
+
 	bool _isRunToPlayer;//是否追逐玩家
+	int _shootTimer;//远程攻击间隔
+	float _toPlayerLengthStop;//距离玩家多远会停下(这个值为0就是近战)
+
 	bool _isWarning;//通过这个值来表示已经警戒，会开始一系列的反应
-	bool _isDrop;//正在陨落(通过这个值会让敌人不追玩家)
+	float _warningLength;//距离玩家多远才开始产生警戒
+
+	bool _isCrash;//被撞击了，通过这个值来播放动画等
+	float _crashScaleSpeed;//被撞击变大速度
+	float _crashScaleMax;//被撞击最大大小
+	float _crashScaleReset;//被撞击后恢复原本
+
 	float _hitBox_enemy;//调整敌人之间碰撞的大小
 	float _bounceValue_bullet;//被子弹弹开的力大小
 	float _bounceValue_player;//被玩家弹开的力大小
 
+	bool _isDrop;//正在陨落(通过这个值会让敌人不追玩家)
 	bool _isHarmed;//是否受到伤害（为了特效）
+	bool _isDead;//已经死亡，玩家就不需要和它发生碰撞了
 
 	Enemy(EnemyType type);
 	void Inital(EnemyType type);

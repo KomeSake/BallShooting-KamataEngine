@@ -32,6 +32,10 @@ public:
 	float _ballDamage;
 	bool _isBallTouch;//球形态下是否撞中敌人(用于给Camera类指示)
 	bool _isHarmed;//是否受伤了
+	bool _isCrashEffect[3];//撞击敌人的特效
+	Vector2 _crashEffectDir[3];//撞击敌人特效的方向
+	Vector2 _crashEffectPos[3];//特效发生地
+	//这个撞击的特效不应该跟着玩家跑，要记录下发生地。还有现在只能播放一个，需要制作多几个
 
 	map<int, LoadRes::SpriteList> _sprite;
 	float _width;

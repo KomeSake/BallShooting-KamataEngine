@@ -20,19 +20,38 @@ void Bullet::Inital(BulletType type)
 	_damage = 2;
 
 	_toDeadEffect = false;
+	_isSpriteAni = false;
 
 	switch (type) {
 	case enemy_shoot:
 		_type = type;
 		_sprite = LoadRes::_spBullet_enemy_shoot;
 		_speed = 10;
-		_damage = 5;
+		_damage = 7;
 		break;
 	case player_shoot:
 		_type = type;
 		_sprite = LoadRes::_spBullet_player_shoot;
 		_speed = 20;
 		_damage = 10;
+		break;
+	case boss:
+		_type = type;
+		_isSpriteAni = true;
+		_spriteAni = LoadRes::_spBullet_boss;
+		_width = 128;
+		_height = 128;
+		_speed = 5;
+		_damage = 15;
+		break;
+	case boss_player:
+		_type = type;
+		_isSpriteAni = true;
+		_spriteAni = LoadRes::_spBullet_boss_player;
+		_width = 128;
+		_height = 128;
+		_speed = 5;
+		_damage = 20;
 		break;
 	}
 }
@@ -64,7 +83,12 @@ void Bullet::Show()
 {
 	if (_isAlive) {
 		float rad = SpriteToObjDir(Vector2{ _dir.x, _dir.y });
-		FrameTexture(_pos.x, _pos.y, _sprite, rad, _color);
+		if (!_isSpriteAni) {
+			FrameTexture(_pos.x, _pos.y, _sprite, rad, _color);
+		}
+		else {
+			FrameAnimation(_pos.x, _pos.y, _spriteAni, rad, _color, 100, 2);
+		}
 	}
 }
 
@@ -80,6 +104,12 @@ void Bullet::Fire(Vector2 bornPos, Vector2 dir)
 		BulletManager::_bulletUpdata_enemy.push_back(this);
 		break;
 	case player_shoot:
+		BulletManager::_bulletUpdata_player.push_back(this);
+		break;
+	case boss:
+		BulletManager::_bulletUpdata_enemy.push_back(this);
+		break;
+	case boss_player:
 		BulletManager::_bulletUpdata_player.push_back(this);
 		break;
 	}
@@ -147,6 +177,30 @@ Bullet* BulletManager::AcquireBullet(Bullet::BulletType type)
 			return bullet;
 		}
 		break;
+	case Bullet::boss:
+		if (_bulletIdiePool_boss.empty()) {
+			Bullet* bullet = new Bullet(type);
+			return bullet;
+		}
+		else {
+			Bullet* bullet = _bulletIdiePool_boss.front();
+			_bulletIdiePool_boss.pop();
+			bullet->Inital(type);
+			return bullet;
+		}
+		break;
+	case Bullet::boss_player:
+		if (_bulletIdiePool_boss_player.empty()) {
+			Bullet* bullet = new Bullet(type);
+			return bullet;
+		}
+		else {
+			Bullet* bullet = _bulletIdiePool_boss_player.front();
+			_bulletIdiePool_boss_player.pop();
+			bullet->Inital(type);
+			return bullet;
+		}
+		break;
 	}
 	return nullptr;
 }
@@ -174,6 +228,20 @@ void BulletManager::ReleaseBullet(Bullet* bullet)
 			_bulletUpdata_player.erase(it);
 		}
 		_bulletIdiePool_normal.push(bullet);
+		break; }
+	case Bullet::boss: {
+		auto it = find(_bulletUpdata_enemy.begin(), _bulletUpdata_enemy.end(), bullet);
+		if (it != _bulletUpdata_enemy.end()) {
+			_bulletUpdata_enemy.erase(it);
+		}
+		_bulletIdiePool_boss.push(bullet);
+		break; }
+	case Bullet::boss_player: {
+		auto it = find(_bulletUpdata_player.begin(), _bulletUpdata_player.end(), bullet);
+		if (it != _bulletUpdata_player.end()) {
+			_bulletUpdata_player.erase(it);
+		}
+		_bulletIdiePool_boss_player.push(bullet);
 		break; }
 	}
 }

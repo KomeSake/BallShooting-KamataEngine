@@ -73,7 +73,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景(防止更换场景时候的颜色错误)
 		int mouseX = 0, mouseY = 0;
 		Novice::GetMousePosition(&mouseX, &mouseY);
-		//char* tempKeys = 0;//为了剥夺玩家的控制，随便创建一个空的输入key
 
 		switch (SceneObj->_sceneIndex) {
 		case Scene::Loading:
@@ -165,7 +164,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			SceneObj->ScreenStart(mouseX, mouseY);
 			CameraObj->MouseShow(float(mouseX), float(mouseY), isTriggerMouse);
 			break; }
-		case Scene::Game:
+		case Scene::Game: {
 			//游玩
 			BulletManager::BulletUpdata(Bullet::Vector2{ CameraObj->_cameraPos.x, CameraObj->_cameraPos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
 			EnemyManager::EnemyUpdata(Enemy::Vector2{ PlayerObj->_pos.x, PlayerObj->_pos.y }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);
@@ -190,8 +189,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Novice::DrawBox(0, 0, 1920, 1080, 0, 0x263238ff, kFillModeSolid);//最底下的深渊背景
 			CameraObj->MapShow(_mapData, CameraObj->_bgWidth, CameraObj->_bgHeight, CameraObj->_minMapSize, PlayerObj->_isExit);
-			EnemyManager::EnemyShow(true);
 			BulletManager::BulletShow();
+			EnemyManager::EnemyShow(true);
 			PlayerObj->Effect();
 			PlayerObj->Show();
 
@@ -205,7 +204,39 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (PlayerObj->_isDead) {
 				SceneObj->_sceneIndex = Scene::GameOver;
 			}
-			break;
+			//Boss相关机制
+			bool isBossSplit = false;//是否分裂
+			int bossSplit = 0;//分裂阶段
+			float bornPosX = 0, bornPosY = 0;
+			for (Enemy* element : EnemyManager::_enemyUpdateVector) {
+				if (element->_type == Enemy::boss) {
+					//如果击败Boss
+					if (element->_isBossDead) {
+						SceneObj->_sceneIndex = Scene::LevelClear;
+					}
+				}
+				if (element->_type == Enemy::boss || element->_type == Enemy::boss2) {
+					//Boss分裂
+					if (element->_isBossSplit) {
+						bornPosX = element->_pos.x + element->_dir.x * 350;
+						bornPosY = element->_pos.y + element->_dir.y * 350;
+						isBossSplit = true;
+						bossSplit = element->_bossSplit;
+						element->_isBossSplit = false;
+					}
+				}
+			}
+			//因为生成敌人不可以写在敌人循环里面，所以只可以这样了
+			if (isBossSplit) {
+				Enemy* emeny = EnemyManager::AcquireEnemy(Enemy::boss2);
+				emeny->_bossSplit = bossSplit;
+				srand(unsigned int(time(nullptr)));
+				int pattern = rand() % 1;
+				emeny->_bossPattern = pattern;
+				emeny->_isBossCrash = true;
+				emeny->Fire(Enemy::Vector2{ bornPosX, bornPosY });
+			}
+			break; }
 		case Scene::LevelClear:
 			//关卡通过
 			EnemyManager::EnemyUpdata(Enemy::Vector2{ float(mouseX), float(mouseY - 1080) * -1 }, _mapData, CameraObj->_bgHeight, CameraObj->_minMapSize);

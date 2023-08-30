@@ -16,6 +16,8 @@ public:
 		dog2,
 		shoot,
 		doubleShoot,
+		boss,
+		boss2
 	}enumEnemy;
 
 	Vector2 _pos;
@@ -59,6 +61,14 @@ public:
 	bool _isHarmed;//是否受到伤害（为了特效）
 	bool _isDead;//已经死亡，玩家就不需要和它发生碰撞了
 
+	int _bossPattern;//Boss状态，0：远程，1：近战，2：叫小弟
+	bool _isBossDead;
+	bool _isBossCrash;//Boss被撞
+	bool _isBossSplit;
+	int _bossSplit;//Boss分裂阶段，0：不分裂，1：第一阶段
+	bool _isBoss2Init;//小Boss初始化
+
+
 	Enemy(EnemyType type);
 	void Inital(EnemyType type);
 	void Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
@@ -69,6 +79,7 @@ public:
 	void ToDead();
 	void Show(bool isHpLine);
 	void DropSystem(vector<vector<char>> mapData, float bgHeight, float minMapSize);//跌落判断
+	void EnemyBoss();//Boss专属机制
 };
 
 class EnemyManager {
@@ -80,6 +91,8 @@ public:
 	inline static std::queue<Enemy*> _enemyIdiePool_dog2;
 	inline static std::queue<Enemy*> _enemyIdiePool_shoot;
 	inline static std::queue<Enemy*> _enemyIdiePool_doubleShoot;
+	inline static std::queue<Enemy*> _enemyIdiePool_boss;
+	inline static std::queue<Enemy*> _enemyIdiePool_boss2;
 
 	static void EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	static Enemy* AcquireEnemy(Enemy::EnemyType type);

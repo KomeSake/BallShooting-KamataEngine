@@ -94,15 +94,15 @@ void People::FrameTexture_OLD(float x, float y, LoadRes::Sprite sprite, float sc
 
 void People::FrameTexture(float x, float y, LoadRes::Sprite sprite, float scaleX, float scaleY, float rad, int color)
 {
-	Vector2 rotated = { (float)sprite.w * -1 / 2,(float)sprite.h / 2 };
+	Vector2 zoom = { float(sprite.w) / 2 - float(sprite.w) / 2 * scaleX,float(sprite.h) / 2 - float(sprite.h) / 2 * scaleY };
+	Vector2 rotated = { (float)sprite.w * -1 / 2 + zoom.x,(float)sprite.h / 2 - zoom.y };
 	//RotatedPos
 	rotated = AditionRule(rotated, -rad);
 	//ScreenPos
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
-	Vector2 zoom = { float(sprite.w) / 2 - float(sprite.w) / 2 * scaleX,float(sprite.h) / 2 - float(sprite.h) / 2 * scaleY };
 
-	Novice::DrawSprite((int)(rotated.x + zoom.x), (int)(rotated.y + zoom.y), sprite.path, scaleX, scaleY, rad, color);
+	Novice::DrawSprite((int)(rotated.x), (int)(rotated.y), sprite.path, scaleX, scaleY, rad, color);
 }
 
 void People::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList, int index, float scaleX, float scaleY, int color)
@@ -124,12 +124,12 @@ void People::FrameTexture(float x, float y, map<int, LoadRes::SpriteList> spList
 	int arrSpriteW = spList[index].listW, arrSpriteH = spList[index].listH;
 	int arrX = spList[index].x, arrY = spList[index].y;
 
-	Vector2 rotated = { (float)spList[index].w * -1 / 2,(float)spList[index].h / 2 };
+	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
+	Vector2 rotated = { (float)spList[index].w * -1 / 2 + zoom.x,(float)spList[index].h / 2 - zoom.y };
 	rotated = AditionRule(rotated, -rad);
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
-	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
-	Novice::DrawSpriteRect((int)(rotated.x + zoom.x), (int)(rotated.y + zoom.y), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW) * scaleX, ((float)arrH / (float)arrSpriteH) * scaleY, rad, color);
+	Novice::DrawSpriteRect((int)(rotated.x), (int)(rotated.y), arrX, arrY, arrW, arrH, arrSprite, ((float)arrW / (float)arrSpriteW) * scaleX, ((float)arrH / (float)arrSpriteH) * scaleY, rad, color);
 }
 
 void People::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spList, float rad, int color, int frameTime, int playIndex)
@@ -163,12 +163,12 @@ void People::FrameAnimation(float x, float y, map<int, LoadRes::SpriteList> spLi
 	int arrW = spList[_frameAniIndex[playIndex]].w, arrH = spList[_frameAniIndex[playIndex]].h;
 	int arrX = spList[_frameAniIndex[playIndex]].x, arrY = spList[_frameAniIndex[playIndex]].y;
 	int arrListW = spList[_frameAniIndex[playIndex]].listW, arrListH = spList[_frameAniIndex[playIndex]].listH;
-	Vector2 rotated = { (float)spList[_frameAniIndex[playIndex]].w * -1 / 2,(float)spList[_frameAniIndex[playIndex]].h / 2 };
+	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
+	Vector2 rotated = { (float)spList[_frameAniIndex[playIndex]].w * -1 / 2 + zoom.x,(float)spList[_frameAniIndex[playIndex]].h / 2 - zoom.y };
 	rotated = AditionRule(rotated, -rad);
 	rotated = { rotated.x + x ,rotated.y + y };
 	rotated = WorldToScreen(rotated, _cameraPos);
-	Vector2 zoom = { float(arrW) / 2 - float(arrW) / 2 * scaleX,float(arrH) / 2 - float(arrH) / 2 * scaleY };
-	Novice::DrawSpriteRect((int)(rotated.x + zoom.x), (int)(rotated.y + zoom.y), arrX, arrY, arrW, arrH, arrPath, ((float)arrW / (float)arrListW) * scaleX, ((float)arrH / (float)arrListH) * scaleY, rad, color);
+	Novice::DrawSpriteRect((int)(rotated.x), (int)(rotated.y), arrX, arrY, arrW, arrH, arrPath, ((float)arrW / (float)arrListW) * scaleX, ((float)arrH / (float)arrListH) * scaleY, rad, color);
 }
 
 int People::FrameTimers(int milli, int index)

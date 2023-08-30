@@ -29,6 +29,8 @@ public:
 	inline static Sprite _spBullet;
 	inline static Sprite _spBullet_enemy_shoot;
 	inline static Sprite _spBullet_player_shoot;
+	inline static map<int, SpriteList> _spBullet_boss;
+	inline static map<int, SpriteList> _spBullet_boss_player;
 	inline static Sprite _spArrow;
 	inline static Sprite _spArrow_mouse;
 	//角色
@@ -44,6 +46,8 @@ public:
 	inline static map<int, SpriteList> _spListEnemy2;
 	inline static map<int, SpriteList> _spListEnemy3;
 	inline static map<int, SpriteList> _spListEnemy4;
+	inline static map<int, SpriteList> _spListEnemy_Boss;
+	inline static map<int, SpriteList> _spListEnemy_Boss2;
 	//特效
 	inline static map<int, SpriteList> _spListExplode;
 	inline static map<int, SpriteList> _spListEnemyExplode;

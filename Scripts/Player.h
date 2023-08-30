@@ -53,7 +53,7 @@ public:
 	int _steamValue;//蒸汽当前数量
 	int _steamMax;//蒸汽上限
 	int _steamEnemy;//撞击敌人后减少多少蒸汽
-	float _steamPlusRate;//增加增加比率
+	float _steamPlusRate;//增加比率
 	int _steamMinus;
 	int _gunHotPlus;//武器增加热度
 	int _gunHotMinus;//武器减少热度

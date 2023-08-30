@@ -13,6 +13,21 @@ void LoadRes::LoadResNovice()
 	int path = 0;
 	int listW = 0, listH = 0;
 	int w = 0, h = 0, x = 0, y = 0;
+	//子弹
+	for (int i = 0; i < 4; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Bullet_boss.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 512, listH = 128;
+		_spBullet_boss[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 4; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Bullet_boss_player.png");
+		w = 128, h = 128;
+		x = i * w, y = 0;
+		listW = 512, listH = 128;
+		_spBullet_boss_player[i] = { path,x,y,w,h,listW,listH };
+	}
 	//角色
 	for (int i = 0; i < 4; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Player.png");
@@ -98,6 +113,20 @@ void LoadRes::LoadResNovice()
 		listW = 768, listH = 128;
 		_spListEnemy4[i] = { path,x,y,w,h,listW,listH };
 	}
+	for (int i = 0; i < 6; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Enemy_Boss.png");
+		w = 512, h = 512;
+		x = i * w, y = 0;
+		listW = 3072, listH = 512;
+		_spListEnemy_Boss[i] = { path,x,y,w,h,listW,listH };
+	}
+	for (int i = 0; i < 6; i++) {
+		path = Novice::LoadTexture("./Resources/Textures/Enemy_Boss2.png");
+		w = 512, h = 512;
+		x = i * w, y = 0;
+		listW = 3072, listH = 512;
+		_spListEnemy_Boss2[i] = { path,x,y,w,h,listW,listH };
+	}
 	//Map
 	for (int i = 0; i < 4; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/Map/List.png");
@@ -176,9 +205,9 @@ void LoadRes::LoadResNovice()
 	//UI
 	for (int i = 0; i < 10; i++) {
 		path = Novice::LoadTexture("./Resources/Textures/UI/Number.png");
-		w = 30, h = 50;
+		w = 32, h = 52;
 		x = i * w, y = 0;
-		listW = 300, listH = 50;
+		listW = 312, listH = 52;
 		_spUI_number[i] = { path,x,y,w,h,listW,listH };
 	}
 	path = Novice::LoadTexture("./Resources/Textures/UI/HP/List.png");

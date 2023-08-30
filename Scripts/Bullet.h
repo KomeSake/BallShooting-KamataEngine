@@ -13,6 +13,8 @@ public:
 		normal,
 		enemy_shoot,
 		player_shoot,//反弹敌人的子弹
+		boss,
+		boss_player
 	}enumBullet;
 
 	Vector2 _pos;
@@ -20,6 +22,8 @@ public:
 	float _speed;
 
 	LoadRes::Sprite _sprite;
+	map<int, LoadRes::SpriteList> _spriteAni;
+	bool _isSpriteAni;//子弹是否是动画
 	float _width;
 	float _height;
 	unsigned int _color;
@@ -45,6 +49,8 @@ public:
 	inline static queue<Bullet*> _bulletIdiePool_normal;
 	inline static queue<Bullet*> _bulletIdiePool_enemy_shoot;
 	inline static queue<Bullet*> _bulletIdiePool_player_shoot;
+	inline static queue<Bullet*> _bulletIdiePool_boss;
+	inline static queue<Bullet*> _bulletIdiePool_boss_player;
 
 	static void BulletUpdata(Bullet::Vector2 cameraPos, vector<vector<char>> mapData, float bgHeight, float minMapSize);
 	static Bullet* AcquireBullet(Bullet::BulletType type);

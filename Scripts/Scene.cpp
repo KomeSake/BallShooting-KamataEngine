@@ -3,9 +3,10 @@
 Scene::Scene()
 {
 	_sceneIndex = Loading;//初始化等于Loading，就会把全部数据都进行载入
+	_isStartMapData = true;//游戏最开始要等于true，这样才会载入开始界面的地图数据
 	_levelNum = 0;
 	_levelLockNum = 0;
-	_isStartMapData = true;//游戏最开始要等于true，这样才会载入开始界面的地图数据
+	_levelMax = 4;
 
 	PlayerUI_HPObj = new PlayerUI_HP();
 	PlayerUI_GunObj = new PlayerUI_Gun;
@@ -25,13 +26,13 @@ void Scene::ScreenGame(Player* playerObj)
 
 void Scene::ScreenLevelClear(int mouseX, int mouseY)
 {
-	if (_levelLockNum < 4 && _levelNum == _levelLockNum) {
+	if (_levelLockNum < _levelMax && _levelNum == _levelLockNum) {
 		_levelLockNum++;
 	}
 	ScreenUI_LevelClearObj->UIOpen(GameUI::Vector2{ float(mouseX),float(mouseY) }, _levelNum, _levelLockNum);
 	if (ScreenUI_LevelClearObj->_isLevelNext) {
 		_sceneIndex = Loading;
-		if (_levelNum < 4) {
+		if (_levelNum < _levelMax) {
 			_levelNum++;
 		}
 		ScreenUI_LevelClearObj->_isLevelNext = false;

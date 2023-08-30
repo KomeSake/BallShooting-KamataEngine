@@ -28,6 +28,7 @@ public:
 	}_levelMapData;
 	int _levelNum;//用于控制要读取什么地图数据，通过上面的枚举可以获得不同的地图数据
 	int _levelLockNum;//已解锁多少关卡
+	int _levelMax;//总关卡数(不包含教学关)
 	bool _isStartMapData;//是否读取主菜单的地图数据
 	Scene();
 	void ScreenGame(Player* playerObj);

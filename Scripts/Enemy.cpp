@@ -35,8 +35,8 @@ void Enemy::Inital(EnemyType type)
 	_warningLength = 850;
 
 	_isCrash = false;
-	_crashScaleSpeed = 0.03f;
-	_crashScaleMax = 1.3f;
+	_crashScaleSpeed = 0.01f;
+	_crashScaleMax = 1.2f;
 	_crashScaleReset = _scaleX;
 
 	_hitBox_enemy = -50;
@@ -46,6 +46,13 @@ void Enemy::Inital(EnemyType type)
 	_isDrop = false;
 	_isHarmed = false;
 	_isDead = false;
+
+	_bossPattern = 0;
+	_bossSplit = 0;
+	_isBossDead = false;
+	_isBossCrash = false;
+	_isBossSplit = false;
+	_isBoss2Init = false;
 
 	switch (type) {
 	case dog:
@@ -58,14 +65,14 @@ void Enemy::Inital(EnemyType type)
 		_scaleX = 1.2f;
 		_scaleY = 1.2f;
 		_type = type;
-		_hp = 30;
-		_damage = 20;
-		_warningLength = 700;
+		_hp = 40;
+		_damage = 17;
+		_warningLength = 500;
 		_bounce = 0.5f;
 		_velMax = 10;
-		_bounceValue_bullet = 5;
-		_bounceValue_player = 20;
-		_crashScaleMax = 1.5f;
+		_bounceValue_bullet = 1;
+		_bounceValue_player = 10;
+		_crashScaleMax = 1.4f;
 		_crashScaleReset = _scaleX;
 		break;
 	case dog2:
@@ -74,7 +81,7 @@ void Enemy::Inital(EnemyType type)
 		_height = 128;
 		_type = type;
 		_hp = 20;
-		_damage = 15;
+		_damage = 13;
 		_warningLength = 700;
 		_bounce = 0.5f;
 		_velMax = 7;
@@ -89,11 +96,11 @@ void Enemy::Inital(EnemyType type)
 		_hp = 7;
 		_damage = 10;
 		_shootTimer = 500;
-		_warningLength = 900;
-		_toPlayerLengthStop = 400;
+		_warningLength = 1000;
+		_toPlayerLengthStop = 700;
 		_bounce = 0.5f;
 		_velMax = 5;
-		_bounceValue_bullet = 8;
+		_bounceValue_bullet = 3;
 		_bounceValue_player = 30;
 		break;
 	case doubleShoot:
@@ -104,12 +111,30 @@ void Enemy::Inital(EnemyType type)
 		_hp = 20;
 		_damage = 20;
 		_shootTimer = 700;
-		_warningLength = 700;
-		_toPlayerLengthStop = 500;
+		_warningLength = 800;
+		_toPlayerLengthStop = 800;
 		_bounce = 0.5f;
 		_velMax = 3;
-		_bounceValue_bullet = 4;
+		_bounceValue_bullet = 8;
 		_bounceValue_player = 15;
+		break;
+	case boss:
+	case boss2:
+		_isBossDead = false;
+		_sprite = LoadRes::_spListEnemy_Boss;
+		_width = 512;
+		_height = 512;
+		_type = type;
+		_hp = 200;
+		_damage = 10;
+		_shootTimer = 700;
+		_warningLength = 2000;
+		_toPlayerLengthStop = 700;
+		_bounce = 0.5f;
+		_velMax = 3;
+		_bounceValue_bullet = 1;
+		_bounceValue_player = 15;
+		_crashScaleMax = 1.1f;
 		break;
 	}
 	_hpMax = _hp;
@@ -142,8 +167,8 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 	}
 	if (_isWarning) {
 		//从Player类偷来的物理移动和地图碰撞检测
-		int playerCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
-		int playerCheckLine = (int)(_pos.x / minMapSize);
+		//int playerCheckRow = (int)((bgHeight - _pos.y) / minMapSize);
+		//int playerCheckLine = (int)(_pos.x / minMapSize);
 
 		//开始x轴的移动，移动后算出新的上下左右4个角的格子位置
 		_acceleration.x = _dir.x * _speed;
@@ -160,14 +185,16 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 		if (_vel.x > 0) {
 			if (!Map::IsThrough(mapData, checkUp, checkRight)
 				|| !Map::IsThrough(mapData, checkDown, checkRight)) {
-				_pos.x = playerCheckLine * minMapSize + _width / 2;
+				//_pos.x = playerCheckLine * minMapSize + _width / 2;
+				_pos.x = originalPos.x;
 				_vel.x = _vel.x * -_bounce;
 			}
 		}
 		else if (_vel.x < 0) {
 			if (!Map::IsThrough(mapData, checkUp, checkLeft)
 				|| !Map::IsThrough(mapData, checkDown, checkLeft)) {
-				_pos.x = playerCheckLine * minMapSize + _width / 2;
+				//_pos.x = playerCheckLine * minMapSize + _width / 2;
+				_pos.x = originalPos.x;
 				_vel.x = _vel.x * -_bounce;
 			}
 		}
@@ -187,14 +214,16 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 		if (_vel.y > 0) {
 			if (!Map::IsThrough(mapData, checkUp, checkLeft)
 				|| !Map::IsThrough(mapData, checkUp, checkRight)) {
-				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				//_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				_pos.y = originalPos.y;
 				_vel.y = _vel.y * -_bounce;
 			}
 		}
 		else if (_vel.y < 0) {
 			if (!Map::IsThrough(mapData, checkDown, checkLeft)
 				|| !Map::IsThrough(mapData, checkDown, checkRight)) {
-				_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				//_pos.y = bgHeight - playerCheckRow * minMapSize - _height / 2;
+				_pos.y = originalPos.y;
 				_vel.y = _vel.y * -_bounce;
 			}
 		}
@@ -213,6 +242,7 @@ void Enemy::Move(Vector2 playerPos, vector<vector<char>> mapData, float bgHeight
 				if (_isCrash) {
 					_scaleX = _crashScaleReset;
 					_scaleY = _crashScaleReset;
+					_crashScaleSpeed *= -1;
 					_isCrash = false;
 				}
 			}
@@ -251,15 +281,29 @@ void Enemy::CollideSystem()
 
 void Enemy::ShootAttack()
 {
-	if (!_isRunToPlayer) {
+	if (!_isRunToPlayer && !_isDrop) {
 		if (MyTimers(_shootTimer, 4)) {
-			Bullet* bullet = BulletManager::AcquireBullet(Bullet::enemy_shoot);
-			bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _dir.x, _dir.y });
-			if (_type == doubleShoot) {
+			switch (_type) {
+			case shoot: {
+				Bullet* bullet = BulletManager::AcquireBullet(Bullet::enemy_shoot);
+				bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _dir.x, _dir.y });
+				break; }
+			case doubleShoot: {
+				Bullet* bullet = BulletManager::AcquireBullet(Bullet::enemy_shoot);
+				bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _dir.x, _dir.y });
 				Bullet* bullet2 = BulletManager::AcquireBullet(Bullet::enemy_shoot);
 				bullet2->Fire(Bullet::Vector2{ _pos.x + 30, _pos.y + 30 }, Bullet::Vector2{ _dir.x, _dir.y });
 				Bullet* bullet3 = BulletManager::AcquireBullet(Bullet::enemy_shoot);
 				bullet3->Fire(Bullet::Vector2{ _pos.x - 30, _pos.y - 30 }, Bullet::Vector2{ _dir.x, _dir.y });
+				break; }
+			case boss: {
+				Bullet* bullet = BulletManager::AcquireBullet(Bullet::boss);
+				bullet->Fire(Bullet::Vector2{ _pos.x + _dir.x, _pos.y + _dir.y }, Bullet::Vector2{ _dir.x, _dir.y });
+				break; }
+			case boss2: {
+				Bullet* bullet = BulletManager::AcquireBullet(Bullet::boss);
+				bullet->Fire(Bullet::Vector2{ _pos.x + _dir.x, _pos.y + _dir.y }, Bullet::Vector2{ _dir.x, _dir.y });
+				break; }
 			}
 		}
 	}
@@ -285,6 +329,7 @@ void Enemy::Effect()
 		if (_scaleX <= _crashScaleReset || _scaleY <= _crashScaleReset) {
 			_scaleX = _crashScaleReset;
 			_scaleY = _crashScaleReset;
+			_crashScaleSpeed *= -1;
 			_isCrash = false;
 			//在Move方法中的和队友碰撞也会变成false，不然碰到队友还在放大缩小有点怪
 		}
@@ -322,7 +367,7 @@ void Enemy::Show(bool isHpLine)
 		FrameAnimation(_pos.x, _pos.y, LoadRes::_spListEnemyExplode, rad, WHITE, 100, 2);
 	}
 	//头顶上的血条
-	if (!_isDrop && isHpLine) {
+	if (!_isDrop && isHpLine && _type != boss) {
 		LoadRes::Sprite sprite = { Novice::LoadTexture("white1x1.png") ,1,1 };
 		float hpSpriteW = 60;
 		float hpRate = hpSpriteW / _hpMax;
@@ -333,6 +378,23 @@ void Enemy::Show(bool isHpLine)
 		else {
 			FrameTexture_OLD(_pos.x - _width / 2 + hpSpriteW / 2, _pos.y + _height / 2 + 20, sprite, hpSpriteW, 10, 0x263238ff);
 		}
+	}
+	if (!_isDrop && isHpLine && _type == boss) {
+		LoadRes::Sprite sprite = { Novice::LoadTexture("white1x1.png") ,1,1 };
+		float hpSpriteW = 1200;
+		float hpRate = hpSpriteW / _hpMax;
+		if (_hp > 0) {
+			Novice::DrawSprite(int(1920.f / 2 - hpSpriteW / 2), 50, sprite.path, hpSpriteW, 50, 0, 0x263238ff);
+			Novice::DrawSprite(int(1920.f / 2 - hpSpriteW / 2), 50, sprite.path, _hp * hpRate, 50, 0, 0xe84e40ff);
+		}
+		else {
+			Novice::DrawSprite(int(1920.f / 2 - hpSpriteW / 2), 50, sprite.path, hpSpriteW, 50, 0, 0x263238ff);
+		}
+		//血条边框
+		Novice::DrawBox(int(1920.f / 2 - hpSpriteW / 2) - 1, 50 - 1, int(hpSpriteW) + 2, 50 + 2, 0, WHITE, kFillModeWireFrame);
+		Novice::DrawBox(int(1920.f / 2 - hpSpriteW / 2) - 2, 50 - 2, int(hpSpriteW) + 4, 50 + 4, 0, WHITE, kFillModeWireFrame);
+		Novice::DrawBox(int(1920.f / 2 - hpSpriteW / 2) - 3, 50 - 3, int(hpSpriteW) + 6, 50 + 6, 0, WHITE, kFillModeWireFrame);
+		Novice::DrawBox(int(1920.f / 2 - hpSpriteW / 2) - 4, 50 - 4, int(hpSpriteW) + 8, 50 + 8, 0, WHITE, kFillModeWireFrame);
 	}
 }
 
@@ -352,6 +414,130 @@ void Enemy::DropSystem(vector<vector<char>> mapData, float bgHeight, float minMa
 		if (_scaleX < 0 || _scaleY < 0) {
 			EnemyManager::ReleaseEnemy(this);
 		}
+	}
+}
+
+void Enemy::EnemyBoss()
+{
+	//这一趴写的很乱，因为是通宵了一晚上写的deadline效果了，所以就先这样屎山吧
+
+	//是否击败Boss
+	if (_hp <= 0) {
+		_isBossDead = true;
+	}
+	//状态变换
+	if (_isBossCrash) {
+		switch (_bossPattern)
+		{
+		case 0:
+			//变成近战的属性
+			_bossPattern = 1;
+			_sprite = LoadRes::_spListEnemy_Boss2;
+			_toPlayerLengthStop = 0;
+			_bounce = 0.5f;
+			_velMax = 10;
+			_bounceValue_bullet = 10;
+			_bounceValue_player = 25;
+			break;
+		case 1:
+			//变成远程的属性
+			_bossPattern = 0;
+			_sprite = LoadRes::_spListEnemy_Boss;
+			srand(unsigned int(time(nullptr)));
+			float length = (float)(rand() % 700 + 400);
+			_toPlayerLengthStop = length;
+			_bounce = 0.5f;
+			_velMax = 3;
+			_bounceValue_bullet = 1;
+			_bounceValue_player = 15;
+			break;
+		}
+		//不知道为什么被撞了之后，会恢复原本的大小，所以根据分裂阶段，再重新赋值一次好了
+		switch (_bossSplit) {
+		case 1:
+			_width = 512.f * 0.7f;
+			_height = 512.f * 0.7f;
+			_scaleX = 0.7f;
+			_scaleY = 0.7f;
+			_crashScaleMax = 0.9f;
+			break;
+		case 2:
+			_width = 512.f * 0.4f;
+			_height = 512.f * 0.4f;
+			_scaleX = 0.4f;
+			_scaleY = 0.4f;
+			_crashScaleMax = 0.6f;
+			break;
+		case 3:
+			_width = 512.f * 0.2f;
+			_height = 512.f * 0.2f;
+			_scaleX = 0.2f;
+			_scaleY = 0.2f;
+			_crashScaleMax = 0.4f;
+			break;
+		}
+		_isBossCrash = false;
+	}
+	//分裂
+	if (_hp <= _hpMax * 0.85f && _bossSplit == 0) {
+		_width = 512.f * 0.7f;
+		_height = 512.f * 0.7f;
+		_scaleX = 0.7f;
+		_scaleY = 0.7f;
+		_crashScaleMax = 0.9f;
+		_bossSplit = 1;
+		_isBossSplit = true;
+	}
+	if (_hp <= _hpMax * 0.6f && _bossSplit == 1) {
+		_width = 512.f * 0.4f;
+		_height = 512.f * 0.4f;
+		_scaleX = 0.4f;
+		_scaleY = 0.4f;
+		_crashScaleMax = 0.6f;
+		_bossSplit = 2;
+		_isBossSplit = true;
+	}
+	if (_hp <= _hpMax * 0.4f && _bossSplit == 2) {
+		_width = 512.f * 0.2f;
+		_height = 512.f * 0.2f;
+		_scaleX = 0.2f;
+		_scaleY = 0.2f;
+		_crashScaleMax = 0.4f;
+		_bossSplit = 3;
+		_isBossSplit = true;
+	}
+	if (_type == boss2 && !_isBoss2Init) {
+		//给分裂出来的boss2使用的，分裂阶段属性初始化
+		switch (_bossSplit) {
+		case 1:
+			_width = 512.f * 0.7f;
+			_height = 512.f * 0.7f;
+			_scaleX = 0.7f;
+			_scaleY = 0.7f;
+			_crashScaleMax = 0.9f;
+			_hpMax = _hpMax / 2;
+			_hp = _hpMax * 0.85f;
+			break;
+		case 2:
+			_width = 512.f * 0.4f;
+			_height = 512.f * 0.4f;
+			_scaleX = 0.4f;
+			_scaleY = 0.4f;
+			_crashScaleMax = 0.6f;
+			_hpMax = _hpMax / 2;
+			_hp = _hpMax * 0.6f;
+			break;
+		case 3:
+			_width = 512.f * 0.2f;
+			_height = 512.f * 0.2f;
+			_scaleX = 0.2f;
+			_scaleY = 0.2f;
+			_crashScaleMax = 0.4f;
+			_hpMax = _hpMax / 2;
+			_hp = _hpMax * 0.4f;
+			break;
+		}
+		_isBoss2Init = true;
 	}
 }
 
@@ -375,6 +561,9 @@ void EnemyManager::EnemyUpdata(Enemy::Vector2 playerPos, vector<vector<char>> ma
 			element->ShootAttack();
 			element->DropSystem(mapData, bgHeight, minMapSize);
 			element->Effect();
+			if (element->_type == Enemy::boss || element->_type == Enemy::boss2) {
+				element->EnemyBoss();
+			}
 		}
 	}
 }
@@ -442,6 +631,30 @@ Enemy* EnemyManager::AcquireEnemy(Enemy::EnemyType type)
 			return enemy;
 		}
 		break;
+	case Enemy::boss:
+		if (_enemyIdiePool_boss.empty()) {
+			Enemy* enemy = new Enemy(type);
+			return enemy;
+		}
+		else {
+			Enemy* enemy = _enemyIdiePool_boss.front();
+			_enemyIdiePool_boss.pop();
+			enemy->Inital(type);
+			return enemy;
+		}
+		break;
+	case Enemy::boss2:
+		if (_enemyIdiePool_boss2.empty()) {
+			Enemy* enemy = new Enemy(type);
+			return enemy;
+		}
+		else {
+			Enemy* enemy = _enemyIdiePool_boss2.front();
+			_enemyIdiePool_boss2.pop();
+			enemy->Inital(type);
+			return enemy;
+		}
+		break;
 	}
 	return nullptr;
 }
@@ -484,6 +697,20 @@ void EnemyManager::ReleaseEnemy(Enemy* enemy)
 		}
 		_enemyIdiePool_doubleShoot.push(enemy);
 		break; }
+	case Enemy::boss: {
+		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
+		if (it != _enemyUpdateVector.end()) {
+			_enemyUpdateVector.erase(it);
+		}
+		_enemyIdiePool_boss.push(enemy);
+		break; }
+	case Enemy::boss2: {
+		auto it = find(_enemyUpdateVector.begin(), _enemyUpdateVector.end(), enemy);
+		if (it != _enemyUpdateVector.end()) {
+			_enemyUpdateVector.erase(it);
+		}
+		_enemyIdiePool_boss2.push(enemy);
+		break; }
 	}
 }
 
@@ -515,6 +742,10 @@ void EnemyManager::EnemyBornToMap(vector<vector<char>> mapData, float bgW, float
 				break;
 			case 'i':
 				emeny = EnemyManager::AcquireEnemy(Enemy::doubleShoot);
+				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
+				break;
+			case 'b':
+				emeny = EnemyManager::AcquireEnemy(Enemy::boss);
 				emeny->Fire(Enemy::Vector2{ minMapPos.x, minMapPos.y });
 				break;
 			}

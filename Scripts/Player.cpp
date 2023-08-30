@@ -27,7 +27,7 @@ Player::Player(Vector2 bornPos)
 	_hpGodTime = 100;
 	_bounceValue_enemy = 25;
 	_ballDamage = 7;
-	_dropDamage = 20;
+	_dropDamage = 10;
 	_isBallTouch = false;
 	_isHarmed = false;
 	_isBallEntering = false;
@@ -47,14 +47,14 @@ Player::Player(Vector2 bornPos)
 	_bulletDir = { 0,0 };
 	_bulletTime = 100;
 
-	_steamMax = 500;
-	_steamEnemy = 100;
-	_steamPlusRate = 2.f;
+	_steamMax = 3500;
+	_steamEnemy = 700;
+	_steamPlusRate = 1.f;
 	_steamMinus = 1;
-	_steamValue = 25000;
-	_gunHotMax = 100;
-	_gunHotPlus = 10;
-	_gunHotMinus = 1;
+	_steamValue = 1500;
+	_gunHotMax = 700;
+	_gunHotPlus = 50;
+	_gunHotMinus = 5;
 	_gunHotValue = 0;
 	_isGunHot = false;
 
@@ -73,29 +73,31 @@ Player::Player(Vector2 bornPos)
 void Player::Move(char keys[], vector<vector<char>> mapData, float bgWidth, float bgHeight, float minMapSize)
 {
 	//移动部分
-	if (!_isDrop && !_isExit && !_isDead) {
-		if (keys[DIK_W]) {
-			_dir.y = 1;
-		}
-		else if (keys[DIK_S]) {
-			_dir.y = -1;
-		}
-		else {
-			_dir.y = 0;
-		}
-		if (keys[DIK_D]) {
-			_dir.x = 1;
-		}
-		else if (keys[DIK_A]) {
-			_dir.x = -1;
-		}
-		else {
-			_dir.x = 0;
-		}
-		float vectorLength = sqrtf(powf(_dir.x, 2) + powf(_dir.y, 2));
-		if (vectorLength != 0) {
-			_dir.x = _dir.x / vectorLength;
-			_dir.y = _dir.y / vectorLength;
+	if (!_isExit && !_isDead) {
+		if (!_isDrop) {
+			if (keys[DIK_W]) {
+				_dir.y = 1;
+			}
+			else if (keys[DIK_S]) {
+				_dir.y = -1;
+			}
+			else {
+				_dir.y = 0;
+			}
+			if (keys[DIK_D]) {
+				_dir.x = 1;
+			}
+			else if (keys[DIK_A]) {
+				_dir.x = -1;
+			}
+			else {
+				_dir.x = 0;
+			}
+			float vectorLength = sqrtf(powf(_dir.x, 2) + powf(_dir.y, 2));
+			if (vectorLength != 0) {
+				_dir.x = _dir.x / vectorLength;
+				_dir.y = _dir.y / vectorLength;
+			}
 		}
 
 		//格子限制
@@ -336,6 +338,10 @@ void Player::CollideSystem()
 						else {
 							_steamValue = 0;
 						}
+						//如果撞到的是Boss，那就触发boss变换状态
+						if (element->_type == Enemy::boss || element->_type == Enemy::boss2) {
+							element->_isBossCrash = true;
+						}
 						_isBallTouch = true;//给Camera类提示要晃动镜头
 						//撞击敌人特效
 						for (int i = 0; i < 3; i++) {
@@ -362,13 +368,18 @@ void Player::CollideSystem()
 						element->_isAlive = false;
 						//把子弹弹回去
 						switch (element->_type) {
-						case Bullet::enemy_shoot:
+						case Bullet::enemy_shoot: {
 							Bullet* bullet = BulletManager::AcquireBullet(Bullet::player_shoot);
 							Vector2 newDir = { element->_dir.x,element->_dir.y };
 							bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ -newDir.x, -newDir.y });
 							//下面这种是按照鼠标方向反弹子弹
 							//bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ _bulletDir.x, _bulletDir.y });
-							break;
+							break; }
+						case Bullet::boss: {
+							Bullet* bullet = BulletManager::AcquireBullet(Bullet::boss_player);
+							Vector2 newDir = { element->_dir.x,element->_dir.y };
+							bullet->Fire(Bullet::Vector2{ _pos.x, _pos.y }, Bullet::Vector2{ -newDir.x, -newDir.y });
+							break; }
 						}
 					}
 				}
@@ -660,7 +671,7 @@ void Player::Show()
 			//跟随鼠标方向
 			float rad = SpriteToObjDir(Vector2{ _bulletDir.x,_bulletDir.y });
 			//计算出过热的RGB值
-			unsigned int color = (int)(255 - (_gunHotValue * 2.55f));
+			unsigned int color = (int)(255 - (_gunHotValue * 255 / _gunHotMax));
 			if (color < 0) {
 				color = 0;
 			}
